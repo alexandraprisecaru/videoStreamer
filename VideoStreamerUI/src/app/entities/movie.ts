@@ -3,12 +3,10 @@
 
 export class Movie {
 
-  readonly id: string;
-  readonly title: string;
+  readonly Id: string;
+  readonly Title: string;
 
   // this is the latest transfer recorded
   // for this account and balance
-  readonly synopsis: string;
-
-  readonly stream: string;
+  readonly Synopsis: string;
 }

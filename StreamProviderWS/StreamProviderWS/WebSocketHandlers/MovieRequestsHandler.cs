@@ -19,35 +19,35 @@ namespace StreamProviderWS.WebSocketHandlers
             _movieProvider = movieProvider;
         }
 
-        public override async Task OnConnected(WebSocket socket)
-        {
-            await base.OnConnected(socket);
-
-            var socketId = WebSocketConnectionManager.GetId(socket);
-
-            //await SendMessageAsync(socket, "{}");
-            //await SendMessageToAllAsync($"{socketId} is now connected");
-        }
-
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
             var socketId = WebSocketConnectionManager.GetId(socket);
 
             var a = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
+            var messageWrapper = JsonConvert.DeserializeObject<MessageWrapper>(a);
+
+            // todo: checkups
+
             //todo: maybe add a switch based on Message Type and handle all cases
-             
-            if (a.Equals(MessageType.MovieListRequest))
+            switch (messageWrapper.type)
             {
-                var movies = await _movieProvider.GetAll();
-                var json = JsonConvert.SerializeObject(movies);
+                case MessageType.MovieListRequest:
+                    var movies = await _movieProvider.GetAll();
+                    var jsonMovies = JsonConvert.SerializeObject(movies);
+                    var messageResponseWrapper = new MessageWrapper
+                    {
+                        type = MessageType.MovieListResponse,
+                        payload = jsonMovies
+                    };
 
-                await SendMessageAsync(socket, json);
+                    var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+                    await SendMessageAsync(socket, json);
+                    break;
+                default:
+                    break;
             }
-
-            var message = $"{socketId} said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}";
-
-            //await SendMessageToAllAsync(message);
         }
     }
 }

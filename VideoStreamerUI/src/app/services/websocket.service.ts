@@ -1,5 +1,5 @@
-import { Injectable} from '@angular/core';
-import { Observer, Subject} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observer, Subject } from 'rxjs';
 
 import { AppConfigService } from './appConfig.service';
 import { MessageWrapper } from '../entities/messageWrapper';
@@ -45,7 +45,7 @@ export class WebSocketsService {
       this.webSocket.close();
     }
   }
-  
+
   public subscribeToMovieListResponses(observer: Observer<Movie[]>): void {
     this.movieListResponseSubject.subscribe(observer);
   }
@@ -69,14 +69,14 @@ export class WebSocketsService {
   private connect(url: string): void {
     this.webSocket = new WebSocket(url);
 
-    this.webSocket.onopen = function(messageEvent: MessageEvent) {
+    this.webSocket.onopen = function (messageEvent: MessageEvent) {
       console.info('WebSocket connection has been opened: %o', messageEvent);
     };
 
     // we need the "self" constant because we cannot use "this" inside the function below
     const self = this;
 
-    const onMessage =  function(messageEvent: MessageEvent) {
+    const onMessage = function (messageEvent: MessageEvent) {
       const jsonReceived: string = messageEvent.data;
 
       console.debug('WebSocket message received: %s', jsonReceived);
@@ -86,25 +86,37 @@ export class WebSocketsService {
         messageWrapper = JSON.parse(jsonReceived);
       } catch (error) {
         console.error('Unable to parse received JSON string: %s\n%o',
-            jsonReceived, error);
+          jsonReceived, error);
         return;
       }
 
       if (!messageWrapper.hasOwnProperty('type') ||
-          !messageWrapper.hasOwnProperty('payload')) {
+        !messageWrapper.hasOwnProperty('payload')) {
         console.error('Invalid message received, not the correct properties: %s',
-            jsonReceived);
+          jsonReceived);
         return;
       }
 
-      if (messageWrapper.type === MessageType.BALANCE_DATA_RESPONSE ||
-          messageWrapper.type === MessageType.BALANCE_DATA_UPDATE) {
+      if (messageWrapper.type === MessageType.MOVIE_LIST_RESPONSE) {
+        let movies: Movie[] = [];
+        try {
+          movies = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Unable to deserialize Movie[] object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Movies message received: %o', movies);
+        self.movieListResponseSubject.next(movies);
+      } else if (messageWrapper.type === MessageType.BALANCE_DATA_RESPONSE ||
+        messageWrapper.type === MessageType.BALANCE_DATA_UPDATE) {
         let accountBalance: AccountBalance;
         try {
           accountBalance = JSON.parse(messageWrapper.payload);
         } catch (error) {
           console.error('Unable to deserialize AccountBalance object: %s',
-              messageWrapper.payload);
+            messageWrapper.payload);
           return;
         }
 
@@ -123,7 +135,7 @@ export class WebSocketsService {
             transferReceived = JSON.parse(messageWrapper.payload);
           } catch (error) {
             console.error('Unable to deserialize Transfer object: %s',
-                messageWrapper.payload);
+              messageWrapper.payload);
           }
 
           const transfer: Transfer = new Transfer(transferReceived);
@@ -138,11 +150,11 @@ export class WebSocketsService {
 
     this.webSocket.onmessage = onMessage;
 
-    this.webSocket.onerror = function(messageEvent: MessageEvent) {
+    this.webSocket.onerror = function (messageEvent: MessageEvent) {
       console.error('WebSocket error observed: %o', messageEvent);
     };
 
-    this.webSocket.onclose = function(closeEvent: CloseEvent) {
+    this.webSocket.onclose = function (closeEvent: CloseEvent) {
       console.info('WebSocket connection has been closed: %o', closeEvent);
     };
   }
@@ -166,9 +178,8 @@ export class WebSocketsService {
   public sendMovieListRequest(): void {
     const request: MovieListRequest = new MovieListRequest();
     const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_LIST_REQUEST, request);
-    
-    this.webSocket.send(MessageType.MOVIE_LIST_REQUEST);
-    // this.send(message);
+
+    this.sendMessage(this.webSocket, message);
   }
 
   private sendAccountBalanceSubscriptionRequest(accountId: string): void {
@@ -189,5 +200,37 @@ export class WebSocketsService {
     } catch (error) {
       console.error('Sending message failed.\nMessage:\n%o\nError:\n%o', message, error);
     }
+  }
+
+  private waitForOpenConnection(socket: WebSocket) {
+    return new Promise((resolve, reject) => {
+      const maxNumberOfAttempts = 10
+      const intervalTime = 200 //ms
+
+      let currentAttempt = 0
+      const interval = setInterval(() => {
+        if (currentAttempt > maxNumberOfAttempts - 1) {
+          clearInterval(interval)
+          reject(new Error('Maximum number of attempts exceeded'))
+        } else if (socket.readyState === socket.OPEN) {
+          clearInterval(interval)
+          resolve()
+        }
+        currentAttempt++
+      }, intervalTime)
+    })
+  }
+
+  private async sendMessage(socket: WebSocket, message: MessageWrapper) {
+    if (socket.readyState !== socket.OPEN) {
+      try {
+        await this.waitForOpenConnection(socket);
+      } catch (err) {
+        console.error(err)
+        return;
+      }
+    }
+
+    socket.send(JSON.stringify(message))
   }
 }
