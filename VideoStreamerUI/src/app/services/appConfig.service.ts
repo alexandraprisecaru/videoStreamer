@@ -8,21 +8,23 @@ export class AppConfigService {
 
   private appConfig: any;
 
-  constructor(private httpClient: HttpClient) { }
+  constructor() { }
 
-  public loadAppConfig(): Promise<string | void> {
-    return this.httpClient.get('/assets/config.json')
-      .toPromise()
-      .then(data => {
-        this.appConfig = data;
-    });
-  }
+  // public loadAppConfig(): Promise<string | void> {
+  //   // return this.httpClient.get('/assets/config.json')
+  //   //   .toPromise()
+  //   //   .then(data => {
+  //   //     this.appConfig = data;
+  //   // });
+  // }
 
   public get webSocketsServerUrl(): string {
-    if (!this.appConfig) {
-      throw Error('Config file not loaded!');
-    }
+    // if (!this.appConfig) {
+    //   throw Error('Config file not loaded!');
+    // }
 
-    return this.appConfig.webSocketsServerUrl;
+
+    // return "ws://echo.websocket.org";
+    return "wss://localhost:44343/chat";
   }
 }

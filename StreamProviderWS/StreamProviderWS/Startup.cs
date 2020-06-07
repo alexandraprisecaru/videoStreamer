@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StreamProviderWS.Kafka.Services;
 using StreamProviderWS.Extensions;
+using StreamProviderWS.WebSocketHandlers;
 
 namespace StreamProviderWS
 {
@@ -47,28 +49,30 @@ namespace StreamProviderWS
             services.AddConsumer<string, byte[]>(Configuration, "consumer");
             services.AddProducer<string, string>(Configuration, "producer");
             services.AddProducer<string, byte[]>(Configuration, "producer");
-            services.AddHostedService<GeometryBytesConsumerService>();
-            services.AddHostedService<GeometryStringProducerService>();
+            //services.AddHostedService<GeometryBytesConsumerService>();
+            //services.AddHostedService<GeometryStringProducerService>();
+
+            services.AddWebSocketManager();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            var serviceScopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+            var serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
 
-            app.UseHttpsRedirection();
+            app.UseWebSockets();
 
+            app.MapWebSocketManager("/chat", serviceProvider.GetService<ChatMessageHandler>());
+
+            app.UseStaticFiles();
+            
             app.UseRouting();
-
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
         }
+
     }
 }

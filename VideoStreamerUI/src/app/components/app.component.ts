@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService, GoogleLoginProvider, SocialUser } from 'angularx-social-login';
 import { Router } from '@angular/router';
+import { WebSocketsService } from '../services/websocket.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,13 +14,10 @@ export class AppComponent implements OnInit {
   user: SocialUser;
   loggedIn: boolean;
   
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private webSocketService: WebSocketsService) { }
   
   ngOnInit() {
-    this.signinForm = this.formBuilder.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required]
-    });
+    this.webSocketService.start();
   }
 
   // signInWithGoogle(): void {
