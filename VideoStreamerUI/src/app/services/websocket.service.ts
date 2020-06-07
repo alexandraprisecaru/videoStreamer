@@ -10,6 +10,7 @@ import { AccountBalanceRequest } from '../entities/accountBalanceRequest';
 import { TransferReceived } from '../entities/transferReceived';
 import { Transfer } from '../entities/transfer';
 import { TransfersSubscriptionRequest } from '../entities/transfersSubscriptionRequest';
+import { Movie } from '../entities/movie';
 
 @Injectable({
   providedIn: 'root'
@@ -19,12 +20,16 @@ export class WebSocketsService {
 
   // Maybe we only need one balance subject
   private balanceResponseSubject: Subject<AccountBalance>;
+  private movieListResponseSubject: Subject<Movie[]>;
+  private movieListUpdateSubject: Subject<Movie[]>;
   private balanceUpdateSubject: Subject<AccountBalance>;
 
   private transferReceivedSubject: Subject<Transfer>;
 
   constructor(private appConfigService: AppConfigService) {
     this.balanceResponseSubject = new Subject<AccountBalance>();
+    this.movieListResponseSubject = new Subject<Movie[]>();
+    this.movieListUpdateSubject = new Subject<Movie[]>();
     this.balanceUpdateSubject = new Subject<AccountBalance>();
     this.transferReceivedSubject = new Subject<Transfer>();
   }
@@ -38,6 +43,14 @@ export class WebSocketsService {
     if (this.webSocket != null) {
       this.webSocket.close();
     }
+  }
+  
+  public subscribeToMovieListResponses(observer: Observer<Movie[]>): void {
+    this.movieListResponseSubject.subscribe(observer);
+  }
+
+  public subscribeToMovieListUpdates(observer: Observer<Movie[]>): void {
+    this.movieListResponseSubject.subscribe(observer);
   }
 
   public subscribeToBalanceResponses(observer: Observer<AccountBalance>): void {

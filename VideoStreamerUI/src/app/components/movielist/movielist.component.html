@@ -1,1 +1,12 @@
 <p>movielist works!</p>
+<div *ngIf="movies.length > 0" class="bold">
+    <h3>Movies</h3>
+  </div>
+  <div class="style01">
+    <ul>
+      <mat-list-item *ngFor="let movie of movies; let i = index; trackBy: trackByFn">
+        {{i}}&#9;<b>${{movies.title}}</b>&#9;
+      </mat-list-item>
+    </ul>
+  </div>
+  
