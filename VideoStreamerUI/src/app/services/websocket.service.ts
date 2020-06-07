@@ -11,6 +11,7 @@ import { TransferReceived } from '../entities/transferReceived';
 import { Transfer } from '../entities/transfer';
 import { TransfersSubscriptionRequest } from '../entities/transfersSubscriptionRequest';
 import { Movie } from '../entities/movie';
+import { MovieListRequest } from '../entities/movieListRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -151,11 +152,23 @@ export class WebSocketsService {
     this.sendAccountBalanceSubscriptionRequest(accountId);
     this.sendTransfersSubscriptionRequest(accountId);
   }
+  public sendMovieListAndRoomsRequests(userId: string): void {
+    this.sendMovieListRequest();
+    // todo: send rooms request for user id
+  }
 
   private sendAccountBalanceRequest(accountId: string): void {
     const request: AccountBalanceRequest = new AccountBalanceRequest(accountId);
     const message: MessageWrapper = new MessageWrapper(MessageType.BALANCE_DATA_REQUEST, request);
     this.send(message);
+  }
+
+  public sendMovieListRequest(): void {
+    const request: MovieListRequest = new MovieListRequest();
+    const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_LIST_REQUEST, request);
+    
+    this.webSocket.send(MessageType.MOVIE_LIST_REQUEST);
+    // this.send(message);
   }
 
   private sendAccountBalanceSubscriptionRequest(accountId: string): void {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService, GoogleLoginProvider, SocialUser } from 'angularx-social-login';
 import { Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { WebSocketsService } from '../services/websocket.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'videostreamer';
   signinForm: FormGroup;
   user: SocialUser;
@@ -18,6 +18,10 @@ export class AppComponent implements OnInit {
   
   ngOnInit() {
     this.webSocketService.start();
+  }
+
+  ngOnDestroy(): void {
+    this.webSocketService.stop();
   }
 
   // signInWithGoogle(): void {

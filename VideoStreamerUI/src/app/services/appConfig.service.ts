@@ -25,6 +25,6 @@ export class AppConfigService {
 
 
     // return "ws://echo.websocket.org";
-    return "wss://localhost:44343/chat";
+    return "wss://localhost:44343/movies";
   }
 }

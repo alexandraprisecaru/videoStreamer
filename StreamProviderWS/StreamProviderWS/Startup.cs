@@ -1,12 +1,11 @@
-using System.Net.WebSockets;
-using Confluent.Kafka;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using StreamProviderWS.Kafka.Services;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using StreamProviderWS.Extensions;
+using StreamProviderWS.Models.Common;
+using StreamProviderWS.Services;
 using StreamProviderWS.WebSocketHandlers;
 
 namespace StreamProviderWS
@@ -52,6 +51,7 @@ namespace StreamProviderWS
             //services.AddHostedService<GeometryBytesConsumerService>();
             //services.AddHostedService<GeometryStringProducerService>();
 
+            services.TryAddSingleton<IProvider<Movie>, MoviesProvider>();
             services.AddWebSocketManager();
         }
 
@@ -64,6 +64,7 @@ namespace StreamProviderWS
             app.UseWebSockets();
 
             app.MapWebSocketManager("/chat", serviceProvider.GetService<ChatMessageHandler>());
+            app.MapWebSocketManager("/movies", serviceProvider.GetService<MovieRequestsHandler>());
 
             app.UseStaticFiles();
             

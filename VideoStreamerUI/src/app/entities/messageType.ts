@@ -3,6 +3,9 @@
 // https://github.com/VictorGil/transfers_websockets_service/blob/master/src/main/java/net/devaction/kafka/transferswebsocketsservice/message/MessageType.java
 export enum MessageType {
 
+  MOVIE_LIST_REQUEST = 'MOVIE_LIST_REQUEST',
+  MOVIE_LIST_RESPONSE = 'MOVIE_LIST_RESPONSE',
+
   BALANCE_DATA_REQUEST = 'BALANCE_DATA_REQUEST',
   BALANCE_DATA_RESPONSE = 'BALANCE_DATA_RESPONSE',
 

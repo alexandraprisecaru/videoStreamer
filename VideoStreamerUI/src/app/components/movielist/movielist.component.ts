@@ -4,13 +4,13 @@ import { Observer } from 'rxjs';
 import { Movie } from 'src/app/entities/movie';
 
 @Component({
-  selector: 'movielist',
+  selector: 'movie-list',
   templateUrl: './movielist.component.html',
   styleUrls: ['./movielist.component.scss']
 })
 export class MovielistComponent implements OnInit {
 
-  private movies: Movie[] = [];
+  movies: Movie[] = [];
   constructor(private webSocketService: WebSocketsService) { }
 
   ngOnInit(): void {
@@ -48,7 +48,7 @@ export class MovielistComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToMovieListUpdates(movieListUpdatesObserver);
-
+    this.webSocketService.sendMovieListRequest();
     // const clearBalanceObserver: Observer<void> = {
     //   next: function (): void {
     //     self.clearBalance();
