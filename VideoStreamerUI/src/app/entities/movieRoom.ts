@@ -10,5 +10,5 @@ export class MovieRoom {
 
     // video stream
     Stream: string;
-    TimeWatched: string;
+    TimeWatched: number;
 }

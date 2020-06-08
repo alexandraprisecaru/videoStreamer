@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
+import { MatVideoComponent } from 'mat-video/lib/video.component';
 
 
 @Component({
@@ -11,11 +12,37 @@ import { MovieRoom } from 'src/app/entities/movieRoom';
   styleUrls: ['./movie-room.component.scss']
 })
 export class MovieRoomComponent implements OnInit {
+
+  private video: MatVideoComponent;
+  @ViewChild('video') set matVideo(matVideo: MatVideoComponent) {
+    if (matVideo) { // initially setter gets called with undefined
+      this.video = matVideo;
+    }
+  }
+
   room: MovieRoom;
 
   roomId: string;
 
-  constructor(private route: ActivatedRoute, private webSocketService: WebSocketsService) {
+  ngclass: any;
+  src: string = "http://static.videogular.com/assets/videos/videogular.mp4";
+  title: string = this.room ? this.room.Movie.Title : "Not loaded yet";
+  autoplay: boolean = true;
+  preload: boolean = true;
+  loop: boolean = false;
+  fullscreen: boolean = false;
+  download: boolean = false;
+  quality: boolean = true;
+  keyboard: boolean = true;
+  color: any;
+  spinner: any;
+  poster: any;
+  muted: boolean = true;
+  overlay: boolean = true;
+  showFrameByFrame: boolean = false;
+  currentTime: number = 1;
+
+  constructor(private route: ActivatedRoute, private changeDetector: ChangeDetectorRef, private webSocketService: WebSocketsService) {
     this.route.params.subscribe(params => {
       console.log(params);
 
@@ -34,6 +61,32 @@ export class MovieRoomComponent implements OnInit {
     console.debug('Movie Room received through the observer:\n%o', room);
 
     this.room = room;
+    this.title = room.Movie.Title;
+    this.changeDetector.detectChanges();
+
+    this.currentTime = room.TimeWatched;
+
+    this.video.timeChange.subscribe(() => {
+      // send ws request to update timewatched 
+    });
+
+    this.video.getVideoTag().onpause = () => {
+      console.log(`on pause called, current time: ${this.video.getVideoTag().currentTime}`);
+      // send ws request to pause video for all
+    }
+
+    this.video.getVideoTag().onplay = () => {
+      console.log(`on play called, current time: ${this.video.getVideoTag().currentTime}`);
+      // send ws reuqest to play the video
+    }
+
+    this.video.getVideoTag().onseeked = ()=>{
+      console.log(`on seeked moved called, current time: ${this.video.getVideoTag().currentTime}`);
+
+      // // send ws request to update the time
+    }
+
+    console.log(`title: ${this.video.title}`);
   }
 
   private createMovieRoomResponsesSubscription() {

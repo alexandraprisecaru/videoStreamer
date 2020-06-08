@@ -8,6 +8,8 @@ import { AppComponent } from './components/app.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SocialLoginModule, AuthServiceConfig, GoogleLoginProvider } from 'angularx-social-login';
 import { EmptyComponent } from './components/empty/empty.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatVideoModule } from 'mat-video';
 
 const config = new AuthServiceConfig([
   {
@@ -30,7 +32,9 @@ export function provideConfig() {
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    SocialLoginModule
+    SocialLoginModule,
+    BrowserAnimationsModule,
+    MatVideoModule
   ],
   providers: [
     {
