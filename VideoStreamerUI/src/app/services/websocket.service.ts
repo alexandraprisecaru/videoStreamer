@@ -4,12 +4,13 @@ import { Observer, Subject } from 'rxjs';
 import { AppConfigService } from './appConfig.service';
 import { MessageWrapper } from '../entities/messageWrapper';
 import { MessageType } from '../entities/messageType';
-import { Transfer } from '../entities/transfer';
 import { Movie } from '../entities/movie';
 import { MovieListRequest } from '../entities/requests/movieListRequest';
 import { AuthService, SocialUser } from 'angularx-social-login';
 import { MovieRoomRequest } from '../entities/requests/movieRoomRequest';
 import { MovieRoom } from '../entities/movieRoom';
+import { MovieRoomsRequest } from '../entities/requests/movieRoomsRequest';
+import { SaveUserRequest } from '../entities/requests/saveUserRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +22,20 @@ export class WebSocketsService implements OnInit {
   // Maybe we only need one balance subject
   private movieListResponseSubject: Subject<Movie[]>;
   private movieListUpdateSubject: Subject<Movie[]>;
+
+  private movieRoomsResponseSubject: Subject<MovieRoom[]>;
+  private movieRoomsUpdateSubject: Subject<MovieRoom[]>;
+
   private movieRoomResponseSubject: Subject<MovieRoom>;
   private movieRoomUpdateSubject: Subject<MovieRoom>;
-
-  private transferReceivedSubject: Subject<Transfer>;
 
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.movieListResponseSubject = new Subject<Movie[]>();
     this.movieListUpdateSubject = new Subject<Movie[]>();
+
+    this.movieRoomsResponseSubject = new Subject<MovieRoom[]>();
+    this.movieRoomsUpdateSubject = new Subject<MovieRoom[]>();
+
     this.movieRoomResponseSubject = new Subject<MovieRoom>();
     this.movieRoomUpdateSubject = new Subject<MovieRoom>();
   }
@@ -57,6 +64,14 @@ export class WebSocketsService implements OnInit {
 
   public subscribeToMovieListUpdates(observer: Observer<Movie[]>): void {
     this.movieListUpdateSubject.subscribe(observer);
+  }
+
+  public subscribeToMovieRoomsResponses(observer: Observer<MovieRoom[]>): void {
+    this.movieRoomsResponseSubject.subscribe(observer);
+  }
+
+  public subscribeToMovieRoomsUpdates(observer: Observer<MovieRoom[]>): void {
+    this.movieRoomsUpdateSubject.subscribe(observer);
   }
 
   public subscribeToMovieRoomResponses(observer: Observer<MovieRoom>): void {
@@ -99,6 +114,13 @@ export class WebSocketsService implements OnInit {
     // todo: send rooms request for user id
   }
 
+  public sendSaveUserRequest(user: SocialUser): void {
+    const request: SaveUserRequest = new SaveUserRequest(user);
+    const message: MessageWrapper = new MessageWrapper(MessageType.SAVE_USER_REQUEST, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
   public sendMovieListRequest(): void {
     const request: MovieListRequest = new MovieListRequest();
     const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_LIST_REQUEST, request);
@@ -113,6 +135,15 @@ export class WebSocketsService implements OnInit {
     this.sendMessage(this.webSocket, message);
   }
 
+  public sendMovieRoomsRequest(): void {
+    let userId = this.user.id;
+
+    const request: MovieRoomsRequest = new MovieRoomsRequest(userId);
+    const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_ROOMS_REQUEST, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
   public sendMovieRoomRequest(movieId: string): void {
     let userId = this.user.id;
 
@@ -121,7 +152,6 @@ export class WebSocketsService implements OnInit {
 
     this.sendMessage(this.webSocket, message);
   }
-
 
   private waitForOpenConnection(socket: WebSocket) {
     return new Promise((resolve, reject) => {

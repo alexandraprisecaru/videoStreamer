@@ -9,10 +9,10 @@ namespace StreamProviderWS.Services
 
         Task<T> GetById(string id);
 
-        Task Add<T>(T item);
+        Task Add(T item);
 
-        Task<bool> Update<T>(T updatedItem);
+        Task<bool> Update(T updatedItem);
 
-        Task<bool> Delete<T>(string id);
+        Task<bool> Delete(string id);
     }
 }

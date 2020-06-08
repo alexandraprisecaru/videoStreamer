@@ -51,7 +51,10 @@ namespace StreamProviderWS
             //services.AddHostedService<GeometryBytesConsumerService>();
             //services.AddHostedService<GeometryStringProducerService>();
 
+            services.TryAddSingleton<IProvider<User>, UsersProvider>();
             services.TryAddSingleton<IProvider<Movie>, MoviesProvider>();
+            services.TryAddSingleton<IRoomsProvider, RoomsProvider>();
+
             services.AddWebSocketManager();
         }
 

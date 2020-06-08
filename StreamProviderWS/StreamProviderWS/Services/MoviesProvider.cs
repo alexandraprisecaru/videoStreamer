@@ -34,17 +34,17 @@ namespace StreamProviderWS.Services
             return Task.Run(() => _movies.FirstOrDefault(m => m.Id.Equals(id)));
         }
 
-        public Task Add<T>(T item)
+        public Task Add(Movie item)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> Update<T>(T item)
+        public Task<bool> Update(Movie updatedItem)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete<T>(string id)
+        public Task<bool> Delete(string id)
         {
             throw new NotImplementedException();
         }

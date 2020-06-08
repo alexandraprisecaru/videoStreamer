@@ -3,6 +3,7 @@ import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer } from 'rxjs';
 import { Movie } from 'src/app/entities/movie';
 import { Router } from '@angular/router';
+import { MovieRoom } from 'src/app/entities/movieRoom';
 
 @Component({
   selector: 'movie-list',
@@ -12,15 +13,53 @@ import { Router } from '@angular/router';
 export class MovielistComponent implements OnInit {
 
   movies: Movie[] = [];
+  movieRooms: MovieRoom[] = [];
   constructor(private webSocketService: WebSocketsService, private router: Router) { }
 
   ngOnInit(): void {
-    // we need the "self" constant because we cannot use "this" inside the functions below
-    const self = this;
+    this.createMovieListResponsesSubscription();
+    this.createMovieListUpdatesSubscription();
 
+    this.createMovieRoomsResponsesSubscription();
+    this.createMovieRoomsUpdatesSubscription();
+
+    this.createMovieRoomResponsesSubscription();
+    this.createMovieRoomUpdatesSubscription();
+
+    this.webSocketService.sendMovieListRequest();
+    this.webSocketService.sendMovieRoomsRequest();
+  }
+
+  goToMovie(movieId: string) {
+    this.webSocketService.sendMovieRoomRequest(movieId);
+
+    // this.router.navigate([`movie/${movieId}/${}`])
+    // return {};
+  }
+
+  private processMovies(movieList: Movie[]): void {
+    console.debug('Movies received through the observer:\n%o', movieList);
+
+    this.movies = movieList;
+  }
+
+  private processMovieRoom(room: MovieRoom): void {
+    console.debug('Movie Rooms received through the observer:\n%o', room);
+
+    // TODO: navigate to room X
+  }
+
+  private processMovieRooms(rooms: MovieRoom[]): void {
+    console.debug('Movie Rooms received through the observer:\n%o', rooms);
+
+    this.movieRooms = rooms;
+  }
+
+  private createMovieListResponsesSubscription() {
+    let self = this;
     const movieListResponsesObserver: Observer<Movie[]> = {
       next: function (movies: Movie[]): void {
-        self.process(movies);
+        self.processMovies(movies);
       },
 
       error: function (err: any): void {
@@ -33,10 +72,13 @@ export class MovielistComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToMovieListResponses(movieListResponsesObserver);
+  }
 
+  private createMovieListUpdatesSubscription() {
+    let self = this;
     const movieListUpdatesObserver: Observer<Movie[]> = {
       next: function (movies: Movie[]): void {
-        self.process(movies);
+        self.processMovies(movies);
       },
 
       error: function (err: any): void {
@@ -49,21 +91,81 @@ export class MovielistComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToMovieListUpdates(movieListUpdatesObserver);
-    this.webSocketService.sendMovieListRequest();
   }
 
+  private createMovieRoomsResponsesSubscription() {
+    let self = this;
+    const movieRoomsResponsesObserver: Observer<MovieRoom[]> = {
+      next: function (movieRooms: MovieRoom[]): void {
+        self.processMovieRooms(movieRooms);
+      },
 
-  goToMovie(movieId: string) {
-    // this.webSocketService.sendMovieRoomRequest(movieId, userId)
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
 
+      complete: function (): void {
+        console.log('No more movies responses');
+      }
+    };
 
-    // this.router.navigate([`movie/${movieId}/${}`])
-    // return {};
+    this.webSocketService.subscribeToMovieRoomsResponses(movieRoomsResponsesObserver);
   }
 
-  private process(movieList: Movie[]): void {
-    console.debug('Movies received through the observer:\n%o', movieList);
+  private createMovieRoomsUpdatesSubscription() {
+    let self = this;
+    const movieRoomsUpdatesObserver: Observer<MovieRoom[]> = {
+      next: function (movieRooms: MovieRoom[]): void {
+        self.processMovieRooms(movieRooms);
+      },
 
-    this.movies = movieList;
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more movies updates');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieRoomsUpdates(movieRoomsUpdatesObserver);
+  }
+
+  private createMovieRoomResponsesSubscription() {
+    let self = this;
+    const movieRoomResponsesObserver: Observer<MovieRoom> = {
+      next: function (room: MovieRoom): void {
+        self.processMovieRoom(room);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more movies responses');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieRoomResponses(movieRoomResponsesObserver);
+  }
+
+  private createMovieRoomUpdatesSubscription() {
+    let self = this;
+    const movieRoomUpdatesObserver: Observer<MovieRoom> = {
+      next: function (room: MovieRoom): void {
+        self.processMovieRoom(room);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more movies responses');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieRoomUpdates(movieRoomUpdatesObserver);
   }
 }

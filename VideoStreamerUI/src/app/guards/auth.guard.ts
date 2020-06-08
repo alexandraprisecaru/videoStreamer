@@ -3,6 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Rout
 import { Observable } from 'rxjs';
 import { AuthService, SocialUser, GoogleLoginProvider } from 'angularx-social-login';
 import { CookieService } from 'ngx-cookie-service';
+import { WebSocketsService } from '../services/websocket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,13 +12,24 @@ export class AuthGuard implements CanActivate {
   user: SocialUser;
   loggedIn: boolean;
 
-  constructor(private authService: AuthService, private router: Router, private cookieService: CookieService) {
+  constructor(
+    private authService: AuthService,
+    private cookieService: CookieService,
+    private webSocketService: WebSocketsService,
+    private router: Router) {
+
     this.authService.authState.subscribe((user) => {
       this.user = user;
       this.loggedIn = (user != null);
-      console.log(this.user);
-      this.saveToCookie("authToken", this.user.authToken);
-      this.saveToCookie("idToken", this.user.idToken);
+
+      if(this.loggedIn){
+        console.log(this.user);
+
+        webSocketService.sendSaveUserRequest(user);
+
+        this.saveToCookie("authToken", this.user.authToken);
+        this.saveToCookie("idToken", this.user.idToken);
+      }
     });
   }
 
@@ -52,10 +64,10 @@ export class AuthGuard implements CanActivate {
   }
 
   signInWithGoogle(): Promise<void> {
-    return this.authService.signIn(GoogleLoginProvider.PROVIDER_ID, {ux_mode:"redirect"}).then((user) => {
+    return this.authService.signIn(GoogleLoginProvider.PROVIDER_ID, { ux_mode: "redirect" }).then((user) => {
       if (user !== null && user.authToken) {
-        this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
-        this.router.navigate([""]));
+        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+          this.router.navigate([""]));
       }
     });
   }

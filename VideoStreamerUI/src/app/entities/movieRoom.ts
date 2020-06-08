@@ -2,13 +2,13 @@ import { Movie } from './movie';
 import { SocialUser } from 'angularx-social-login';
 
 export class MovieRoom {
-    roomId: string;
-    movie: Movie;
+    Id: string;
+    Movie: Movie;
 
     // list of users that have joined this room at least once
-    users: SocialUser[];
+    Users: SocialUser[];
 
     // video stream
-    stream: string;
-    timeWatched: string;
+    Stream: string;
+    TimeWatched: string;
 }
