@@ -6,6 +6,7 @@
 <div>
     <ul>
         <li *ngFor="let movie of movies">
-            <p>{{movie.Title}}</li>
+            <p (click)="goToMovie(movie.Id)">{{movie.Title}}</p>
+        </li>
     </ul>
 </div>
