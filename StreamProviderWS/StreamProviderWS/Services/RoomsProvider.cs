@@ -8,30 +8,32 @@ namespace StreamProviderWS.Services
 {
     public class RoomsProvider : IRoomsProvider
     {
-        private static List<Movie> _movies;
-        private static List<User> _users;
+        private static List<Movie> _movies = new List<Movie>();
+        private static List<User> _users = new List<User>();
+
+        private readonly List<MovieRoom> _rooms;
 
         public RoomsProvider(IProvider<Movie> moviesProvider, IProvider<User> usersProvider)
         {
             _movies = moviesProvider.GetAll().Result;
             _users = usersProvider.GetAll().Result;
-        }
 
-        private readonly List<MovieRoom> _rooms = new List<MovieRoom>
-        {
-            new MovieRoom
+            _rooms = new List<MovieRoom>
             {
-                Id = Guid.NewGuid().ToString(),
-                Movie = _movies.FirstOrDefault(),
-                Users = _users,
-            },
-            new MovieRoom
-            {
-                Id = Guid.NewGuid().ToString(),
-                Movie = _movies.FirstOrDefault(),
-                Users = _users,
-            }
-        };
+                new MovieRoom
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Movie = _movies.FirstOrDefault(),
+                    Users = _users,
+                },
+                new MovieRoom
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Movie = _movies.FirstOrDefault(),
+                    Users = _users,
+                }
+            };
+        }
 
         public Task<List<MovieRoom>> GetAll()
         {
@@ -50,7 +52,14 @@ namespace StreamProviderWS.Services
 
         public Task<bool> Update(MovieRoom updatedItem)
         {
-            throw new NotImplementedException();
+            var room = _rooms.FirstOrDefault(x => x.Id.Equals(updatedItem.Id));
+            if (room == null)
+            {
+                return Task.Run(() => false);
+            }
+
+            room = updatedItem;
+            return Task.Run(() => true);
         }
 
         public Task<bool> Delete(string id)
@@ -61,6 +70,28 @@ namespace StreamProviderWS.Services
         public Task<List<MovieRoom>> GetAllByUserId(string userId)
         {
             return Task.Run(() => _rooms.Where(x => x.Users.Any(u => u.Id.Equals(userId))).ToList());
+        }
+
+        public Task<MovieRoom> CreateRoom(string movieId, string userId)
+        {
+            // todo: get movie by id
+            var movie = _movies.FirstOrDefault();
+
+            // todo: get user by id (?)
+            var user = _users.FirstOrDefault(u => u.Id.Equals(userId));
+
+            MovieRoom room = new MovieRoom
+            {
+                Id = Guid.NewGuid().ToString(),
+                Movie = movie,
+                Users = new List<User> { user },
+                Stream = "",
+                TimeWatched = "00:00:00"
+            };
+
+            _rooms.Add(room);
+
+            return Task.Run(() => room);
         }
     }
 }

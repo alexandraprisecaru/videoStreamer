@@ -1,4 +1,5 @@
-﻿using System.Net.WebSockets;
+﻿using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -14,15 +15,18 @@ namespace StreamProviderWS.WebSocketHandlers
     {
         private readonly IProvider<Movie> _movieProvider;
         private readonly IProvider<User> _userProvider;
+        private readonly IRoomsProvider _roomsProvider;
 
         public MovieRequestsHandler(
             ConnectionManager webSocketConnectionManager,
             IProvider<Movie> movieProvider,
-            IProvider<User> userProvider)
+            IProvider<User> userProvider,
+            IRoomsProvider roomsProvider)
             : base(webSocketConnectionManager)
         {
             _movieProvider = movieProvider;
             _userProvider = userProvider;
+            _roomsProvider = roomsProvider;
         }
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
@@ -35,51 +39,131 @@ namespace StreamProviderWS.WebSocketHandlers
 
             // todo: checkups
 
-            //todo: maybe add a switch based on Message Type and handle all cases
             switch (messageWrapper.type)
             {
                 case MessageType.SAVE_USER_REQUEST:
-                    var saveUserRequest = JsonConvert.DeserializeObject<SaveUserRequest>(messageWrapper.payload);
-                    if (saveUserRequest?.User == null)
-                    {
-                        break;
-                    }
-
-                    await _userProvider.Add(saveUserRequest.User);
-                    
-                    // todo: get user information from socket, call users provider, save user info. There's no need to respond in this case
-
+                    await HandleSaveUserRequest(socket, messageWrapper);
                     break;
+
                 case MessageType.MOVIE_LIST_REQUEST:
-                    var movies = await _movieProvider.GetAll();
-                    var jsonMovies = JsonConvert.SerializeObject(movies);
-                    var messageResponseWrapper = new MessageWrapper
-                    {
-                        type = MessageType.MOVIE_LIST_RESPONSE,
-                        payload = jsonMovies
-                    };
-
-                    var json = JsonConvert.SerializeObject(messageResponseWrapper);
-
-                    await SendMessageAsync(socket, json);
+                    await HandleMovieListRequest(socket, messageWrapper);
                     break;
 
+                case MessageType.MOVIE_ROOM_REQUEST:
+                    await HandleMovieRoomRequest(socket, messageWrapper);
+                    break;
+                case MessageType.MOVIE_ROOM_WITH_ID_REQUEST:
+                    await HandleMovieRoomWithIdRequest(socket, messageWrapper);
+                    break;
 
                 case MessageType.MOVIE_ROOMS_REQUEST:
-                    //var movies = await _movieProvider.GetAll();
-                    //var jsonMovies = JsonConvert.SerializeObject(movies);
-                    //var messageResponseWrapper = new MessageWrapper
-                    //{
-                    //    type = MessageType.MOVIE_LIST_RESPONSE,
-                    //    payload = jsonMovies
-                    //};
-
-                    //var json = JsonConvert.SerializeObject(messageResponseWrapper);
-
-                    //await SendMessageAsync(socket, json);
+                    //HandleMovieRoomsRequest(messageWrapper);
                     break;
                 default:
                     break;
+            }
+        }
+
+        private async Task HandleSaveUserRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var saveUserRequest = JsonConvert.DeserializeObject<SaveUserRequest>(messageWrapper.payload);
+            if (saveUserRequest?.User == null)
+            {
+                return;
+            }
+
+            await _userProvider.Add(saveUserRequest.User);
+        }
+
+        private async Task HandleMovieListRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var movies = await _movieProvider.GetAll();
+            var jsonMovies = JsonConvert.SerializeObject(movies);
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_LIST_RESPONSE,
+                payload = jsonMovies
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageAsync(socket, json);
+        }
+
+        private async Task HandleMovieRoomRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var movieRoomRequest = JsonConvert.DeserializeObject<MovieRoomRequest>(messageWrapper.payload);
+            if (movieRoomRequest?.MovieId == null)
+            {
+                return;
+            }
+
+            var room = await _roomsProvider.CreateRoom(movieRoomRequest.MovieId, movieRoomRequest.UserId);
+            var jsonRoom = JsonConvert.SerializeObject(room);
+
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_ROOM_RESPONSE,
+                payload = jsonRoom
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageAsync(socket, json);
+        }
+
+        private async Task HandleMovieRoomWithIdRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var movieRoomRequest = JsonConvert.DeserializeObject<MovieRoomWithIdRequest>(messageWrapper.payload);
+            if (movieRoomRequest?.RoomId == null)
+            {
+                return;
+            }
+
+            var room = await _roomsProvider.GetById(movieRoomRequest.RoomId);
+
+            // todo: check room
+            if (room == null)
+            {
+                return;
+            }
+
+            var userId = movieRoomRequest.UserId;
+
+            var wasUpdated = false;
+            // todo: check user id
+            if (!room.Users.Any(u => u.Id.Equals(userId)))
+            {
+                var user = await _userProvider.GetById(userId);
+
+                // todo: check user
+
+                room.Users.Add(user);
+                wasUpdated = await _roomsProvider.Update(room);
+            }
+
+            var jsonRoom = JsonConvert.SerializeObject(room);
+
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_ROOM_RESPONSE,
+                payload = jsonRoom
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageAsync(socket, json);
+
+            if (wasUpdated)
+            {
+                messageResponseWrapper = new MessageWrapper
+                {
+                    type = MessageType.MOVIE_ROOM_UPDATE,
+                    payload = jsonRoom
+                };
+
+                json = JsonConvert.SerializeObject(messageResponseWrapper);
+                await SendMessageToAllAsync(json);
             }
         }
     }

@@ -27,14 +27,13 @@ export class MovielistComponent implements OnInit {
     this.createMovieRoomUpdatesSubscription();
 
     this.webSocketService.sendMovieListRequest();
-    this.webSocketService.sendMovieRoomsRequest();
+    // this.webSocketService.sendMovieRoomsRequest();
   }
 
-  goToMovie(movieId: string) {
-    this.webSocketService.sendMovieRoomRequest(movieId);
+  goToMovie(movie: Movie) {
+    console.log(movie);
 
-    // this.router.navigate([`movie/${movieId}/${}`])
-    // return {};
+    this.webSocketService.sendMovieRoomRequest(movie.Id);
   }
 
   private processMovies(movieList: Movie[]): void {
@@ -44,9 +43,9 @@ export class MovielistComponent implements OnInit {
   }
 
   private processMovieRoom(room: MovieRoom): void {
-    console.debug('Movie Rooms received through the observer:\n%o', room);
+    console.debug('Movie Room received through the observer:\n%o', room);
 
-    // TODO: navigate to room X
+    this.router.navigate([`movies/${room.Id}`]);
   }
 
   private processMovieRooms(rooms: MovieRoom[]): void {

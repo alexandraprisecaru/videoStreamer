@@ -13,9 +13,10 @@ export class AppComponent implements OnInit, OnDestroy {
   signinForm: FormGroup;
   user: SocialUser;
   loggedIn: boolean;
-  
-  constructor(private authService: AuthService, private webSocketService: WebSocketsService) { }
-  
+
+  constructor(private authService: AuthService, private webSocketService: WebSocketsService) {
+  }
+
   ngOnInit() {
     this.webSocketService.start();
   }

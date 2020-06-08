@@ -13,6 +13,7 @@
         public const string MOVIE_ROOMS_UPDATE = "MOVIE_ROOMS_UPDATE";
 
         public const string MOVIE_ROOM_REQUEST = "MOVIE_ROOM_REQUEST";
+        public const string MOVIE_ROOM_WITH_ID_REQUEST = "MOVIE_ROOM_WITH_ID_REQUEST";
         public const string MOVIE_ROOM_RESPONSE = "MOVIE_ROOM_RESPONSE";
         public const string MOVIE_ROOM_UPDATE = "MOVIE_ROOM_UPDATE";
         

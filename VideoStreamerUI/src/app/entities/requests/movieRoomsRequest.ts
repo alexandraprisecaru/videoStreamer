@@ -1,5 +1,8 @@
 export class MovieRoomsRequest {
 
-  constructor(private userId: string) {
+  public userId: string;
+
+  constructor(userId: string) {
+    this.userId = userId;
   }
 }

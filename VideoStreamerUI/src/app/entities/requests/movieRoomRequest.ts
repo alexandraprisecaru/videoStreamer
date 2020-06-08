@@ -1,5 +1,10 @@
 export class MovieRoomRequest {
 
-  constructor(private movieId: string, private userId: string) {
+  public movieId: string;
+  public userId: string;
+
+  constructor(movieId: string, userId: string) {
+    this.movieId = movieId;
+    this.userId = userId;
   }
 }

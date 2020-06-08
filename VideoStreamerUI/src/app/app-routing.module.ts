@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { MovielistComponent } from './components/movielist/movielist.component';
 import { AuthGuard } from './guards/auth.guard';
 import { EmptyComponent } from './components/empty/empty.component';
+import { MovieRoomComponent } from './components/movie-room/movie-room.component';
 
 
 const routes: Routes = [
@@ -13,8 +14,14 @@ const routes: Routes = [
   },
   {
     path: "movies",
-    component: MovielistComponent,
-    canActivate: [AuthGuard]
+    children:[
+      {
+        path :":room-id",
+        component: MovieRoomComponent,
+        pathMatch:"full",
+        canActivate: [AuthGuard]
+      }
+    ]
   }
 ];
 

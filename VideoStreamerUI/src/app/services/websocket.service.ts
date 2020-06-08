@@ -11,11 +11,12 @@ import { MovieRoomRequest } from '../entities/requests/movieRoomRequest';
 import { MovieRoom } from '../entities/movieRoom';
 import { MovieRoomsRequest } from '../entities/requests/movieRoomsRequest';
 import { SaveUserRequest } from '../entities/requests/saveUserRequest';
+import { MovieRoomWithIdRequest } from '../entities/requests/movieRoomWithIdRequest';
 
 @Injectable({
   providedIn: 'root'
 })
-export class WebSocketsService implements OnInit {
+export class WebSocketsService {
   private user: SocialUser;
   private webSocket: WebSocket;
 
@@ -30,6 +31,13 @@ export class WebSocketsService implements OnInit {
   private movieRoomUpdateSubject: Subject<MovieRoom>;
 
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
+    this.authService.authState.subscribe((user) => {
+      if (user !== null && user !== undefined) {
+        this.user = user;
+        console.log(this.user);
+      }
+    });
+
     this.movieListResponseSubject = new Subject<Movie[]>();
     this.movieListUpdateSubject = new Subject<Movie[]>();
 
@@ -38,13 +46,6 @@ export class WebSocketsService implements OnInit {
 
     this.movieRoomResponseSubject = new Subject<MovieRoom>();
     this.movieRoomUpdateSubject = new Subject<MovieRoom>();
-  }
-
-  ngOnInit() {
-    this.authService.authState.subscribe((user) => {
-      this.user = user;
-      console.log(this.user);
-    });
   }
 
   public start(): void {
@@ -136,21 +137,30 @@ export class WebSocketsService implements OnInit {
   }
 
   public sendMovieRoomsRequest(): void {
-    let userId = this.user.id;
+    this.authService.authState.subscribe(user => {
+      const request: MovieRoomsRequest = new MovieRoomsRequest(user.id);
+      const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_ROOMS_REQUEST, request);
 
-    const request: MovieRoomsRequest = new MovieRoomsRequest(userId);
-    const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_ROOMS_REQUEST, request);
-
-    this.sendMessage(this.webSocket, message);
+      this.sendMessage(this.webSocket, message);
+    });
   }
 
   public sendMovieRoomRequest(movieId: string): void {
-    let userId = this.user.id;
+    this.authService.authState.subscribe(user => {
+      const request: MovieRoomRequest = new MovieRoomRequest(movieId, user.id);
+      const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_ROOM_REQUEST, request);
 
-    const request: MovieRoomRequest = new MovieRoomRequest(movieId, userId);
-    const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_ROOM_REQUEST, request);
+      this.sendMessage(this.webSocket, message);
+    });
+  }
 
-    this.sendMessage(this.webSocket, message);
+  public sendMovieRoomWithIdRequest(roomId: string): void {
+    this.authService.authState.subscribe(user => {
+      const request: MovieRoomWithIdRequest = new MovieRoomWithIdRequest(roomId, user.id);
+      const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_ROOM_WITH_ID_REQUEST, request);
+
+      this.sendMessage(this.webSocket, message);
+    });
   }
 
   private waitForOpenConnection(socket: WebSocket) {
@@ -204,7 +214,33 @@ export class WebSocketsService implements OnInit {
         break;
 
       case MessageType.MOVIE_ROOM_RESPONSE:
+        let room: MovieRoom;
+        try {
+          room = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Unable to deserialize MovieRoom object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Room received: %o', room);
+        this.movieRoomResponseSubject.next(room);
         break;
+
+      case MessageType.MOVIE_ROOM_UPDATE:
+        let roomUpdated: MovieRoom;
+        try {
+          roomUpdated = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Unable to deserialize MovieRoom object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Room received: %o', roomUpdated);
+        this.movieRoomUpdateSubject.next(roomUpdated);
+        break;
+
       default: break;
 
     }
