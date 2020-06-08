@@ -86,7 +86,7 @@ namespace StreamProviderWS.Services
                 Movie = movie,
                 Users = new List<User> { user },
                 Stream = "",
-                TimeWatched = "00:00:00"
+                TimeWatched = 0
             };
 
             _rooms.Add(room);

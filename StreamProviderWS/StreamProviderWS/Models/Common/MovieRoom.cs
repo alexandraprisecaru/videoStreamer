@@ -12,6 +12,6 @@ namespace StreamProviderWS.Models.Common
         
         public string Stream { get; set; }
         
-        public string TimeWatched { get; set; }
+        public double TimeWatched { get; set; }
     }
 }

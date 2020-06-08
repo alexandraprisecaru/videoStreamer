@@ -42,6 +42,8 @@ export class MovieRoomComponent implements OnInit {
   showFrameByFrame: boolean = false;
   currentTime: number = 1;
 
+  seekedByWS: boolean = false;
+
   constructor(private route: ActivatedRoute, private changeDetector: ChangeDetectorRef, private webSocketService: WebSocketsService) {
     this.route.params.subscribe(params => {
       console.log(params);
@@ -55,6 +57,10 @@ export class MovieRoomComponent implements OnInit {
   ngOnInit(): void {
     this.createMovieRoomResponsesSubscription();
     this.createMovieRoomUpdatesSubscription();
+
+    this.createMovieRoomPauseUpdatesSubscription();
+    this.createMovieRoomPlayUpdatesSubscription();
+    this.createMovieRoomSeekUpdatesSubscription();
   }
 
   private processMovieRoom(room: MovieRoom): void {
@@ -71,22 +77,66 @@ export class MovieRoomComponent implements OnInit {
     });
 
     this.video.getVideoTag().onpause = () => {
+      // check if it's on pause already-> don't make request
       console.log(`on pause called, current time: ${this.video.getVideoTag().currentTime}`);
+
       // send ws request to pause video for all
+      this.webSocketService.sendPauseRequest(this.roomId, this.video.getVideoTag().currentTime);
     }
 
     this.video.getVideoTag().onplay = () => {
       console.log(`on play called, current time: ${this.video.getVideoTag().currentTime}`);
+
       // send ws reuqest to play the video
+      this.webSocketService.sendPlayRequest(this.roomId, this.video.getVideoTag().currentTime);
     }
 
-    this.video.getVideoTag().onseeked = ()=>{
+    this.video.getVideoTag().onseeked = () => {
       console.log(`on seeked moved called, current time: ${this.video.getVideoTag().currentTime}`);
+      if (!this.seekedByWS) {
+        // send ws request to update the time
+        this.webSocketService.sendSeekRequest(this.roomId, this.video.getVideoTag().currentTime);
+      }
 
-      // // send ws request to update the time
+      this.seekedByWS = false;
     }
 
     console.log(`title: ${this.video.title}`);
+  }
+
+  private pause(roomId: string, currentTime: number) {
+    if (roomId !== this.roomId) {
+      return;
+    }
+
+    this.changeDetector.detectChanges();
+    this.video.getVideoTag().pause();
+
+    this.currentTime = currentTime;
+  }
+
+  private play(roomId: string, currentTime: number) {
+    if (roomId !== this.roomId) {
+      return;
+    }
+
+    this.changeDetector.detectChanges();
+    this.video.getVideoTag().play();
+
+    this.currentTime = currentTime;
+  }
+
+  private seek(roomId: string, currentTime: number) {
+    if (roomId !== this.roomId) {
+      return;
+    }
+
+    this.changeDetector.detectChanges();
+    this.seekedByWS = true;
+
+    this.video.getVideoTag().currentTime = currentTime;
+
+    this.currentTime = currentTime;
   }
 
   private createMovieRoomResponsesSubscription() {
@@ -131,4 +181,60 @@ export class MovieRoomComponent implements OnInit {
     this.webSocketService.subscribeToMovieRoomUpdates(movieRoomUpdatesObserver);
   }
 
+  private createMovieRoomPauseUpdatesSubscription() {
+    let self = this;
+    const movieRoomResponsesObserver: Observer<MovieRoom> = {
+      next: function (room: MovieRoom): void {
+        self.pause(room.Id, room.TimeWatched);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more movies responses');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieRoomPauseUpdates(movieRoomResponsesObserver);
+  }
+
+  private createMovieRoomPlayUpdatesSubscription() {
+    let self = this;
+    const movieRoomUpdatesObserver: Observer<MovieRoom> = {
+      next: function (room: MovieRoom): void {
+        self.play(room.Id, room.TimeWatched);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more movies responses');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieRoomPlayUpdates(movieRoomUpdatesObserver);
+  }
+
+  private createMovieRoomSeekUpdatesSubscription() {
+    let self = this;
+    const movieRoomUpdatesObserver: Observer<MovieRoom> = {
+      next: function (room: MovieRoom): void {
+        self.seek(room.Id, room.TimeWatched);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more movies responses');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieRoomSeekUpdates(movieRoomUpdatesObserver);
+  }
 }

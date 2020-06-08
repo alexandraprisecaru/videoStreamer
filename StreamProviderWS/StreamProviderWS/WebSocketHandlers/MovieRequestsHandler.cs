@@ -52,13 +52,27 @@ namespace StreamProviderWS.WebSocketHandlers
                 case MessageType.MOVIE_ROOM_REQUEST:
                     await HandleMovieRoomRequest(socket, messageWrapper);
                     break;
+
                 case MessageType.MOVIE_ROOM_WITH_ID_REQUEST:
                     await HandleMovieRoomWithIdRequest(socket, messageWrapper);
+                    break;
+
+                case MessageType.MOVIE_ROOM_PAUSE_REQUEST:
+                    await HandleMovieRoomPauseRequest(socket, messageWrapper);
+                    break;
+
+                case MessageType.MOVIE_ROOM_PLAY_REQUEST:
+                    await HandleMovieRoomPlayRequest(socket, messageWrapper);
+                    break;
+
+                case MessageType.MOVIE_ROOM_SEEK_REQUEST:
+                    await HandleMovieRoomSeekRequest(socket, messageWrapper);
                     break;
 
                 case MessageType.MOVIE_ROOMS_REQUEST:
                     //HandleMovieRoomsRequest(messageWrapper);
                     break;
+
                 default:
                     break;
             }
@@ -165,6 +179,88 @@ namespace StreamProviderWS.WebSocketHandlers
                 json = JsonConvert.SerializeObject(messageResponseWrapper);
                 await SendMessageToAllAsync(json);
             }
+        }
+
+        private async Task HandleMovieRoomPauseRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var jsonRoomAndUser = await UpdateRoomAsync(messageWrapper);
+            if (jsonRoomAndUser == null)
+            {
+                return;
+            }
+
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_ROOM_PAUSE_UPDATE,
+                payload = jsonRoomAndUser
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllAsync(json);
+        }
+
+        private async Task HandleMovieRoomPlayRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var jsonRoomAndUser = await UpdateRoomAsync(messageWrapper);
+            if (jsonRoomAndUser == null)
+            {
+                return;
+            }
+
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_ROOM_PLAY_UPDATE,
+                payload = jsonRoomAndUser
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllAsync(json);
+        }
+
+        private async Task HandleMovieRoomSeekRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var jsonRoomAndUser = await UpdateRoomAsync(messageWrapper);
+            if (jsonRoomAndUser == null)
+            {
+                return;
+            }
+
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_ROOM_SEEK_UPDATE,
+                payload = jsonRoomAndUser
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllAsync(json);
+        }
+
+        private async Task<string> UpdateRoomAsync(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<MovieRoomVideoUpdateRequest>(messageWrapper.payload);
+            if (request?.RoomId == null)
+            {
+                return null;
+            }
+
+            var room = await _roomsProvider.GetById(request.RoomId);
+            if (room == null)
+            {
+                // wtf 
+                // todo: treat this case, send error or smth
+
+                return null;
+            }
+
+            room.TimeWatched = request.CurrentTime;
+
+            await _roomsProvider.Update(room);
+
+            var movieRoomAction = new MovieRoomAction {Room = room, UserId = request.UserId};
+            return JsonConvert.SerializeObject(movieRoomAction);
         }
     }
 }

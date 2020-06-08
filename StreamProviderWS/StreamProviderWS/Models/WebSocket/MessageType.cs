@@ -12,6 +12,15 @@
         public const string MOVIE_ROOMS_RESPONSE = "MOVIE_ROOMS_RESPONSE";
         public const string MOVIE_ROOMS_UPDATE = "MOVIE_ROOMS_UPDATE";
 
+        public const string MOVIE_ROOM_PAUSE_REQUEST = "MOVIE_ROOM_PAUSE_REQUEST";
+        public const string MOVIE_ROOM_PAUSE_UPDATE = "MOVIE_ROOM_PAUSE_UPDATE";
+
+        public const string MOVIE_ROOM_PLAY_REQUEST = "MOVIE_ROOM_PLAY_REQUEST";
+        public const string MOVIE_ROOM_PLAY_UPDATE = "MOVIE_ROOM_PLAY_UPDATE";
+        
+        public const string MOVIE_ROOM_SEEK_REQUEST = "MOVIE_ROOM_SEEK_REQUEST";
+        public const string MOVIE_ROOM_SEEK_UPDATE = "MOVIE_ROOM_SEEK_UPDATE";
+
         public const string MOVIE_ROOM_REQUEST = "MOVIE_ROOM_REQUEST";
         public const string MOVIE_ROOM_WITH_ID_REQUEST = "MOVIE_ROOM_WITH_ID_REQUEST";
         public const string MOVIE_ROOM_RESPONSE = "MOVIE_ROOM_RESPONSE";
