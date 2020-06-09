@@ -17,7 +17,7 @@ namespace StreamProviderWS.Services
 
         public Task<User> GetById(string id)
         {
-            return Task.Run(() => _users.FirstOrDefault(u => u.Id.Equals(id)));
+            return Task.Run(() => _users.FirstOrDefault(u => u.id.Equals(id)));
         }
 
         public Task Add(User item)
@@ -27,7 +27,7 @@ namespace StreamProviderWS.Services
                 return Task.CompletedTask;
             }
 
-            if (_users.Any(u => u.Id.Equals(item.Id)))
+            if (_users.Any(u => u.id.Equals(item.id)))
             {
                 return Task.CompletedTask;
             }

@@ -69,7 +69,7 @@ namespace StreamProviderWS.Services
 
         public Task<List<MovieRoom>> GetAllByUserId(string userId)
         {
-            return Task.Run(() => _rooms.Where(x => x.Users.Any(u => u.Id.Equals(userId))).ToList());
+            return Task.Run(() => _rooms.Where(x => x.Users.Any(u => u.id.Equals(userId))).ToList());
         }
 
         public Task<MovieRoom> CreateRoom(string movieId, string userId)
@@ -78,7 +78,7 @@ namespace StreamProviderWS.Services
             var movie = _movies.FirstOrDefault();
 
             // todo: get user by id (?)
-            var user = _users.FirstOrDefault(u => u.Id.Equals(userId));
+            var user = _users.FirstOrDefault(u => u.id.Equals(userId));
 
             MovieRoom room = new MovieRoom
             {

@@ -5,6 +5,7 @@ import { Observer } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
 import { ChatMessage } from 'src/app/entities/chatMessage';
+import { AuthService, SocialUser } from 'angularx-social-login';
 
 
 @Component({
@@ -24,7 +25,7 @@ export class MovieRoomComponent implements OnInit {
   room: MovieRoom;
   roomId: string;
 
-  chatMessages: ChatMessage[];
+  chatMessages: ChatMessage[] = [];
 
   ngclass: any;
   src: string = "http://static.videogular.com/assets/videos/videogular.mp4";
@@ -46,13 +47,26 @@ export class MovieRoomComponent implements OnInit {
 
   seekedByWS: boolean = false;
 
-  constructor(private route: ActivatedRoute, private changeDetector: ChangeDetectorRef, private webSocketService: WebSocketsService) {
+  user: SocialUser;
+
+  constructor(private route: ActivatedRoute,
+    private changeDetector: ChangeDetectorRef,
+    private webSocketService: WebSocketsService,
+    private authService: AuthService) {
+
     this.route.params.subscribe(params => {
       console.log(params);
 
-      this.roomId = params["room-id"];
-      console.log(this.roomId);
-      this.webSocketService.sendMovieRoomWithIdRequest(this.roomId);
+      this.authService.authState.subscribe(user => {
+        if (user !== null && user !== undefined) {
+          this.user = user;
+
+          this.roomId = params["room-id"];
+          console.log(this.roomId);
+          this.webSocketService.sendMovieRoomWithIdRequest(this.roomId);
+          this.webSocketService.sendChatMessagesRequest(this.roomId);
+        }
+      })
     });
   }
 
@@ -66,6 +80,22 @@ export class MovieRoomComponent implements OnInit {
 
     this.createChatMessagesReponsesSubscription();
     this.createChatMessageUpdatesSubscription();
+  }
+
+  sendMessage(value: string) {
+    let chatMessage: ChatMessage = {
+      Id: "",
+      RoomId: this.roomId,
+      User: this.user,
+      Message: value,
+      VoiceMessage: "voice message cica",
+      DateTime: new Date(),
+      MovieCurrentTime: this.currentTime // seconds into the movie
+    };
+
+    this.chatMessages.push(chatMessage);
+
+    this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
   }
 
   private processMovieRoom(room: MovieRoom): void {
@@ -271,11 +301,11 @@ export class MovieRoomComponent implements OnInit {
     let self = this;
     const chatMessagesResponseObserver: Observer<ChatMessage[]> = {
       next: function (messages: ChatMessage[]): void {
-        if(!messages || messages.length === 0){
+        if (!messages || messages.length === 0) {
           return;
         }
 
-        self.setChatMessages(messages[0].Id, messages);
+        self.setChatMessages(messages[0].RoomId, messages);
       },
 
       error: function (err: any): void {
@@ -286,27 +316,29 @@ export class MovieRoomComponent implements OnInit {
         console.log('No more chat messages responses');
       }
     };
+
+    this.webSocketService.subscribeToChatMessagesReponses(chatMessagesResponseObserver);
   }
 
-    private createChatMessageUpdatesSubscription() {
-      let self = this;
-      const chatMessagesUpdateObserver: Observer<ChatMessage> = {
-        next: function (message: ChatMessage): void {
-          if(!message){
-            return;
-          }
-  
-          self.addChatMessage(message);
-        },
-  
-        error: function (err: any): void {
-          console.error('Error: %o', err);
-        },
-  
-        complete: function (): void {
-          console.log('No more chat message updates');
+  private createChatMessageUpdatesSubscription() {
+    let self = this;
+    const chatMessagesUpdateObserver: Observer<ChatMessage> = {
+      next: function (message: ChatMessage): void {
+        if (!message) {
+          return;
         }
-      };
+
+        self.addChatMessage(message);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more chat message updates');
+      }
+    };
 
     this.webSocketService.subscribeToChatMessageUpdates(chatMessagesUpdateObserver);
   }

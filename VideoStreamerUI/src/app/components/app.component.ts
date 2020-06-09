@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AuthService, GoogleLoginProvider, SocialUser } from 'angularx-social-login';
-import { Router } from '@angular/router';
+import { FormGroup } from '@angular/forms';
+import { AuthService, SocialUser } from 'angularx-social-login';
 import { WebSocketsService } from '../services/websocket.service';
 @Component({
   selector: 'app-root',

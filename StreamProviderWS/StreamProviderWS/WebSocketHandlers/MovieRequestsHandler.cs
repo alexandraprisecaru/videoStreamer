@@ -157,7 +157,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
             var wasUpdated = false;
             // todo: check user id
-            if (!room.Users.Any(u => u.Id.Equals(userId)))
+            if (!room.Users.Any(u => u.id.Equals(userId)))
             {
                 var user = await _userProvider.GetById(userId);
 
@@ -270,7 +270,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
             var wasUpdated = false;
             // todo: check user id
-            if (!room.Users.Any(u => u.Id.Equals(userId)))
+            if (!room.Users.Any(u => u.id.Equals(userId)))
             {
                 // the messages request was not sent by someone in the same room
                 return;
@@ -312,7 +312,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
             var wasUpdated = false;
             // todo: check user id
-            if (!room.Users.Any(u => u.Id.Equals(userId)))
+            if (!room.Users.Any(u => u.id.Equals(userId)))
             {
                 // the messages was not sent by someone in the same room
                 return;

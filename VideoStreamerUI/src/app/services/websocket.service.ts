@@ -248,10 +248,13 @@ export class WebSocketsService {
 
   public sendChatMessageRequest(roomId: string, chatMessage: ChatMessage): void {
     this.authService.authState.subscribe(user => {
-      const request: SendChatMessageRequest = new SendChatMessageRequest(roomId, user.id, chatMessage);
-      const message: MessageWrapper = new MessageWrapper(MessageType.SEND_CHAT_MESSAGE_REQUEST, request);
+      if (user) {
+        chatMessage.User = user
+        const request: SendChatMessageRequest = new SendChatMessageRequest(roomId, user.id, chatMessage);
+        const message: MessageWrapper = new MessageWrapper(MessageType.SEND_CHAT_MESSAGE_REQUEST, request);
 
-      this.sendMessage(this.webSocket, message);
+        this.sendMessage(this.webSocket, message);
+      }
     });
   }
 
@@ -411,7 +414,7 @@ export class WebSocketsService {
           return;
         }
 
-        if (message.UserId === this.user.id) {
+        if (message.User.id === this.user.id) {
           // if the message was sent by the current user, exit
           return;
         }
