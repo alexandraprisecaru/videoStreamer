@@ -27,7 +27,7 @@ export class MovielistComponent implements OnInit {
     this.createMovieRoomUpdatesSubscription();
 
     this.webSocketService.sendMovieListRequest();
-    // this.webSocketService.sendMovieRoomsRequest();
+    this.webSocketService.sendMovieRoomsRequest();
   }
 
   goToMovie(movie: Movie) {

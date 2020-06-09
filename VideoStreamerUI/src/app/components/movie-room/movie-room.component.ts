@@ -6,6 +6,7 @@ import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
 import { ChatMessage } from 'src/app/entities/chatMessage';
 import { AuthService, SocialUser } from 'angularx-social-login';
+import { MovieComment } from 'src/app/entities/movieComment';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class MovieRoomComponent implements OnInit {
   roomId: string;
 
   chatMessages: ChatMessage[] = [];
+  comments: MovieComment[] = [];
 
   ngclass: any;
   src: string = "http://static.videogular.com/assets/videos/videogular.mp4";
@@ -80,6 +82,9 @@ export class MovieRoomComponent implements OnInit {
 
     this.createChatMessagesReponsesSubscription();
     this.createChatMessageUpdatesSubscription();
+
+    this.createCommentsReponsesSubscription();
+    this.createCommentUpdatesSubscription();
   }
 
   sendMessage(value: string) {
@@ -102,6 +107,7 @@ export class MovieRoomComponent implements OnInit {
     console.debug('Movie Room received through the observer:\n%o', room);
 
     this.room = room;
+
     this.title = room.Movie.Title;
     this.changeDetector.detectChanges();
 
@@ -203,6 +209,7 @@ export class MovieRoomComponent implements OnInit {
     const movieRoomResponsesObserver: Observer<MovieRoom> = {
       next: function (room: MovieRoom): void {
         self.processMovieRoom(room);
+        self.webSocketService.sendMovieCommentsRequest(self.room.Movie.Id);
       },
 
       error: function (err: any): void {
@@ -341,5 +348,76 @@ export class MovieRoomComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToChatMessageUpdates(chatMessagesUpdateObserver);
+  }
+
+  private createCommentsReponsesSubscription() {
+    let self = this;
+    const commentsResponseObserver: Observer<MovieComment[]> = {
+      next: function (messages: MovieComment[]): void {
+        if (!messages || messages.length === 0) {
+          return;
+        }
+
+        self.setComments(messages[0].MovieId, messages);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more chat messages responses');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieCommentsReponses(commentsResponseObserver);
+  }
+
+  private createCommentUpdatesSubscription() {
+    let self = this;
+    const commentsUpdateObserver: Observer<MovieComment> = {
+      next: function (message: MovieComment): void {
+        if (!message) {
+          return;
+        }
+
+        self.addComment(message);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more chat message updates');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieCommentUpdates(commentsUpdateObserver);
+  }
+
+  addComment(comment: MovieComment) {
+    if (comment == null) {
+      return;
+    }
+
+    if (comment.MovieId !== this.room.Movie.Id) {
+      return;
+    }
+
+    this.comments.push(comment);
+  }
+
+  setComments(movieId: string, comments: MovieComment[]) {
+
+    if (comments == null) {
+      return;
+    }
+
+    if (movieId !== this.room.Movie.Id) {
+      return;
+    }
+
+    this.comments = comments;
   }
 }

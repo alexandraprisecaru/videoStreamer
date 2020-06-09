@@ -19,6 +19,9 @@ import { MovieRoomAction } from '../entities/movieRoomAction';
 import { ChatMessage } from '../entities/chatMessage';
 import { SendChatMessageRequest } from '../entities/requests/sendChatMessageRequest';
 import { ChatMessagesRequest } from '../entities/requests/chatMessagesRequest';
+import { MovieComment } from '../entities/movieComment';
+import { MovieCommentsRequest } from '../entities/requests/movieCommentsRequest';
+import { SendMovieCommentRequest } from '../entities/requests/sendMovieCommentRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +47,9 @@ export class WebSocketsService {
   private chatMessagesReponseSubject: Subject<ChatMessage[]>;
   private chatMessageUpdateSubject: Subject<ChatMessage>;
 
+  private commentsReponseSubject: Subject<MovieComment[]>;
+  private commentUpdateSubject: Subject<MovieComment>;
+
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.authService.authState.subscribe((user) => {
       if (user !== null && user !== undefined) {
@@ -67,6 +73,9 @@ export class WebSocketsService {
 
     this.chatMessagesReponseSubject = new Subject<ChatMessage[]>();
     this.chatMessageUpdateSubject = new Subject<ChatMessage>();
+
+    this.commentsReponseSubject = new Subject<MovieComment[]>();
+    this.commentUpdateSubject = new Subject<MovieComment>();
   }
 
   public start(): void {
@@ -124,6 +133,14 @@ export class WebSocketsService {
     this.chatMessageUpdateSubject.subscribe(observer);
   }
 
+  public subscribeToMovieCommentsReponses(observer: Observer<MovieComment[]>): void {
+    this.commentsReponseSubject.subscribe(observer);
+  }
+
+  public subscribeToMovieCommentUpdates(observer: Observer<MovieComment>): void {
+    this.commentUpdateSubject.subscribe(observer);
+  }
+
   private connect(url: string): void {
     this.webSocket = new WebSocket(url);
 
@@ -155,11 +172,6 @@ export class WebSocketsService {
     this.webSocket.onclose = function (closeEvent: CloseEvent) {
       console.info('WebSocket connection has been closed: %o', closeEvent);
     };
-  }
-
-  public sendMovieListAndRoomsRequests(userId: string): void {
-    this.sendMovieListRequest();
-    // todo: send rooms request for user id
   }
 
   public sendSaveUserRequest(user: SocialUser): void {
@@ -258,6 +270,24 @@ export class WebSocketsService {
     });
   }
 
+  public sendMovieCommentsRequest(movieId: string): void {
+    const request: MovieCommentsRequest = new MovieCommentsRequest(movieId);
+    const message: MessageWrapper = new MessageWrapper(MessageType.MOVIE_COMMENTS_REQUEST, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
+  public sendMovieCommentRequest(movieId: string, comment: MovieComment): void {
+    this.authService.authState.subscribe(user => {
+      if (user) {
+        const request: SendMovieCommentRequest = new SendMovieCommentRequest(movieId, comment);
+        const message: MessageWrapper = new MessageWrapper(MessageType.SEND_MOVIE_COMMENT_REQUEST, request);
+
+        this.sendMessage(this.webSocket, message);
+      }
+    });
+  }
+
   private waitForOpenConnection(socket: WebSocket) {
     return new Promise((resolve, reject) => {
       const maxNumberOfAttempts = 10
@@ -307,6 +337,34 @@ export class WebSocketsService {
         console.debug('Movies message received: %o', movies);
         this.movieListResponseSubject.next(movies);
         break;
+      case MessageType.MOVIE_ROOMS_RESPONSE:
+        let rooms: MovieRoom[];
+        try {
+          rooms = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Room reponse: Unable to deserialize MovieRoom object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Room received: %o', rooms);
+        this.movieRoomsResponseSubject.next(rooms);
+        break;
+
+      case MessageType.MOVIE_ROOMS_UPDATE:
+        let roomsUpdated: MovieRoom[];
+        try {
+          roomsUpdated = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Room reponse: Unable to deserialize MovieRoom object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Room received: %o', roomsUpdated);
+        this.movieRoomsUpdateSubject.next(roomsUpdated);
+        break;
+
 
       case MessageType.MOVIE_ROOM_RESPONSE:
         let room: MovieRoom;
@@ -422,6 +480,39 @@ export class WebSocketsService {
         console.debug('Chat Message received: %o', message);
         this.chatMessageUpdateSubject.next(message);
         break;
+
+        case MessageType.MOVIE_COMMENTS_RESPONSE:
+          let comments: MovieComment[];
+          try {
+            comments = JSON.parse(messageWrapper.payload);
+          } catch (error) {
+            console.error('Get movie comments response: Unable to deserialize MovieComment[] object: %s',
+              messageWrapper.payload);
+            return;
+          }
+  
+          console.debug('Movie comments received: %o', comments);
+          this.commentsReponseSubject.next(comments);
+          break;
+  
+        case MessageType.MOVIE_COMMENT_UPDATE:
+          let comment: MovieComment;
+          try {
+            comment = JSON.parse(messageWrapper.payload);
+          } catch (error) {
+            console.error('Get movie comment update : Unable to deserialize MovieComment object: %s',
+              messageWrapper.payload);
+            return;
+          }
+  
+          if (comment.User.id === this.user.id) {
+            // if the message was sent by the current user, exit
+            return;
+          }
+  
+          console.debug('Chat Message received: %o', comment);
+          this.commentUpdateSubject.next(comment);
+          break;
 
       default: break;
     }

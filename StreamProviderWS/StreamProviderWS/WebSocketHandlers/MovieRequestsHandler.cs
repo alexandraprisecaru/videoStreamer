@@ -17,25 +17,26 @@ namespace StreamProviderWS.WebSocketHandlers
         private readonly IProvider<User> _userProvider;
         private readonly IRoomsProvider _roomsProvider;
         private readonly IChatMessagesProvider _chatMessagesProvider;
+        private readonly IMovieCommentsProvider _commentsProvider;
 
         public MovieRequestsHandler(
             ConnectionManager webSocketConnectionManager,
             IProvider<Movie> movieProvider,
             IProvider<User> userProvider,
             IRoomsProvider roomsProvider,
-            IChatMessagesProvider chatMessagesProvider)
+            IChatMessagesProvider chatMessagesProvider,
+            IMovieCommentsProvider commentsProvider)
             : base(webSocketConnectionManager)
         {
             _movieProvider = movieProvider;
             _userProvider = userProvider;
             _roomsProvider = roomsProvider;
             _chatMessagesProvider = chatMessagesProvider;
+            _commentsProvider = commentsProvider;
         }
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
-            var socketId = WebSocketConnectionManager.GetId(socket);
-
             var a = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
             var messageWrapper = JsonConvert.DeserializeObject<MessageWrapper>(a);
@@ -49,7 +50,7 @@ namespace StreamProviderWS.WebSocketHandlers
                     break;
 
                 case MessageType.MOVIE_LIST_REQUEST:
-                    await HandleMovieListRequest(socket, messageWrapper);
+                    await HandleMovieListRequest(socket);
                     break;
 
                 case MessageType.MOVIE_ROOM_REQUEST:
@@ -73,7 +74,7 @@ namespace StreamProviderWS.WebSocketHandlers
                     break;
 
                 case MessageType.MOVIE_ROOMS_REQUEST:
-                    //HandleMovieRoomsRequest(messageWrapper);
+                    await HandleMovieRoomsRequest(socket, messageWrapper);
                     break;
 
                 case MessageType.CHAT_MESSAGES_REQUEST:
@@ -84,9 +85,43 @@ namespace StreamProviderWS.WebSocketHandlers
                     await HandleSendChatMessageRequest(messageWrapper);
                     break;
 
+                case MessageType.MOVIE_COMMENTS_REQUEST:
+                    await HandleMovieCommentsRequest(socket, messageWrapper);
+                    break;
+
+                case MessageType.SEND_MOVIE_COMMENT_REQUEST:
+                    await HandleSendMovieCommentRequest(messageWrapper);
+                    break;
+
                 default:
                     break;
             }
+        }
+
+        private async Task HandleMovieRoomsRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<MovieRoomsRequest>(messageWrapper.payload);
+            if (request?.UserId == null)
+            {
+                return;
+            }
+
+            var rooms = await _roomsProvider.GetAllByUserId(request.UserId);
+            if (rooms == null || rooms.Count == 0)
+            {
+                return;
+            }
+
+            var jsonRooms = JsonConvert.SerializeObject(rooms);
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_ROOMS_RESPONSE,
+                payload = jsonRooms
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageAsync(socket, json);
         }
 
         private async Task HandleSaveUserRequest(MessageWrapper messageWrapper)
@@ -100,7 +135,7 @@ namespace StreamProviderWS.WebSocketHandlers
             await _userProvider.Add(saveUserRequest.User);
         }
 
-        private async Task HandleMovieListRequest(WebSocket socket, MessageWrapper messageWrapper)
+        private async Task HandleMovieListRequest(WebSocket socket)
         {
             var movies = await _movieProvider.GetAll();
             var jsonMovies = JsonConvert.SerializeObject(movies);
@@ -135,6 +170,19 @@ namespace StreamProviderWS.WebSocketHandlers
             var json = JsonConvert.SerializeObject(messageResponseWrapper);
 
             await SendMessageAsync(socket, json);
+
+            var allUserRooms = await _roomsProvider.GetAllByUserId(movieRoomRequest.UserId);
+            var jsonRooms = JsonConvert.SerializeObject(allUserRooms);
+
+            var messageUpdateWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_ROOMS_UPDATE,
+                payload = jsonRooms
+            };
+
+            var jsonUpdate = JsonConvert.SerializeObject(messageUpdateWrapper);
+
+            await SendMessageAsync(socket, jsonUpdate);
         }
 
         private async Task HandleMovieRoomWithIdRequest(WebSocket socket, MessageWrapper messageWrapper)
@@ -185,6 +233,18 @@ namespace StreamProviderWS.WebSocketHandlers
                 {
                     type = MessageType.MOVIE_ROOM_UPDATE,
                     payload = jsonRoom
+                };
+
+                json = JsonConvert.SerializeObject(messageResponseWrapper);
+                await SendMessageToAllAsync(json);
+
+                // Update user about the newly created room
+                var rooms = await _roomsProvider.GetAllByUserId(movieRoomRequest.UserId);
+                var jsonRooms = JsonConvert.SerializeObject(rooms);
+                messageResponseWrapper = new MessageWrapper
+                {
+                    type = MessageType.MOVIE_ROOMS_UPDATE,
+                    payload = jsonRooms
                 };
 
                 json = JsonConvert.SerializeObject(messageResponseWrapper);
@@ -248,7 +308,6 @@ namespace StreamProviderWS.WebSocketHandlers
 
             await SendMessageToAllAsync(json);
         }
-
 
         private async Task HandleChatMessagesRequest(WebSocket socket, MessageWrapper messageWrapper)
         {
@@ -333,6 +392,67 @@ namespace StreamProviderWS.WebSocketHandlers
             await SendMessageToAllAsync(json);
         }
 
+        private async Task HandleMovieCommentsRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<MovieCommentsRequest>(messageWrapper.payload);
+            if (request?.MovieId == null)
+            {
+                return;
+            }
+
+            var movie = await _movieProvider.GetById(request.MovieId);
+
+            // todo: check movie
+            if (movie == null)
+            {
+                return;
+            }
+
+            var comments = _commentsProvider.GetByMovieId(request.MovieId);
+
+            var jsonComments = JsonConvert.SerializeObject(comments);
+
+            var commentsResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_COMMENTS_RESPONSE,
+                payload = jsonComments
+            };
+
+            var json = JsonConvert.SerializeObject(commentsResponseWrapper);
+
+            await SendMessageAsync(socket, json);
+        }
+
+        private async Task HandleSendMovieCommentRequest(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<SendMovieCommentRequest>(messageWrapper.payload);
+            if (request?.MovieId == null)
+            {
+                return;
+            }
+
+            var movie = await _movieProvider.GetById(request.MovieId);
+
+            // todo: check movie
+            if (movie == null)
+            {
+                return;
+            }
+
+            await _commentsProvider.Add(request.MovieComment);
+
+            var jsonComment = JsonConvert.SerializeObject(request.MovieComment);
+
+            var commentResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.MOVIE_COMMENT_UPDATE,
+                payload = jsonComment
+            };
+
+            var json = JsonConvert.SerializeObject(commentResponseWrapper);
+
+            await SendMessageToAllAsync(json);
+        }
 
         private async Task<string> UpdateRoomAsync(MessageWrapper messageWrapper)
         {

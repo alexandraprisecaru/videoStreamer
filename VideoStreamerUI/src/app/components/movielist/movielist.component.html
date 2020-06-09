@@ -10,3 +10,12 @@
         </li>
     </ul>
 </div>
+
+<div>
+    <p>Movie rooms count: {{movieRooms.length}}
+    <ul>
+        <li *ngFor="let room of movieRooms">
+            <button>{{room.Id}}</button>
+        </li>
+    </ul>
+</div>

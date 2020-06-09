@@ -18,21 +18,7 @@ namespace StreamProviderWS.Services
             _movies = moviesProvider.GetAll().Result;
             _users = usersProvider.GetAll().Result;
 
-            _rooms = new List<MovieRoom>
-            {
-                new MovieRoom
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Movie = _movies.FirstOrDefault(),
-                    Users = _users,
-                },
-                new MovieRoom
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Movie = _movies.FirstOrDefault(),
-                    Users = _users,
-                }
-            };
+            _rooms = new List<MovieRoom>();
         }
 
         public Task<List<MovieRoom>> GetAll()

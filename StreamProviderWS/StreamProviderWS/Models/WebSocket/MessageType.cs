@@ -29,19 +29,19 @@
         public const string MOVIE_STREAM_REQUEST = "MOVIE_STREAM_REQUEST";
         public const string MOVIE_STREAM_RESPONSE = "MOVIE_STREAM_RESPONSE";
         public const string MOVIE_STREAM_UPDATE = "MOVIE_STREAM_UPDATE";
-        
-        public const string MOVIE_COMMENTS_REQUEST = "MOVIE_COMMENTS_REQUEST";
-        public const string MOVIE_COMMENTS_RESPONSE = "MOVIE_COMMENTS_RESPONSE";
-        public const string MOVIE_COMMENTS_UPDATE = "MOVIE_COMMENTS_UPDATE";
-        
-        public const string MOVIE_ADD_COMMENT_REQUEST = "MOVIE_ADD_COMMENT_REQUEST";
-        public const string MOVIE_ADD_COMMENT_UPDATE = "MOVIE_COMMENTS_UPDATE"; // is it needed?
-        
+
         public const string SEND_CHAT_MESSAGE_REQUEST = "SEND_CHAT_MESSAGE_REQUEST";
         public const string CHAT_MESSAGE_UPDATE = "CHAT_MESSAGE_UPDATE";
         
         public const string CHAT_MESSAGES_REQUEST = "CHAT_MESSAGES_REQUEST";
         public const string CHAT_MESSAGES_RESPONSE = "CHAT_MESSAGES_RESPONSE";
+
+
+        public const string SEND_MOVIE_COMMENT_REQUEST = "SEND_MOVIE_COMMENT_REQUEST";
+        public const string MOVIE_COMMENT_UPDATE = "MOVIE_COMMENT_UPDATE";
+
+        public const string MOVIE_COMMENTS_REQUEST = "MOVIE_COMMENTS_REQUEST";
+        public const string MOVIE_COMMENTS_RESPONSE = "MOVIE_COMMENTS_RESPONSE";
 
         public const string MOVIE_PAUSE_REQUEST = "MOVIE_PAUSE_REQUEST";
         public const string MOVIE_PAUSE_RESPONSE = "MOVIE_PAUSE_RESPONSE";

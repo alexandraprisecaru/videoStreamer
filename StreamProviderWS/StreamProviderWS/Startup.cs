@@ -55,6 +55,7 @@ namespace StreamProviderWS
             services.TryAddSingleton<IProvider<Movie>, MoviesProvider>();
             services.TryAddSingleton<IRoomsProvider, RoomsProvider>();
             services.TryAddSingleton<IChatMessagesProvider, ChatMessagesProvider>();
+            services.TryAddSingleton<IMovieCommentsProvider, MovieCommentsProvider>();
 
             services.AddWebSocketManager();
         }
