@@ -3,8 +3,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using StreamProviderWS.Extensions;
 using StreamProviderWS.Models.Common;
+using StreamProviderWS.Repositories;
+using StreamProviderWS.Repositories.Interfaces;
+using StreamProviderWS.Repositories.Models;
 using StreamProviderWS.Services;
 using StreamProviderWS.WebSocketHandlers;
 
@@ -24,6 +28,14 @@ namespace StreamProviderWS
         {
             services.AddSingleton(Configuration);
             services.AddControllers();
+
+            services.Configure<DatabaseSettings>(
+                Configuration.GetSection(nameof(DatabaseSettings)));
+
+            services.AddSingleton<IDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+
+
             //ProducerConfig producerConfig = new ProducerConfig();
             //ConsumerConfig consumerConfig = new ConsumerConfig();
 
@@ -56,6 +68,12 @@ namespace StreamProviderWS
             services.TryAddSingleton<IRoomsProvider, RoomsProvider>();
             services.TryAddSingleton<IChatMessagesProvider, ChatMessagesProvider>();
             services.TryAddSingleton<IMovieCommentsProvider, MovieCommentsProvider>();
+
+            services.TryAddSingleton<IRepository<Movie>, Repository<Movie>>();
+            services.TryAddSingleton<IRepository<MovieRoom>, Repository<MovieRoom>>();
+            services.TryAddSingleton<IRepository<MovieComment>, Repository<MovieComment>>();
+            services.TryAddSingleton<IRepository<User>, UserRepository>();
+            services.TryAddSingleton<IRepository<ChatMessage>, Repository<ChatMessage>>();
 
             services.AddWebSocketManager();
         }
