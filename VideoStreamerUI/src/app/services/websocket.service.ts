@@ -16,6 +16,9 @@ import { MovieRoomPauseRequest } from '../entities/requests/movieRoomPauseReques
 import { MovieRoomPlayRequest } from '../entities/requests/movieRoomPlayRequest';
 import { MovieRoomSeekRequest } from '../entities/requests/movieRoomSeekRequest';
 import { MovieRoomAction } from '../entities/movieRoomAction';
+import { ChatMessage } from '../entities/chatMessage';
+import { SendChatMessageRequest } from '../entities/requests/sendChatMessageRequest';
+import { ChatMessagesRequest } from '../entities/requests/chatMessagesRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +41,9 @@ export class WebSocketsService {
   private movieRoomPlayUpdateSubject: Subject<MovieRoom>;
   private movieRoomSeekUpdateSubject: Subject<MovieRoom>;
 
+  private chatMessagesReponseSubject: Subject<ChatMessage[]>;
+  private chatMessageUpdateSubject: Subject<ChatMessage>;
+
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.authService.authState.subscribe((user) => {
       if (user !== null && user !== undefined) {
@@ -58,6 +64,9 @@ export class WebSocketsService {
     this.movieRoomPauseUpdateSubject = new Subject<MovieRoom>();
     this.movieRoomPlayUpdateSubject = new Subject<MovieRoom>();
     this.movieRoomSeekUpdateSubject = new Subject<MovieRoom>();
+
+    this.chatMessagesReponseSubject = new Subject<ChatMessage[]>();
+    this.chatMessageUpdateSubject = new Subject<ChatMessage>();
   }
 
   public start(): void {
@@ -105,6 +114,14 @@ export class WebSocketsService {
 
   public subscribeToMovieRoomSeekUpdates(observer: Observer<MovieRoom>): void {
     this.movieRoomSeekUpdateSubject.subscribe(observer);
+  }
+
+  public subscribeToChatMessagesReponses(observer: Observer<ChatMessage[]>): void {
+    this.chatMessagesReponseSubject.subscribe(observer);
+  }
+
+  public subscribeToChatMessageUpdates(observer: Observer<ChatMessage>): void {
+    this.chatMessageUpdateSubject.subscribe(observer);
   }
 
   private connect(url: string): void {
@@ -220,6 +237,24 @@ export class WebSocketsService {
     });
   }
 
+  public sendChatMessagesRequest(roomId: string): void {
+    this.authService.authState.subscribe(user => {
+      const request: ChatMessagesRequest = new ChatMessagesRequest(roomId, user.id);
+      const message: MessageWrapper = new MessageWrapper(MessageType.CHAT_MESSAGES_REQUEST, request);
+
+      this.sendMessage(this.webSocket, message);
+    });
+  }
+
+  public sendChatMessageRequest(roomId: string, chatMessage: ChatMessage): void {
+    this.authService.authState.subscribe(user => {
+      const request: SendChatMessageRequest = new SendChatMessageRequest(roomId, user.id, chatMessage);
+      const message: MessageWrapper = new MessageWrapper(MessageType.SEND_CHAT_MESSAGE_REQUEST, request);
+
+      this.sendMessage(this.webSocket, message);
+    });
+  }
+
   private waitForOpenConnection(socket: WebSocket) {
     return new Promise((resolve, reject) => {
       const maxNumberOfAttempts = 10
@@ -303,14 +338,12 @@ export class WebSocketsService {
         try {
           roomActionPlay = JSON.parse(messageWrapper.payload);
         } catch (error) {
-          console.error('Play video: Unable to deserialize [MovieRoom, string] object: %s',
+          console.error('Play video: Unable to deserialize MovieRoomAction object: %s',
             messageWrapper.payload);
           return;
         }
 
         if (roomActionPlay.UserId === this.user.id) {
-          console.log(`current user id" ${this.user.id}`);
-          console.log(`action play user id" ${roomActionPlay.UserId}`);
           return;
         }
 
@@ -323,14 +356,12 @@ export class WebSocketsService {
         try {
           roomActionPause = JSON.parse(messageWrapper.payload);
         } catch (error) {
-          console.error('Pause video: Unable to deserialize [MovieRoom, string] object: %s',
+          console.error('Pause video: Unable to deserialize MovieRoomAction object: %s',
             messageWrapper.payload);
           return;
         }
 
         if (roomActionPause.UserId === this.user.id) {
-          console.log(`current user id" ${this.user.id}`);
-          console.log(`action pause user id" ${roomActionPause.UserId}`);
           return;
         }
 
@@ -343,14 +374,12 @@ export class WebSocketsService {
         try {
           roomActionSeek = JSON.parse(messageWrapper.payload);
         } catch (error) {
-          console.error('Seek video: Unable to deserialize [MovieRoom, string] object: %s',
+          console.error('Seek video: Unable to deserialize MovieRoomAction object: %s',
             messageWrapper.payload);
           return;
         }
 
         if (roomActionSeek.UserId === this.user.id) {
-          console.log(`current user id" ${this.user.id}`);
-          console.log(`action seek user id" ${roomActionSeek.UserId}`);
           return;
         }
 
@@ -358,8 +387,40 @@ export class WebSocketsService {
         this.movieRoomSeekUpdateSubject.next(roomActionSeek.Room);
         break;
 
-      default: break;
+      case MessageType.CHAT_MESSAGES_RESPONSE:
+        let messages: ChatMessage[];
+        try {
+          messages = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Get chat messages response: Unable to deserialize ChatMessage[] object: %s',
+            messageWrapper.payload);
+          return;
+        }
 
+        console.debug('Chat Message received: %o', messages);
+        this.chatMessagesReponseSubject.next(messages);
+        break;
+
+      case MessageType.CHAT_MESSAGE_UPDATE:
+        let message: ChatMessage;
+        try {
+          message = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Get chat message rupdate : Unable to deserialize ChatMessage object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        if (message.UserId === this.user.id) {
+          // if the message was sent by the current user, exit
+          return;
+        }
+
+        console.debug('Chat Message received: %o', message);
+        this.chatMessageUpdateSubject.next(message);
+        break;
+
+      default: break;
     }
   }
 

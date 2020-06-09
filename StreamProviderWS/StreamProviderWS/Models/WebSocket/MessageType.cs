@@ -37,12 +37,11 @@
         public const string MOVIE_ADD_COMMENT_REQUEST = "MOVIE_ADD_COMMENT_REQUEST";
         public const string MOVIE_ADD_COMMENT_UPDATE = "MOVIE_COMMENTS_UPDATE"; // is it needed?
         
-        public const string MOVIE_CHAT_REQUEST = "MOVIE_CHAT_REQUEST";
-        public const string MOVIE_CHAT_RESPONSE = "MOVIE_CHAT_RESPONSE";
-        public const string MOVIE_CHAT_UPDATE = "MOVIE_CHAT_UPDATE";
+        public const string SEND_CHAT_MESSAGE_REQUEST = "SEND_CHAT_MESSAGE_REQUEST";
+        public const string CHAT_MESSAGE_UPDATE = "CHAT_MESSAGE_UPDATE";
         
-        public const string MOVIE_SEND_CHAT_MESSAGE_REQUEST = "MOVIE_SEND_CHAT_MESSAGE_REQUEST";
-        public const string MOVIE_GET_CHAT_MESSAGE_RESPONSE = "MOVIE_GET_CHAT_MESSAGE_RESPONSE";
+        public const string CHAT_MESSAGES_REQUEST = "CHAT_MESSAGES_REQUEST";
+        public const string CHAT_MESSAGES_RESPONSE = "CHAT_MESSAGES_RESPONSE";
 
         public const string MOVIE_PAUSE_REQUEST = "MOVIE_PAUSE_REQUEST";
         public const string MOVIE_PAUSE_RESPONSE = "MOVIE_PAUSE_RESPONSE";

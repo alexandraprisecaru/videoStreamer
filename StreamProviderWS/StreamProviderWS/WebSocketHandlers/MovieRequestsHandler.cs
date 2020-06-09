@@ -16,17 +16,20 @@ namespace StreamProviderWS.WebSocketHandlers
         private readonly IProvider<Movie> _movieProvider;
         private readonly IProvider<User> _userProvider;
         private readonly IRoomsProvider _roomsProvider;
+        private readonly IChatMessagesProvider _chatMessagesProvider;
 
         public MovieRequestsHandler(
             ConnectionManager webSocketConnectionManager,
             IProvider<Movie> movieProvider,
             IProvider<User> userProvider,
-            IRoomsProvider roomsProvider)
+            IRoomsProvider roomsProvider,
+            IChatMessagesProvider chatMessagesProvider)
             : base(webSocketConnectionManager)
         {
             _movieProvider = movieProvider;
             _userProvider = userProvider;
             _roomsProvider = roomsProvider;
+            _chatMessagesProvider = chatMessagesProvider;
         }
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
@@ -42,7 +45,7 @@ namespace StreamProviderWS.WebSocketHandlers
             switch (messageWrapper.type)
             {
                 case MessageType.SAVE_USER_REQUEST:
-                    await HandleSaveUserRequest(socket, messageWrapper);
+                    await HandleSaveUserRequest(messageWrapper);
                     break;
 
                 case MessageType.MOVIE_LIST_REQUEST:
@@ -58,19 +61,27 @@ namespace StreamProviderWS.WebSocketHandlers
                     break;
 
                 case MessageType.MOVIE_ROOM_PAUSE_REQUEST:
-                    await HandleMovieRoomPauseRequest(socket, messageWrapper);
+                    await HandleMovieRoomPauseRequest(messageWrapper);
                     break;
 
                 case MessageType.MOVIE_ROOM_PLAY_REQUEST:
-                    await HandleMovieRoomPlayRequest(socket, messageWrapper);
+                    await HandleMovieRoomPlayRequest(messageWrapper);
                     break;
 
                 case MessageType.MOVIE_ROOM_SEEK_REQUEST:
-                    await HandleMovieRoomSeekRequest(socket, messageWrapper);
+                    await HandleMovieRoomSeekRequest(messageWrapper);
                     break;
 
                 case MessageType.MOVIE_ROOMS_REQUEST:
                     //HandleMovieRoomsRequest(messageWrapper);
+                    break;
+
+                case MessageType.CHAT_MESSAGES_REQUEST:
+                    await HandleChatMessagesRequest(socket, messageWrapper);
+                    break;
+
+                case MessageType.SEND_CHAT_MESSAGE_REQUEST:
+                    await HandleSendChatMessageRequest(messageWrapper);
                     break;
 
                 default:
@@ -78,7 +89,7 @@ namespace StreamProviderWS.WebSocketHandlers
             }
         }
 
-        private async Task HandleSaveUserRequest(WebSocket socket, MessageWrapper messageWrapper)
+        private async Task HandleSaveUserRequest(MessageWrapper messageWrapper)
         {
             var saveUserRequest = JsonConvert.DeserializeObject<SaveUserRequest>(messageWrapper.payload);
             if (saveUserRequest?.User == null)
@@ -181,7 +192,7 @@ namespace StreamProviderWS.WebSocketHandlers
             }
         }
 
-        private async Task HandleMovieRoomPauseRequest(WebSocket socket, MessageWrapper messageWrapper)
+        private async Task HandleMovieRoomPauseRequest(MessageWrapper messageWrapper)
         {
             var jsonRoomAndUser = await UpdateRoomAsync(messageWrapper);
             if (jsonRoomAndUser == null)
@@ -200,7 +211,7 @@ namespace StreamProviderWS.WebSocketHandlers
             await SendMessageToAllAsync(json);
         }
 
-        private async Task HandleMovieRoomPlayRequest(WebSocket socket, MessageWrapper messageWrapper)
+        private async Task HandleMovieRoomPlayRequest(MessageWrapper messageWrapper)
         {
             var jsonRoomAndUser = await UpdateRoomAsync(messageWrapper);
             if (jsonRoomAndUser == null)
@@ -219,7 +230,7 @@ namespace StreamProviderWS.WebSocketHandlers
             await SendMessageToAllAsync(json);
         }
 
-        private async Task HandleMovieRoomSeekRequest(WebSocket socket, MessageWrapper messageWrapper)
+        private async Task HandleMovieRoomSeekRequest(MessageWrapper messageWrapper)
         {
             var jsonRoomAndUser = await UpdateRoomAsync(messageWrapper);
             if (jsonRoomAndUser == null)
@@ -237,6 +248,91 @@ namespace StreamProviderWS.WebSocketHandlers
 
             await SendMessageToAllAsync(json);
         }
+
+
+        private async Task HandleChatMessagesRequest(WebSocket socket, MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<ChatMessagesRequest>(messageWrapper.payload);
+            if (request?.RoomId == null)
+            {
+                return;
+            }
+
+            var room = await _roomsProvider.GetById(request.RoomId);
+
+            // todo: check room
+            if (room == null)
+            {
+                return;
+            }
+
+            var userId = request.UserId;
+
+            var wasUpdated = false;
+            // todo: check user id
+            if (!room.Users.Any(u => u.Id.Equals(userId)))
+            {
+                // the messages request was not sent by someone in the same room
+                return;
+            }
+
+            var messages = await _chatMessagesProvider.GetAllByRoomId(request.RoomId);
+
+            var jsonMessages = JsonConvert.SerializeObject(messages);
+
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.CHAT_MESSAGES_RESPONSE,
+                payload = jsonMessages
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageAsync(socket, json);
+        }
+
+
+        private async Task HandleSendChatMessageRequest(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<SendChatMessageRequest>(messageWrapper.payload);
+            if (request?.RoomId == null)
+            {
+                return;
+            }
+
+            var room = await _roomsProvider.GetById(request.RoomId);
+
+            // todo: check room
+            if (room == null)
+            {
+                return;
+            }
+
+            var userId = request.UserId;
+
+            var wasUpdated = false;
+            // todo: check user id
+            if (!room.Users.Any(u => u.Id.Equals(userId)))
+            {
+                // the messages was not sent by someone in the same room
+                return;
+            }
+
+            await _chatMessagesProvider.Add(request.ChatMessage);
+
+            var jsonMessage = JsonConvert.SerializeObject(request.ChatMessage);
+
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.CHAT_MESSAGE_UPDATE,
+                payload = jsonMessage
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllAsync(json);
+        }
+
 
         private async Task<string> UpdateRoomAsync(MessageWrapper messageWrapper)
         {
@@ -259,7 +355,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
             await _roomsProvider.Update(room);
 
-            var movieRoomAction = new MovieRoomAction {Room = room, UserId = request.UserId};
+            var movieRoomAction = new MovieRoomAction { Room = room, UserId = request.UserId };
             return JsonConvert.SerializeObject(movieRoomAction);
         }
     }

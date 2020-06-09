@@ -4,6 +4,7 @@ import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
+import { ChatMessage } from 'src/app/entities/chatMessage';
 
 
 @Component({
@@ -21,8 +22,9 @@ export class MovieRoomComponent implements OnInit {
   }
 
   room: MovieRoom;
-
   roomId: string;
+
+  chatMessages: ChatMessage[];
 
   ngclass: any;
   src: string = "http://static.videogular.com/assets/videos/videogular.mp4";
@@ -61,6 +63,9 @@ export class MovieRoomComponent implements OnInit {
     this.createMovieRoomPauseUpdatesSubscription();
     this.createMovieRoomPlayUpdatesSubscription();
     this.createMovieRoomSeekUpdatesSubscription();
+
+    this.createChatMessagesReponsesSubscription();
+    this.createChatMessageUpdatesSubscription();
   }
 
   private processMovieRoom(room: MovieRoom): void {
@@ -137,6 +142,30 @@ export class MovieRoomComponent implements OnInit {
     this.video.getVideoTag().currentTime = currentTime;
 
     this.currentTime = currentTime;
+  }
+
+  private setChatMessages(roomId: string, chatMessages: ChatMessage[]) {
+    if (roomId !== this.roomId) {
+      return;
+    }
+
+    if (!chatMessages) {
+      return;
+    }
+
+    this.chatMessages = chatMessages;
+  }
+
+  private addChatMessage(chatMessage: ChatMessage) {
+    if (!chatMessage) {
+      return;
+    }
+
+    if (chatMessage.RoomId !== this.roomId) {
+      return;
+    }
+
+    this.chatMessages.push(chatMessage);
   }
 
   private createMovieRoomResponsesSubscription() {
@@ -236,5 +265,49 @@ export class MovieRoomComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToMovieRoomSeekUpdates(movieRoomUpdatesObserver);
+  }
+
+  private createChatMessagesReponsesSubscription() {
+    let self = this;
+    const chatMessagesResponseObserver: Observer<ChatMessage[]> = {
+      next: function (messages: ChatMessage[]): void {
+        if(!messages || messages.length === 0){
+          return;
+        }
+
+        self.setChatMessages(messages[0].Id, messages);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more chat messages responses');
+      }
+    };
+  }
+
+    private createChatMessageUpdatesSubscription() {
+      let self = this;
+      const chatMessagesUpdateObserver: Observer<ChatMessage> = {
+        next: function (message: ChatMessage): void {
+          if(!message){
+            return;
+          }
+  
+          self.addChatMessage(message);
+        },
+  
+        error: function (err: any): void {
+          console.error('Error: %o', err);
+        },
+  
+        complete: function (): void {
+          console.log('No more chat message updates');
+        }
+      };
+
+    this.webSocketService.subscribeToChatMessageUpdates(chatMessagesUpdateObserver);
   }
 }
