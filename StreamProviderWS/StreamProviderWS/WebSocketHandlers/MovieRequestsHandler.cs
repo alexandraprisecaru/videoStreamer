@@ -408,7 +408,7 @@ namespace StreamProviderWS.WebSocketHandlers
                 return;
             }
 
-            var comments = _commentsProvider.GetByMovieId(request.MovieId);
+            var comments = await _commentsProvider.GetByMovieId(request.MovieId);
 
             var jsonComments = JsonConvert.SerializeObject(comments);
 

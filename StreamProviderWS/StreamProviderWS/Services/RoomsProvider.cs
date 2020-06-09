@@ -61,7 +61,7 @@ namespace StreamProviderWS.Services
         public Task<MovieRoom> CreateRoom(string movieId, string userId)
         {
             // todo: get movie by id
-            var movie = _movies.FirstOrDefault();
+            var movie = _movies.FirstOrDefault(m => m.Id.Equals(movieId));
 
             // todo: get user by id (?)
             var user = _users.FirstOrDefault(u => u.id.Equals(userId));

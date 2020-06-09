@@ -4,6 +4,19 @@
   <p>{{room.Users}}</p>
   <p>{{room.Id}}</p>
 
+
+  <input #box (keyup.enter)="sendComment(box.value)">
+
+  <div>
+    <ul>
+      <li *ngFor="let comment of comments">
+        <p>{{comment.User.name}}</p>
+        <p>{{comment.Comment}}</p>
+        <p>{{comment.CurrentTime}}</p>
+      </li>
+    </ul>
+  </div>
+
   <input #box (keyup.enter)="sendMessage(box.value)">
 
   <div>

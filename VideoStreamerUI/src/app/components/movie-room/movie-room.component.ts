@@ -103,6 +103,20 @@ export class MovieRoomComponent implements OnInit {
     this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
   }
 
+  sendComment(value: string) {
+    let comment: MovieComment = {
+      Id: "",
+      CurrentTime: this.video.getVideoTag().currentTime,
+      Comment: value,
+      User: this.user,
+      MovieId: this.room.Movie.Id
+    };
+
+    this.comments.push(comment);
+
+    this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
+  }
+
   private processMovieRoom(room: MovieRoom): void {
     console.debug('Movie Room received through the observer:\n%o', room);
 
@@ -358,7 +372,7 @@ export class MovieRoomComponent implements OnInit {
           return;
         }
 
-        self.setComments(messages[0].MovieId, messages);
+        self.setComments(messages);
       },
 
       error: function (err: any): void {
@@ -408,13 +422,13 @@ export class MovieRoomComponent implements OnInit {
     this.comments.push(comment);
   }
 
-  setComments(movieId: string, comments: MovieComment[]) {
+  setComments(comments: MovieComment[]) {
 
-    if (comments == null) {
+    if (comments === null || comments === undefined || comments.length === 0) {
       return;
     }
 
-    if (movieId !== this.room.Movie.Id) {
+    if (comments[0].MovieId !== this.room.Movie.Id) {
       return;
     }
 
