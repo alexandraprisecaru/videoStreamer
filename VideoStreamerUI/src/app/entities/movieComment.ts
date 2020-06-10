@@ -8,6 +8,7 @@ export class MovieComment {
 
   Comment: string;
   CurrentTime: number;
+  Shown: boolean;
 
   constructor(movieId: string, user: SocialUser, comment: string, currentTime: number) {
     this.MovieId = movieId;

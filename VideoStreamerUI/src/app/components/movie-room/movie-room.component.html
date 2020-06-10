@@ -1,14 +1,9 @@
 <div *ngIf="room!==undefined">
-    <div>
-        <input #comm (keyup.enter)="sendComment(comm.value)">
 
-        <ul>
-            <li *ngFor="let comment of comments">
-                <p>{{comment.User.name}}</p>
-                <p>{{comment.Comment}}</p>
-                <p>{{comment.CurrentTime}}</p>
-            </li>
-        </ul>
+    <div>
+        <p>Send comment:</p>
+        <input #comm (keyup.enter)="sendComment(comm.value)">
+        <p>Current comment: {{currentComment}}</p>
     </div>
 
     <p>{{room.Users}}</p>

@@ -1,13 +1,12 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer, Observable, of } from 'rxjs';
+import { Observer, Observable, of, Subject } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
 import { ChatMessage } from 'src/app/entities/chatMessage';
 import { AuthService, SocialUser } from 'angularx-social-login';
 import { MovieComment } from 'src/app/entities/movieComment';
-import { FormControl, FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -29,6 +28,8 @@ export class MovieRoomComponent implements OnInit {
   chatMessages: ChatMessage[] = [];
   comments: MovieComment[] = [];
 
+  currentComment: string = "";
+
   ngclass: any;
   src: string = "http://static.videogular.com/assets/videos/videogular.mp4";
   title: string = this.room ? this.room.Movie.Title : "Not loaded yet";
@@ -46,6 +47,8 @@ export class MovieRoomComponent implements OnInit {
   overlay: boolean = true;
   showFrameByFrame: boolean = false;
   currentTime: number = 1;
+
+  movieCurrentTime: Subject<number> = new Subject<number>();
 
   seekedByWS: boolean = false;
 
@@ -154,6 +157,10 @@ export class MovieRoomComponent implements OnInit {
       }
 
       this.seekedByWS = false;
+    }
+
+    this.video.getVideoTag().ontimeupdate = () => {
+      setTimeout(() => { this.movieCurrentTime.next(this.video.getVideoTag().currentTime); }, 1000)
     }
 
     console.log(`title: ${this.video.title}`);
@@ -426,7 +433,6 @@ export class MovieRoomComponent implements OnInit {
   }
 
   setComments(comments: MovieComment[]) {
-
     if (comments === null || comments === undefined || comments.length === 0) {
       return;
     }
@@ -436,5 +442,18 @@ export class MovieRoomComponent implements OnInit {
     }
 
     this.comments = comments;
+    this.show();
+  }
+
+  show() {
+    this.movieCurrentTime.subscribe(time => {
+
+      let comment = this.comments.find(x => x.Shown === undefined && x.CurrentTime - time < 1 && x.CurrentTime - time > -1);
+      if (comment) {
+        this.currentComment = `${comment.User.firstName}: ${comment.Comment}`;
+        comment.Shown = true;
+        setTimeout(() => { this.currentComment = "" }, 2000)
+      }
+    });
   }
 }
