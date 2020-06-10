@@ -1,11 +1,13 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace StreamProviderWS.Models.Common
 {
     public class User
     {
         [BsonId]
-        public string IdDb { get; set; } 
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string IdDb { get; set; }
 
         public string id { get; set; }
 

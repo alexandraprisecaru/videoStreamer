@@ -1,50 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StreamProviderWS.Models.Common;
+using StreamProviderWS.Repositories.Interfaces;
 
 namespace StreamProviderWS.Services
 {
-    public class ChatMessagesProvider : IChatMessagesProvider
+    public class ChatMessagesProvider : BaseProvider<ChatMessage>, IChatMessagesProvider
     {
-        private readonly List<ChatMessage> _chatMessages = new List<ChatMessage>
-        {
-        };
+        private readonly IRepository<ChatMessage> _chatMessageRepository;
 
-        public Task<List<ChatMessage>> GetAll()
+        public ChatMessagesProvider(IRepository<ChatMessage> chatMessageRepository) : base(chatMessageRepository)
         {
-            return Task.Run(() => _chatMessages);
+            _chatMessageRepository = chatMessageRepository;
         }
 
-        public Task<ChatMessage> GetById(string id)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task Add(ChatMessage item)
+        public async Task<List<ChatMessage>> GetAllByRoomId(string roomId)
         {
-            if (item == null)
+            var messages = await _chatMessageRepository.GetAllAsync();
+            if (messages == null)
             {
-                return Task.CompletedTask;
+                return new List<ChatMessage>();
             }
-            _chatMessages.Add(item);
-            return Task.CompletedTask;
-        }
 
-        public Task<bool> Update(ChatMessage updatedItem)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Delete(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<ChatMessage>> GetAllByRoomId(string roomId)
-        {
-            return Task.Run(() => _chatMessages.Where(m => m.RoomId.Equals(roomId)).ToList());
+            return messages.Where(m => m.RoomId.Equals(roomId)).ToList();
         }
     }
 }

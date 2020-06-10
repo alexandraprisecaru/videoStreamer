@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using StreamProviderWS.Models.Common;
@@ -21,11 +22,19 @@ namespace StreamProviderWS.Repositories
 
         public async Task<List<User>> GetAllAsync() => (await _collection.FindAsync(user => true)).ToList();
 
-        public async Task<User> GetByIdAsync(string id) =>
-            (await _collection.FindAsync(user => user.IdDb == id)).FirstOrDefault();
+        public async Task<User> GetByIdAsync(string id)
+        {
+            return (await _collection.FindAsync(user => user.id == id)).FirstOrDefault();
+        }
 
         public async Task<User> CreateAsync(User user)
         {
+            var existent = (await GetAllAsync()).FirstOrDefault(u => u.id.Equals(user.id));
+            if (existent != null)
+            {
+                return existent;
+            }
+
             await _collection.InsertOneAsync(user);
             return user;
         }

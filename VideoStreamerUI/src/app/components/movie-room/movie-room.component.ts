@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer } from 'rxjs';
+import { Observer, Observable, of } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
 import { ChatMessage } from 'src/app/entities/chatMessage';
@@ -88,15 +88,13 @@ export class MovieRoomComponent implements OnInit {
   }
 
   sendMessage(value: string) {
-    let chatMessage: ChatMessage = {
-      Id: "",
-      RoomId: this.roomId,
-      User: this.user,
-      Message: value,
-      VoiceMessage: "voice message cica",
-      DateTime: new Date(),
-      MovieCurrentTime: this.currentTime // seconds into the movie
-    };
+    let chatMessage: ChatMessage = new ChatMessage(
+      this.roomId,
+      this.user,
+      value,
+      "voice msg cica",
+      new Date(),
+      this.video.getVideoTag().currentTime);
 
     this.chatMessages.push(chatMessage);
 
@@ -104,20 +102,18 @@ export class MovieRoomComponent implements OnInit {
   }
 
   sendComment(value: string) {
-    let comment: MovieComment = {
-      Id: "",
-      CurrentTime: this.video.getVideoTag().currentTime,
-      Comment: value,
-      User: this.user,
-      MovieId: this.room.Movie.Id
-    };
+    let comment: MovieComment = new MovieComment(
+      this.room.Movie.Id,
+      this.user,
+      value,
+      this.video.getVideoTag().currentTime);
 
     this.comments.push(comment);
 
     this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
   }
 
-  private processMovieRoom(room: MovieRoom): void {
+  private processMovieRoom(room: MovieRoom): Observable<MovieRoom> {
     console.debug('Movie Room received through the observer:\n%o', room);
 
     this.room = room;
@@ -157,6 +153,8 @@ export class MovieRoomComponent implements OnInit {
     }
 
     console.log(`title: ${this.video.title}`);
+
+    return of(room);
   }
 
   private pause(roomId: string, currentTime: number) {
@@ -222,8 +220,9 @@ export class MovieRoomComponent implements OnInit {
     let self = this;
     const movieRoomResponsesObserver: Observer<MovieRoom> = {
       next: function (room: MovieRoom): void {
-        self.processMovieRoom(room);
-        self.webSocketService.sendMovieCommentsRequest(self.room.Movie.Id);
+        self.processMovieRoom(room).subscribe(room => {
+          self.webSocketService.sendMovieCommentsRequest(room.Movie.Id);
+        });
       },
 
       error: function (err: any): void {

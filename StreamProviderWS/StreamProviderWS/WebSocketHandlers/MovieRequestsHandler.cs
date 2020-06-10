@@ -208,11 +208,14 @@ namespace StreamProviderWS.WebSocketHandlers
             if (!room.Users.Any(u => u.id.Equals(userId)))
             {
                 var user = await _userProvider.GetById(userId);
-
-                // todo: check user
+                if (user == null)
+                {
+                    return;
+                }
 
                 room.Users.Add(user);
-                wasUpdated = await _roomsProvider.Update(room);
+                await _roomsProvider.Update(room.Id, room);
+                wasUpdated = true;
             }
 
             var jsonRoom = JsonConvert.SerializeObject(room);
@@ -473,7 +476,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
             room.TimeWatched = request.CurrentTime;
 
-            await _roomsProvider.Update(room);
+            await _roomsProvider.Update(room.Id, room);
 
             var movieRoomAction = new MovieRoomAction { Room = room, UserId = request.UserId };
             return JsonConvert.SerializeObject(movieRoomAction);

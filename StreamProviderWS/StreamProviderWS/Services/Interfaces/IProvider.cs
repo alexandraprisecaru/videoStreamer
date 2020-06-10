@@ -11,8 +11,8 @@ namespace StreamProviderWS.Services
 
         Task Add(T item);
 
-        Task<bool> Update(T updatedItem);
+        Task Update(string id, T updatedItem);
 
-        Task<bool> Delete(string id);
+        Task Delete(string id);
     }
 }

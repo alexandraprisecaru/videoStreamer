@@ -8,4 +8,11 @@ export class MovieComment {
 
   Comment: string;
   CurrentTime: number;
+
+  constructor(movieId: string, user: SocialUser, comment: string, currentTime: number) {
+    this.MovieId = movieId;
+    this.User = user;
+    this.Comment = comment;
+    this.CurrentTime = currentTime;
+  }
 }

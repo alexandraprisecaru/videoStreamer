@@ -3,46 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StreamProviderWS.Models.Common;
+using StreamProviderWS.Repositories.Interfaces;
 
 namespace StreamProviderWS.Services
 {
-    public class MovieCommentsProvider : IMovieCommentsProvider
+    public class MovieCommentsProvider : BaseProvider<MovieComment>, IMovieCommentsProvider
     {
-        private readonly List<MovieComment> _comments = new List<MovieComment>();
+        private readonly IRepository<MovieComment> _repository;
 
-        public Task<List<MovieComment>> GetAll()
+        public MovieCommentsProvider(IRepository<MovieComment> repository) : base(repository)
         {
-            return Task.Run(() => _comments);
+            _repository = repository;
         }
 
-        public Task<MovieComment> GetById(string id)
+        public async Task<List<MovieComment>> GetByMovieId(string movieId)
         {
-            throw new NotImplementedException();
-        }
+            var comments = await _repository.GetAllAsync();
 
-        public Task Add(MovieComment item)
-        {
-            if (item == null)
-            {
-                return Task.CompletedTask;
-            }
-            _comments.Add(item);
-            return Task.CompletedTask;
-        }
-
-        public Task<bool> Update(MovieComment updatedItem)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> Delete(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<MovieComment>> GetByMovieId(string movieId)
-        {
-            return Task.Run(() => _comments.Where(c=>c.MovieId.Equals(movieId)).ToList());
+            return comments.Where(c => c.MovieId.Equals(movieId)).ToList();
         }
     }
 }

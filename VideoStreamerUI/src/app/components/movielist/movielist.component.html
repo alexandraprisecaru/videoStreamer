@@ -1,21 +1,20 @@
-<p>movielist works!</p>
 <div *ngIf="movies.length > 0" class="bold">
     <h3>Movies</h3>
-</div>
-<p>Movies count:{{movies.length}}</p>
-<div>
-    <ul>
-        <li *ngFor="let movie of movies">
-            <button (click)="goToMovie(movie)">{{movie.Title}}</button>
-        </li>
-    </ul>
-</div>
+    <p>Movies count:{{movies.length}}</p>
+    <div>
+        <ul>
+            <li *ngFor="let movie of movies">
+                <button (click)="goToMovie(movie)">{{movie.Title}}</button>
+            </li>
+        </ul>
+    </div>
 
-<div>
-    <p>Movie rooms count: {{movieRooms.length}}
-    <ul>
-        <li *ngFor="let room of movieRooms">
-            <button>{{room.Id}}</button>
-        </li>
-    </ul>
+    <div>
+        <p>Movie rooms count: {{movieRooms.length}}
+        <ul>
+            <li *ngFor="let room of movieRooms">
+                <button>{{room.Id}}</button>
+            </li>
+        </ul>
+    </div>
 </div>
