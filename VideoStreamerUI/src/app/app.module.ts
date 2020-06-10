@@ -10,6 +10,7 @@ import { SocialLoginModule, AuthServiceConfig, GoogleLoginProvider } from 'angul
 import { EmptyComponent } from './components/empty/empty.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatVideoModule } from 'mat-video';
+import { FormsModule } from '@angular/forms';
 
 const config = new AuthServiceConfig([
   {
@@ -31,6 +32,7 @@ export function provideConfig() {
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
     ReactiveFormsModule,
     SocialLoginModule,
     BrowserAnimationsModule,

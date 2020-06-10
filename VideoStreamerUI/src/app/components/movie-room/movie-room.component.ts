@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer, Observable, of } from 'rxjs';
@@ -7,6 +7,7 @@ import { MatVideoComponent } from 'mat-video/lib/video.component';
 import { ChatMessage } from 'src/app/entities/chatMessage';
 import { AuthService, SocialUser } from 'angularx-social-login';
 import { MovieComment } from 'src/app/entities/movieComment';
+import { FormControl, FormGroup } from '@angular/forms';
 
 
 @Component({
@@ -22,7 +23,6 @@ export class MovieRoomComponent implements OnInit {
       this.video = matVideo;
     }
   }
-
   room: MovieRoom;
   roomId: string;
 
@@ -88,6 +88,10 @@ export class MovieRoomComponent implements OnInit {
   }
 
   sendMessage(value: string) {
+    if (!value || value === "") {
+      return;
+    }
+
     let chatMessage: ChatMessage = new ChatMessage(
       this.roomId,
       this.user,

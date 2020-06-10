@@ -1,39 +1,77 @@
-<p>movie-room works!</p>
-
 <div *ngIf="room!==undefined">
-  <p>{{room.Users}}</p>
-  <p>{{room.Id}}</p>
+    <div>
+        <input #comm (keyup.enter)="sendComment(comm.value)">
 
+        <ul>
+            <li *ngFor="let comment of comments">
+                <p>{{comment.User.name}}</p>
+                <p>{{comment.Comment}}</p>
+                <p>{{comment.CurrentTime}}</p>
+            </li>
+        </ul>
+    </div>
 
-  <input #comm (keyup.enter)="sendComment(comm.value)">
+    <p>{{room.Users}}</p>
+    <p>{{room.Id}}</p>
 
-  <div>
-    <ul>
-      <li *ngFor="let comment of comments">
-        <p>{{comment.User.name}}</p>
-        <p>{{comment.Comment}}</p>
-        <p>{{comment.CurrentTime}}</p>
-      </li>
-    </ul>
-  </div>
+    <div class="row col-lg-12" style="max-height: 80vh;">
+        <div class="col-lg-8">
+            <mat-video #video [src]="src" [title]="title" [autoplay]="autoplay" [preload]="preload" [loop]="loop"
+                [fullscreen]="fullscreen" [download]="download" [quality]="quality" [keyboard]="keyboard"
+                [color]="color" [spinner]="spinner" [poster]="poster" [overlay]="overlay" [(muted)]="muted"
+                [showFrameByFrame]="showFrameByFrame" [(time)]="currentTime">
+            </mat-video>
+        </div>
 
-  <input #box (keyup.enter)="sendMessage(box.value)">
-
-  <div>
-    <ul>
-      <li *ngFor="let message of chatMessages">
-        <p>{{message.User.name}}</p>
-        <p>{{message.Message}}</p>
-      </li>
-    </ul>
-  </div>
-
-  <div margin="100px">
-    <mat-video #video [src]="src" [title]="title" [autoplay]="autoplay" [preload]="preload" [loop]="loop"
-               [fullscreen]="fullscreen" [download]="download" [quality]="quality" [keyboard]="keyboard" [color]="color"
-               [spinner]="spinner" [poster]="poster" [overlay]="overlay" [(muted)]="muted"
-               [showFrameByFrame]="showFrameByFrame" [(time)]="currentTime">
-    </mat-video>
-  </div>
-
+        <div class="col-lg-4 hidden-md hidden-sm hidden-xs">
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="padding:0 0 0 8px;">
+                    <!-- <span class="glyphicon glyphicon-user"></span> -->
+                    <h6 class="panel-title" style="display:inline;">Chat</h6>
+                    <!-- <div class="btn-group btn-group-xs pull-right">
+                        <button type="button" class="btn btn-primary"><span
+                                class="glyphicon glyphicon-lock"></span></button>
+                        <button type="button" class="btn btn-primary"><span
+                                class="glyphicon glyphicon-cog"></span></button>
+                        <button type="button" class="btn btn-primary"><span
+                                class="glyphicon glyphicon-remove"></span></button>
+                    </div> -->
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body" style="padding:0 4px;">
+                    <div #msgContainer style="max-height:80vh; max-width:100%;overflow-y:auto;overflow-x:hidden;">
+                        <table class="table table-hover table-condensed" *ngIf="chatMessages.length !== 0">
+                            <tr *ngFor="let message of chatMessages" style="width:100%;">
+                                <td>
+                                    <img [src]="message.User.photoUrl" style="margin-top:8px; height: 20px;" /></td>
+                                <td>
+                                    <h6>{{message.User.name}}</h6>
+                                </td>
+                                <td>
+                                    <p class="word-wrap:break-word">
+                                        <small>{{message.Message}}</small></p>
+                                </td>
+                            </tr>
+                            <tr *ngIf="chatMessages.length === 0">
+                                <td>
+                                    <p>Nothin' here. <strong>Say something!</strong></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <form>
+                        <div class="input-group input-group-sm">
+                            <input #msg type="text" class="form-control" placeholder="Send a message..." />
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="submit"
+                                    (click)="sendMessage(msg.value)">Send</button>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
