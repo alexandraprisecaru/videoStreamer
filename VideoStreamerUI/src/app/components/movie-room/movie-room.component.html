@@ -1,29 +1,51 @@
-<div *ngIf="room!==undefined">
-
-    <div>
-        <p>Send comment:</p>
-        <input #comm (keyup.enter)="sendComment(comm.value)">
-        <p>Current comment: {{currentComment}}</p>
+<div *ngIf="room!==undefined" style="padding: 10px;">
+    <div class="row">
+        <div class="col col-lg-10"></div>
+        <div style="display: inline-flex;">
+            <img [src]="user.photoUrl" style="height: 20px;">
+        </div>
+        <div style="display: inline-flex; margin-left: 8px;">
+            <p>{{user.name}}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-sm-2">
+            <p>Send comment:</p>
+        </div>
+        <div class="col col-sm-1">
+            <input #comm (keyup.enter)="sendComment(comm.value)">
+        </div>
     </div>
 
-    <p>{{room.Users}}</p>
-    <p>{{room.Id}}</p>
+    <p>Current comment: {{currentComment}}</p>
 
-    <div class="row col-lg-12" style="max-height: 80vh;">
-        <div class="col-lg-8">
-            <mat-video #video [src]="src" [title]="title" [autoplay]="autoplay" [preload]="preload" [loop]="loop"
-                [fullscreen]="fullscreen" [download]="download" [quality]="quality" [keyboard]="keyboard"
-                [color]="color" [spinner]="spinner" [poster]="poster" [overlay]="overlay" [(muted)]="muted"
-                [showFrameByFrame]="showFrameByFrame" [(time)]="currentTime">
-            </mat-video>
+    <div class="row">
+        <div class="col col-sm-2">
+            <p>Users in room:</p>
+        </div>
+        <div>
+            <ul>
+                <li *ngFor="let user of room.Users">
+                    <p>{{user.name}}</p>
+                </li>
+            </ul>
         </div>
 
-        <div class="col-lg-4 hidden-md hidden-sm hidden-xs">
-            <div class="panel panel-primary">
-                <div class="panel-heading" style="padding:0 0 0 8px;">
-                    <!-- <span class="glyphicon glyphicon-user"></span> -->
-                    <h6 class="panel-title" style="display:inline;">Chat</h6>
-                    <!-- <div class="btn-group btn-group-xs pull-right">
+        <div class="row col-lg-12" style="max-height: 60vh;">
+            <div class="col-lg-8">
+                <mat-video #video [src]="src" [title]="title" [autoplay]="autoplay" [preload]="preload" [loop]="loop"
+                    [fullscreen]="fullscreen" [download]="download" [quality]="quality" [keyboard]="keyboard"
+                    [spinner]="spinner" [poster]="poster" [overlay]="overlay" [(muted)]="muted"
+                    [showFrameByFrame]="showFrameByFrame" [(time)]="currentTime">
+                </mat-video>
+            </div>
+
+            <div class="col-lg-4 hidden-md hidden-sm hidden-xs">
+                <div class="panel panel-primary">
+                    <div class="panel-heading" style="padding:0;">
+                        <!-- <span class="glyphicon glyphicon-user"></span> -->
+                        <h6 class="panel-title" style="display:inline;">Chat</h6>
+                        <!-- <div class="btn-group btn-group-xs pull-right">
                         <button type="button" class="btn btn-primary"><span
                                 class="glyphicon glyphicon-lock"></span></button>
                         <button type="button" class="btn btn-primary"><span
@@ -31,42 +53,43 @@
                         <button type="button" class="btn btn-primary"><span
                                 class="glyphicon glyphicon-remove"></span></button>
                     </div> -->
-                    <div class="clearfix"></div>
-                </div>
-                <div class="panel-body" style="padding:0 4px;">
-                    <div #msgContainer style="max-height:80vh; max-width:100%;overflow-y:auto;overflow-x:hidden;">
-                        <table class="table table-hover table-condensed" *ngIf="chatMessages.length !== 0">
-                            <tr *ngFor="let message of chatMessages" style="width:100%;">
-                                <td>
-                                    <img [src]="message.User.photoUrl" style="margin-top:8px; height: 20px;" /></td>
-                                <td>
-                                    <h6>{{message.User.name}}</h6>
-                                </td>
-                                <td>
-                                    <p class="word-wrap:break-word">
-                                        <small>{{message.Message}}</small></p>
-                                </td>
-                            </tr>
-                            <tr *ngIf="chatMessages.length === 0">
-                                <td>
-                                    <p>Nothin' here. <strong>Say something!</strong></p>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="clearfix"></div>
                     </div>
-                </div>
-                <div class="panel-footer">
-                    <form>
-                        <div class="input-group input-group-sm">
-                            <input #msg type="text" class="form-control" placeholder="Send a message..." />
-                            <span class="input-group-btn">
-                                <button class="btn btn-primary" type="submit"
-                                    (click)="sendMessage(msg.value)">Send</button>
-                            </span>
+                    <div class="panel-body" style="padding:0;">
+                        <div #msgContainer
+                            style="max-height:70vh; max-width:100%;overflow-y:auto;overflow-x:hidden; padding: 0px;">
+                            <table class="table table-hover table-condensed" *ngIf="chatMessages.length !== 0">
+                                <tr *ngFor="let message of chatMessages" style="width:100%;" class="row">
+                                    <td style="padding-right: 0px;">
+                                        <img [src]="message.User.photoUrl" style="height: 20px;" /></td>
+                                    <td style="padding-right: 0px;">
+                                        <h4>{{message.User.firstName}}:</h4>
+                                    </td>
+                                    <td class="col col-xs-11">
+                                        <h4 class="word-wrap:break-word" style="margin:0px;">{{message.Message}}</h4>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="chatMessages.length === 0">
+                                    <td>
+                                        <p>Nothin' here. <strong>Say something!</strong></p>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-                    </form>
+                    </div>
+                    <div class="panel-footer">
+                        <form>
+                            <div class="input-group input-group-sm">
+                                <input #msg type="text" class="form-control" placeholder="Send a message..." />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="submit"
+                                        style="height: 31px; margin-left: 5px; padding-top: 2px;"
+                                        (click)="sendMessage(msg.value)">Send</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
