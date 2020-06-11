@@ -40,13 +40,13 @@ export class MovieRoomComponent implements OnInit {
   download: boolean = false;
   quality: boolean = true;
   keyboard: boolean = true;
-  color: any;
   spinner: any;
   poster: any;
   muted: boolean = true;
   overlay: boolean = true;
   showFrameByFrame: boolean = false;
   currentTime: number = 1;
+  color: any;
 
   movieCurrentTime: Subject<number> = new Subject<number>();
 

@@ -1,3 +1,12 @@
-::ng-deep .progress{
-    background: transparent !important;
-}
+// ::ng-deep .progress{
+//     background: transparent !important;
+// }
+
+
+:host::ng-deep .progress{
+    background-color: unset !important;
+  }
+  
+  :host::ng-deep mat-seek-progress-control{
+    width: 100%;
+  }
