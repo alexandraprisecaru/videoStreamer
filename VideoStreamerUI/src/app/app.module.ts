@@ -11,6 +11,8 @@ import { EmptyComponent } from './components/empty/empty.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatVideoModule } from 'mat-video';
 import { FormsModule } from '@angular/forms';
+import { ChatComponent } from './components/chat/chat.component';
+import { CommentComponent } from './components/comment/comment.component';
 
 const config = new AuthServiceConfig([
   {
@@ -27,7 +29,9 @@ export function provideConfig() {
     LoginComponent,
     MovielistComponent,
     MovieRoomComponent,
-    EmptyComponent
+    EmptyComponent,
+    ChatComponent,
+    CommentComponent
   ],
   imports: [
     BrowserModule,

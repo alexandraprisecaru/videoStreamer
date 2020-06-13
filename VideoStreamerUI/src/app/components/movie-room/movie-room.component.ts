@@ -4,10 +4,8 @@ import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer, Observable, of, Subject } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
-import { ChatMessage } from 'src/app/entities/chatMessage';
 import { AuthService, SocialUser } from 'angularx-social-login';
 import { MovieComment } from 'src/app/entities/movieComment';
-
 
 @Component({
   selector: 'app-movie-room',
@@ -22,12 +20,11 @@ export class MovieRoomComponent implements OnInit {
       this.video = matVideo;
     }
   }
+
   room: MovieRoom;
   roomId: string;
 
-  chatMessages: ChatMessage[] = [];
   comments: MovieComment[] = [];
-
   currentComment: string = "";
 
   ngclass: any;
@@ -83,29 +80,8 @@ export class MovieRoomComponent implements OnInit {
     this.createMovieRoomPlayUpdatesSubscription();
     this.createMovieRoomSeekUpdatesSubscription();
 
-    this.createChatMessagesReponsesSubscription();
-    this.createChatMessageUpdatesSubscription();
-
     this.createCommentsReponsesSubscription();
     this.createCommentUpdatesSubscription();
-  }
-
-  sendMessage(value: string) {
-    if (!value || value === "") {
-      return;
-    }
-
-    let chatMessage: ChatMessage = new ChatMessage(
-      this.roomId,
-      this.user,
-      value,
-      "voice msg cica",
-      new Date(),
-      this.video.getVideoTag().currentTime);
-
-    this.chatMessages.push(chatMessage);
-
-    this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
   }
 
   sendComment(value: string) {
@@ -201,30 +177,6 @@ export class MovieRoomComponent implements OnInit {
     this.video.getVideoTag().currentTime = currentTime;
 
     this.currentTime = currentTime;
-  }
-
-  private setChatMessages(roomId: string, chatMessages: ChatMessage[]) {
-    if (roomId !== this.roomId) {
-      return;
-    }
-
-    if (!chatMessages) {
-      return;
-    }
-
-    this.chatMessages = chatMessages;
-  }
-
-  private addChatMessage(chatMessage: ChatMessage) {
-    if (!chatMessage) {
-      return;
-    }
-
-    if (chatMessage.RoomId !== this.roomId) {
-      return;
-    }
-
-    this.chatMessages.push(chatMessage);
   }
 
   private createMovieRoomResponsesSubscription() {
@@ -326,52 +278,6 @@ export class MovieRoomComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToMovieRoomSeekUpdates(movieRoomUpdatesObserver);
-  }
-
-  private createChatMessagesReponsesSubscription() {
-    let self = this;
-    const chatMessagesResponseObserver: Observer<ChatMessage[]> = {
-      next: function (messages: ChatMessage[]): void {
-        if (!messages || messages.length === 0) {
-          return;
-        }
-
-        self.setChatMessages(messages[0].RoomId, messages);
-      },
-
-      error: function (err: any): void {
-        console.error('Error: %o', err);
-      },
-
-      complete: function (): void {
-        console.log('No more chat messages responses');
-      }
-    };
-
-    this.webSocketService.subscribeToChatMessagesReponses(chatMessagesResponseObserver);
-  }
-
-  private createChatMessageUpdatesSubscription() {
-    let self = this;
-    const chatMessagesUpdateObserver: Observer<ChatMessage> = {
-      next: function (message: ChatMessage): void {
-        if (!message) {
-          return;
-        }
-
-        self.addChatMessage(message);
-      },
-
-      error: function (err: any): void {
-        console.error('Error: %o', err);
-      },
-
-      complete: function (): void {
-        console.log('No more chat message updates');
-      }
-    };
-
-    this.webSocketService.subscribeToChatMessageUpdates(chatMessagesUpdateObserver);
   }
 
   private createCommentsReponsesSubscription() {
