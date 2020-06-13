@@ -1,11 +1,10 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer, Observable, of, Subject } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
 import { AuthService, SocialUser } from 'angularx-social-login';
-import { MovieComment } from 'src/app/entities/movieComment';
 
 @Component({
   selector: 'app-movie-room',
@@ -15,17 +14,17 @@ import { MovieComment } from 'src/app/entities/movieComment';
 export class MovieRoomComponent implements OnInit {
 
   private video: MatVideoComponent;
+  htmlVideo: HTMLVideoElement;
   @ViewChild('video') set matVideo(matVideo: MatVideoComponent) {
     if (matVideo) { // initially setter gets called with undefined
       this.video = matVideo;
+
+      this.htmlVideo = this.video.getVideoTag();
     }
   }
 
   room: MovieRoom;
   roomId: string;
-
-  comments: MovieComment[] = [];
-  currentComment: string = "";
 
   ngclass: any;
   src: string = "http://static.videogular.com/assets/videos/videogular.mp4";
@@ -44,8 +43,6 @@ export class MovieRoomComponent implements OnInit {
   showFrameByFrame: boolean = false;
   currentTime: number = 1;
   color: any;
-
-  movieCurrentTime: Subject<number> = new Subject<number>();
 
   seekedByWS: boolean = false;
 
@@ -79,21 +76,6 @@ export class MovieRoomComponent implements OnInit {
     this.createMovieRoomPauseUpdatesSubscription();
     this.createMovieRoomPlayUpdatesSubscription();
     this.createMovieRoomSeekUpdatesSubscription();
-
-    this.createCommentsReponsesSubscription();
-    this.createCommentUpdatesSubscription();
-  }
-
-  sendComment(value: string) {
-    let comment: MovieComment = new MovieComment(
-      this.room.Movie.Id,
-      this.user,
-      value,
-      this.video.getVideoTag().currentTime);
-
-    this.comments.push(comment);
-
-    this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
   }
 
   private processMovieRoom(room: MovieRoom): Observable<MovieRoom> {
@@ -103,12 +85,6 @@ export class MovieRoomComponent implements OnInit {
 
     this.title = room.Movie.Title;
     this.changeDetector.detectChanges();
-
-    this.currentTime = room.TimeWatched;
-
-    this.video.timeChange.subscribe(() => {
-      // send ws request to update timewatched 
-    });
 
     this.video.getVideoTag().onpause = () => {
       // check if it's on pause already-> don't make request
@@ -133,10 +109,6 @@ export class MovieRoomComponent implements OnInit {
       }
 
       this.seekedByWS = false;
-    }
-
-    this.video.getVideoTag().ontimeupdate = () => {
-      setTimeout(() => { this.movieCurrentTime.next(this.video.getVideoTag().currentTime); }, 1000)
     }
 
     console.log(`title: ${this.video.title}`);
@@ -278,88 +250,5 @@ export class MovieRoomComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToMovieRoomSeekUpdates(movieRoomUpdatesObserver);
-  }
-
-  private createCommentsReponsesSubscription() {
-    let self = this;
-    const commentsResponseObserver: Observer<MovieComment[]> = {
-      next: function (messages: MovieComment[]): void {
-        if (!messages || messages.length === 0) {
-          return;
-        }
-
-        self.setComments(messages);
-      },
-
-      error: function (err: any): void {
-        console.error('Error: %o', err);
-      },
-
-      complete: function (): void {
-        console.log('No more chat messages responses');
-      }
-    };
-
-    this.webSocketService.subscribeToMovieCommentsReponses(commentsResponseObserver);
-  }
-
-  private createCommentUpdatesSubscription() {
-    let self = this;
-    const commentsUpdateObserver: Observer<MovieComment> = {
-      next: function (message: MovieComment): void {
-        if (!message) {
-          return;
-        }
-
-        self.addComment(message);
-      },
-
-      error: function (err: any): void {
-        console.error('Error: %o', err);
-      },
-
-      complete: function (): void {
-        console.log('No more chat message updates');
-      }
-    };
-
-    this.webSocketService.subscribeToMovieCommentUpdates(commentsUpdateObserver);
-  }
-
-  addComment(comment: MovieComment) {
-    if (comment == null) {
-      return;
-    }
-
-    if (comment.MovieId !== this.room.Movie.Id) {
-      return;
-    }
-
-    this.comments.push(comment);
-  }
-
-  setComments(comments: MovieComment[]) {
-    if (comments === null || comments === undefined || comments.length === 0) {
-      return;
-    }
-
-    if (comments[0].MovieId !== this.room.Movie.Id) {
-      return;
-    }
-
-    this.comments = comments;
-    this.show();
-  }
-
-  show() {
-    this.movieCurrentTime.subscribe(time => {
-
-      let comment = this.comments.find(x => x.Shown === undefined && x.CurrentTime - time < 2 && x.CurrentTime - time > -2);
-      if (comment) {
-        this.currentComment = `${comment.User.firstName}: ${comment.Comment}`;
-        comment.Shown = true;
-        setTimeout(() => { this.currentComment = "" }, 2000)
-      }
-    });
   }
 }
