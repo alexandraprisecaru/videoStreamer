@@ -642,19 +642,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     var _c0 = ["video"];
 
-    function MovieRoomComponent_div_0_table_25_tr_1_Template(rf, ctx) {
+    function MovieRoomComponent_div_0_li_23_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr", 24);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "li");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "p");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 25);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      }
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "h6");
+      if (rf & 2) {
+        var user_r7 = ctx.$implicit;
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](user_r7.name);
+      }
+    }
+
+    function MovieRoomComponent_div_0_table_37_tr_1_Template(rf, ctx) {
+      if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr", 34);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td", 35);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 5);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td", 35);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "h4");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
 
@@ -662,15 +684,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "td");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "td", 36);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "p", 26);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "h4", 37);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "small");
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -680,23 +698,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       if (rf & 2) {
-        var message_r8 = ctx.$implicit;
+        var message_r10 = ctx.$implicit;
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", message_r8.User.photoUrl, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", message_r10.User.photoUrl, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](message_r8.User.name);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("", message_r10.User.firstName, ":");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](message_r8.Message);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](message_r10.Message);
       }
     }
 
-    function MovieRoomComponent_div_0_table_25_tr_2_Template(rf, ctx) {
+    function MovieRoomComponent_div_0_table_37_tr_2_Template(rf, ctx) {
       if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
 
@@ -720,57 +738,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }
 
-    function MovieRoomComponent_div_0_table_25_Template(rf, ctx) {
+    function MovieRoomComponent_div_0_table_37_Template(rf, ctx) {
       if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 22);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 31);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, MovieRoomComponent_div_0_table_25_tr_1_Template, 10, 3, "tr", 23);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, MovieRoomComponent_div_0_table_37_tr_1_Template, 9, 3, "tr", 32);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, MovieRoomComponent_div_0_table_25_tr_2_Template, 6, 0, "tr", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, MovieRoomComponent_div_0_table_37_tr_2_Template, 6, 0, "tr", 33);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
       }
 
       if (rf & 2) {
-        var ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+        var ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r4.chatMessages);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r5.chatMessages);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.chatMessages.length === 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.chatMessages.length === 0);
       }
     }
 
     function MovieRoomComponent_div_0_Template(rf, ctx) {
       if (rf & 1) {
-        var _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+        var _r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 1);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "p");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "div", 3);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Send comment:");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 4);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "input", 1, 2);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("keyup.enter", function MovieRoomComponent_div_0_Template_input_keyup_enter_4_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10);
-
-          var _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](5);
-
-          var ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-
-          return ctx_r9.sendComment(_r1.value);
-        });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "img", 5);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 6);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "p");
 
@@ -780,91 +788,143 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "p");
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
-
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 2);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 7);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "p");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Send comment:");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "div", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div", 8);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "mat-video", 5, 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "input", 9, 10);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("mutedChange", function MovieRoomComponent_div_0_Template_mat_video_mutedChange_14_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("keyup.enter", function MovieRoomComponent_div_0_Template_input_keyup_enter_13_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12);
+
+          var _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](14);
 
           var ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
 
-          return ctx_r11.muted = $event;
-        })("timeChange", function MovieRoomComponent_div_0_Template_mat_video_timeChange_14_listener($event) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10);
-
-          var ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-
-          return ctx_r12.currentTime = $event;
+          return ctx_r11.sendComment(_r1.value);
         });
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "div", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "p");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 9);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "h6", 10);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Chat");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "div", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 2);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 7);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "div", 12);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "p");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "div", 13, 14);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](25, MovieRoomComponent_div_0_table_25_Template, 3, 2, "table", 15);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Users in room:");
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "div", 16);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "div");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](27, "form");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "ul");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "div", 17);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, MovieRoomComponent_div_0_li_23_Template, 3, 1, "li", 11);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](29, "input", 18, 19);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "span", 20);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](32, "button", 21);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "div", 12);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function MovieRoomComponent_div_0_Template_button_click_32_listener() {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "div", 13);
 
-          var _r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](30);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "mat-video", 14, 15);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("mutedChange", function MovieRoomComponent_div_0_Template_mat_video_mutedChange_26_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12);
 
           var ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
 
-          return ctx_r13.sendMessage(_r5.value);
+          return ctx_r13.muted = $event;
+        })("timeChange", function MovieRoomComponent_div_0_Template_mat_video_timeChange_26_listener($event) {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12);
+
+          var ctx_r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+
+          return ctx_r14.currentTime = $event;
         });
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](33, "Send");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "div", 16);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "div", 17);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "div", 18);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "h6", 19);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](32, "Chat");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](33, "div", 20);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "div", 21);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "div", 22, 23);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](37, MovieRoomComponent_div_0_table_37_Template, 3, 2, "table", 24);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](38, "div", 25);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](39, "form");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](40, "div", 26);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](41, "input", 27, 28);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](43, "span", 29);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](44, "button", 30);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function MovieRoomComponent_div_0_Template_button_click_44_listener() {
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12);
+
+          var _r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](42);
+
+          var ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+
+          return ctx_r15.sendMessage(_r6.value);
+        });
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](45, "Send");
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 
@@ -888,17 +948,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       if (rf & 2) {
         var ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r0.user.photoUrl, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r0.user.name);
+
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](9);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("Current comment: ", ctx_r0.currentComment, "");
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
 
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r0.room.Users);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r0.room.Id);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r0.room.Users);
 
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
 
@@ -1301,7 +1365,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           this.movieCurrentTime.subscribe(function (time) {
             var comment = _this3.comments.find(function (x) {
-              return x.Shown === undefined && x.CurrentTime - time < 0.3 && x.CurrentTime - time > 0;
+              return x.Shown === undefined && x.CurrentTime - time < 2 && x.CurrentTime - time > -2;
             });
 
             if (comment) {
@@ -1346,18 +1410,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       },
       decls: 1,
       vars: 1,
-      consts: [[4, "ngIf"], [3, "keyup.enter"], ["comm", ""], [1, "row", "col-lg-12", 2, "max-height", "80vh"], [1, "col-lg-8"], [3, "src", "title", "autoplay", "preload", "loop", "fullscreen", "download", "quality", "keyboard", "color", "spinner", "poster", "overlay", "muted", "showFrameByFrame", "time", "mutedChange", "timeChange"], ["video", ""], [1, "col-lg-4", "hidden-md", "hidden-sm", "hidden-xs"], [1, "panel", "panel-primary"], [1, "panel-heading", 2, "padding", "0 0 0 8px"], [1, "panel-title", 2, "display", "inline"], [1, "clearfix"], [1, "panel-body", 2, "padding", "0 4px"], [2, "max-height", "80vh", "max-width", "100%", "overflow-y", "auto", "overflow-x", "hidden"], ["msgContainer", ""], ["class", "table table-hover table-condensed", 4, "ngIf"], [1, "panel-footer"], [1, "input-group", "input-group-sm"], ["type", "text", "placeholder", "Send a message...", 1, "form-control"], ["msg", ""], [1, "input-group-btn"], ["type", "submit", 1, "btn", "btn-primary", 3, "click"], [1, "table", "table-hover", "table-condensed"], ["style", "width:100%;", 4, "ngFor", "ngForOf"], [2, "width", "100%"], [2, "margin-top", "8px", "height", "20px", 3, "src"], [1, "word-wrap:break-word"]],
+      consts: [["style", "padding: 10px;", 4, "ngIf"], [2, "padding", "10px"], [1, "row"], [1, "col", "col-lg-10"], [2, "display", "inline-flex"], [2, "height", "20px", 3, "src"], [2, "display", "inline-flex", "margin-left", "8px"], [1, "col", "col-sm-2"], [1, "col", "col-sm-1"], [3, "keyup.enter"], ["comm", ""], [4, "ngFor", "ngForOf"], [1, "row", "col-lg-12", 2, "max-height", "60vh"], [1, "col-lg-8"], [3, "src", "title", "autoplay", "preload", "loop", "fullscreen", "download", "quality", "keyboard", "color", "spinner", "poster", "overlay", "muted", "showFrameByFrame", "time", "mutedChange", "timeChange"], ["video", ""], [1, "col-lg-4", "hidden-md", "hidden-sm", "hidden-xs"], [1, "panel", "panel-primary"], [1, "panel-heading", 2, "padding", "0"], [1, "panel-title", 2, "display", "inline"], [1, "clearfix"], [1, "panel-body", 2, "padding", "0"], [2, "max-height", "70vh", "max-width", "100%", "overflow-y", "auto", "overflow-x", "hidden", "padding", "0px"], ["msgContainer", ""], ["class", "table table-hover table-condensed", 4, "ngIf"], [1, "panel-footer"], [1, "input-group", "input-group-sm"], ["type", "text", "placeholder", "Send a message...", 1, "form-control"], ["msg", ""], [1, "input-group-btn"], ["type", "submit", 1, "btn", "btn-primary", 2, "height", "31px", "margin-left", "5px", "padding-top", "2px", 3, "click"], [1, "table", "table-hover", "table-condensed"], ["style", "width:100%;", "class", "row", 4, "ngFor", "ngForOf"], [4, "ngIf"], [1, "row", 2, "width", "100%"], [2, "padding-right", "0px"], [1, "col", "col-xs-11"], [1, "word-wrap:break-word", 2, "margin", "0px"]],
       template: function MovieRoomComponent_Template(rf, ctx) {
         if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, MovieRoomComponent_div_0_Template, 34, 20, "div", 0);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, MovieRoomComponent_div_0_Template, 46, 21, "div", 0);
         }
 
         if (rf & 2) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.room !== undefined);
         }
       },
-      directives: [_angular_common__WEBPACK_IMPORTED_MODULE_7__["NgIf"], mat_video__WEBPACK_IMPORTED_MODULE_8__["ɵb"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["NgForm"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgForOf"]],
-      styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudHMvbW92aWUtcm9vbS9tb3ZpZS1yb29tLmNvbXBvbmVudC5zY3NzIn0= */"]
+      directives: [_angular_common__WEBPACK_IMPORTED_MODULE_7__["NgIf"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgForOf"], mat_video__WEBPACK_IMPORTED_MODULE_8__["ɵb"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["NgForm"]],
+      styles: ["[_nghost-%COMP%]  .progress {\n  background-color: unset !important;\n}\n\n[_nghost-%COMP%]  mat-seek-progress-control {\n  width: 100%;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50cy9tb3ZpZS1yb29tL0Q6XFxfQ29kZVBlcnNvbmFsXFxEaXNlcnRhdGllXFx2aWRlb1N0cmVhbWVyXFxWaWRlb1N0cmVhbWVyVUkvc3JjXFxhcHBcXGNvbXBvbmVudHNcXG1vdmllLXJvb21cXG1vdmllLXJvb20uY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL2NvbXBvbmVudHMvbW92aWUtcm9vbS9tb3ZpZS1yb29tLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUtBO0VBQ0ksa0NBQUE7QUNKSjs7QURPRTtFQUNFLFdBQUE7QUNKSiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudHMvbW92aWUtcm9vbS9tb3ZpZS1yb29tLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLy8gOjpuZy1kZWVwIC5wcm9ncmVzc3tcclxuLy8gICAgIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50ICFpbXBvcnRhbnQ7XHJcbi8vIH1cclxuXHJcblxyXG46aG9zdDo6bmctZGVlcCAucHJvZ3Jlc3N7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB1bnNldCAhaW1wb3J0YW50O1xyXG4gIH1cclxuICBcclxuICA6aG9zdDo6bmctZGVlcCBtYXQtc2Vlay1wcm9ncmVzcy1jb250cm9se1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgfSIsIjpob3N0OjpuZy1kZWVwIC5wcm9ncmVzcyB7XG4gIGJhY2tncm91bmQtY29sb3I6IHVuc2V0ICFpbXBvcnRhbnQ7XG59XG5cbjpob3N0OjpuZy1kZWVwIG1hdC1zZWVrLXByb2dyZXNzLWNvbnRyb2wge1xuICB3aWR0aDogMTAwJTtcbn0iXX0= */"]
     });
     /*@__PURE__*/
 

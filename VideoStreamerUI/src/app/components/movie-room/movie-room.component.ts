@@ -448,7 +448,7 @@ export class MovieRoomComponent implements OnInit {
   show() {
     this.movieCurrentTime.subscribe(time => {
 
-      let comment = this.comments.find(x => x.Shown === undefined && x.CurrentTime - time < 1 && x.CurrentTime - time > -1);
+      let comment = this.comments.find(x => x.Shown === undefined && x.CurrentTime - time < 2 && x.CurrentTime - time > -2);
       if (comment) {
         this.currentComment = `${comment.User.firstName}: ${comment.Comment}`;
         comment.Shown = true;
