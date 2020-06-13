@@ -48,8 +48,11 @@ export class ChatComponent implements OnInit, OnChanges {
     );
 
     this.chatMessages.push(chatMessage);
-
     this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
+  }
+  
+  spacePressed(event: Event){
+      event.stopPropagation();
   }
 
   private setChatMessages(roomId: string, chatMessages: ChatMessage[]) {

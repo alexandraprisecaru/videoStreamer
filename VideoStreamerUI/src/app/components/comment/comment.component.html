@@ -4,7 +4,7 @@
             <p>Send comment:</p>
         </div>
         <div class="col col-sm-1">
-            <input #comm (keyup.enter)="sendComment(comm.value)">
+            <input #comm (keyup.enter)="sendComment(comm.value)" (keyup.space)="spacePressed($event)">
         </div>
     </div>
 

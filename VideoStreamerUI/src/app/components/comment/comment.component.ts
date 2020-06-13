@@ -51,6 +51,10 @@ export class CommentComponent implements OnInit, OnChanges {
     this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
   }
 
+  spacePressed(event: Event) {
+    event.stopPropagation();
+  }
+
   addComment(comment: MovieComment) {
     if (comment == null) {
       return;

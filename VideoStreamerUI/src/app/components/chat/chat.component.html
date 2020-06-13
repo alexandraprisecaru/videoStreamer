@@ -37,7 +37,8 @@
     <div class="panel-footer">
         <form>
             <div class="input-group input-group-sm">
-                <input #msg type="text" class="form-control" placeholder="Send a message..." />
+                <input #msg type="text" class="form-control" placeholder="Send a message..." 
+                (keyup.space)="spacePressed($event)"/>
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit"
                         style="height: 31px; margin-left: 5px; padding-top: 2px;"
