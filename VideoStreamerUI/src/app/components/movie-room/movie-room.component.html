@@ -9,9 +9,6 @@
         </div>
     </div>
 
-    <!-- comments -->
-    <comment [room]="room" [user]="user" [video]="htmlVideo"></comment>
-
     <div class="row">
         <div class="col col-sm-2">
             <p>Users in room:</p>
@@ -28,17 +25,12 @@
 
             <!-- video  -->
             <div class="col-lg-8">
-                <mat-video #video [src]="src" [title]="title" [autoplay]="autoplay" [preload]="preload" [loop]="loop"
-                    [fullscreen]="fullscreen" [download]="download" [quality]="quality" [keyboard]="keyboard"
-                    [color]="color" [spinner]="spinner" [poster]="poster" [overlay]="overlay" [(muted)]="muted"
-                    [showFrameByFrame]="showFrameByFrame" [(time)]="currentTime">
-                </mat-video>
+                <movie-player [room]="room" [user]="user"></movie-player>
             </div>
 
             <!-- chat -->
             <div class="col-lg-4 hidden-md hidden-sm hidden-xs">
                 <chat [roomId]="roomId" [user]="user"></chat>
-
             </div>
         </div>
     </div>

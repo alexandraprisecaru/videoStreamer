@@ -103,6 +103,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_empty_empty_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/empty/empty.component */ "./src/app/components/empty/empty.component.ts");
 /* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/platform-browser/animations */ "./node_modules/@angular/platform-browser/__ivy_ngcc__/fesm2015/animations.js");
 /* harmony import */ var mat_video__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! mat-video */ "./node_modules/mat-video/__ivy_ngcc__/fesm2015/mat-video.js");
+/* harmony import */ var _components_chat_chat_component__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/chat/chat.component */ "./src/app/components/chat/chat.component.ts");
+/* harmony import */ var _components_comment_comment_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/comment/comment.component */ "./src/app/components/comment/comment.component.ts");
+/* harmony import */ var _components_movie_player_movie_player_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/movie-player/movie-player.component */ "./src/app/components/movie-player/movie-player.component.ts");
+
+
+
 
 
 
@@ -147,7 +153,10 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjector
         _components_login_login_component__WEBPACK_IMPORTED_MODULE_0__["LoginComponent"],
         _components_movielist_movielist_component__WEBPACK_IMPORTED_MODULE_1__["MovielistComponent"],
         _components_movie_room_movie_room_component__WEBPACK_IMPORTED_MODULE_2__["MovieRoomComponent"],
-        _components_empty_empty_component__WEBPACK_IMPORTED_MODULE_9__["EmptyComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["BrowserModule"],
+        _components_empty_empty_component__WEBPACK_IMPORTED_MODULE_9__["EmptyComponent"],
+        _components_chat_chat_component__WEBPACK_IMPORTED_MODULE_12__["ChatComponent"],
+        _components_comment_comment_component__WEBPACK_IMPORTED_MODULE_13__["CommentComponent"],
+        _components_movie_player_movie_player_component__WEBPACK_IMPORTED_MODULE_14__["MoviePlayerComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["BrowserModule"],
         _app_routing_module__WEBPACK_IMPORTED_MODULE_5__["AppRoutingModule"],
         _angular_forms__WEBPACK_IMPORTED_MODULE_7__["FormsModule"],
         _angular_forms__WEBPACK_IMPORTED_MODULE_7__["ReactiveFormsModule"],
@@ -162,7 +171,10 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjector
                     _components_login_login_component__WEBPACK_IMPORTED_MODULE_0__["LoginComponent"],
                     _components_movielist_movielist_component__WEBPACK_IMPORTED_MODULE_1__["MovielistComponent"],
                     _components_movie_room_movie_room_component__WEBPACK_IMPORTED_MODULE_2__["MovieRoomComponent"],
-                    _components_empty_empty_component__WEBPACK_IMPORTED_MODULE_9__["EmptyComponent"]
+                    _components_empty_empty_component__WEBPACK_IMPORTED_MODULE_9__["EmptyComponent"],
+                    _components_chat_chat_component__WEBPACK_IMPORTED_MODULE_12__["ChatComponent"],
+                    _components_comment_comment_component__WEBPACK_IMPORTED_MODULE_13__["CommentComponent"],
+                    _components_movie_player_movie_player_component__WEBPACK_IMPORTED_MODULE_14__["MoviePlayerComponent"]
                 ],
                 imports: [
                     _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["BrowserModule"],
@@ -240,6 +252,365 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
 
 /***/ }),
 
+/***/ "./src/app/components/chat/chat.component.ts":
+/*!***************************************************!*\
+  !*** ./src/app/components/chat/chat.component.ts ***!
+  \***************************************************/
+/*! exports provided: ChatComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChatComponent", function() { return ChatComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var src_app_entities_chatMessage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/entities/chatMessage */ "./src/app/entities/chatMessage.ts");
+/* harmony import */ var src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/services/websocket.service */ "./src/app/services/websocket.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/__ivy_ngcc__/fesm2015/forms.js");
+
+
+
+
+
+
+function ChatComponent_table_8_tr_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "h4");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "td", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "h4", 21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const message_r5 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", message_r5.User.photoUrl, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("", message_r5.User.firstName, ":");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](message_r5.Message);
+} }
+function ChatComponent_table_8_tr_2_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "p");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Nothin' here. ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "strong");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, "Say something!");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function ChatComponent_table_8_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, ChatComponent_table_8_tr_1_Template, 9, 3, "tr", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, ChatComponent_table_8_tr_2_Template, 6, 0, "tr", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r1.chatMessages);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r1.chatMessages.length === 0);
+} }
+class ChatComponent {
+    constructor(webSocketService) {
+        this.webSocketService = webSocketService;
+        this.chatMessages = [];
+    }
+    ngOnChanges(changes) {
+        if (!this.roomId || !this.user) {
+            return;
+        }
+        this.webSocketService.sendChatMessagesRequest(this.roomId);
+    }
+    ngOnInit() {
+        this.createChatMessagesReponsesSubscription();
+        this.createChatMessageUpdatesSubscription();
+    }
+    sendMessage(value) {
+        if (!value || value === "") {
+            return;
+        }
+        let chatMessage = new src_app_entities_chatMessage__WEBPACK_IMPORTED_MODULE_1__["ChatMessage"](this.roomId, this.user, value, "voice msg cica", new Date(), 
+        //this.video.getVideoTag().currentTime,
+        1);
+        this.chatMessages.push(chatMessage);
+        this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
+    }
+    setChatMessages(roomId, chatMessages) {
+        if (roomId !== this.roomId) {
+            return;
+        }
+        if (!chatMessages) {
+            return;
+        }
+        this.chatMessages = chatMessages;
+    }
+    addChatMessage(chatMessage) {
+        if (!chatMessage) {
+            return;
+        }
+        if (chatMessage.RoomId !== this.roomId) {
+            return;
+        }
+        this.chatMessages.push(chatMessage);
+    }
+    createChatMessagesReponsesSubscription() {
+        let self = this;
+        const chatMessagesResponseObserver = {
+            next: function (messages) {
+                if (!messages || messages.length === 0) {
+                    return;
+                }
+                self.setChatMessages(messages[0].RoomId, messages);
+            },
+            error: function (err) {
+                console.error('Error: %o', err);
+            },
+            complete: function () {
+                console.log('No more chat messages responses');
+            }
+        };
+        this.webSocketService.subscribeToChatMessagesReponses(chatMessagesResponseObserver);
+    }
+    createChatMessageUpdatesSubscription() {
+        let self = this;
+        const chatMessagesUpdateObserver = {
+            next: function (message) {
+                if (!message) {
+                    return;
+                }
+                self.addChatMessage(message);
+            },
+            error: function (err) {
+                console.error('Error: %o', err);
+            },
+            complete: function () {
+                console.log('No more chat message updates');
+            }
+        };
+        this.webSocketService.subscribeToChatMessageUpdates(chatMessagesUpdateObserver);
+    }
+}
+ChatComponent.ɵfac = function ChatComponent_Factory(t) { return new (t || ChatComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_2__["WebSocketsService"])); };
+ChatComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ChatComponent, selectors: [["chat"]], inputs: { roomId: "roomId", user: "user" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]], decls: 17, vars: 1, consts: [[1, "panel", "panel-primary"], [1, "panel-heading", 2, "padding", "0"], [1, "panel-title", 2, "display", "inline"], [1, "clearfix"], [1, "panel-body", 2, "padding", "0"], [2, "max-height", "70vh", "max-width", "100%", "overflow-y", "auto", "overflow-x", "hidden", "padding", "0px"], ["msgContainer", ""], ["class", "table table-hover table-condensed", 4, "ngIf"], [1, "panel-footer"], [1, "input-group", "input-group-sm"], ["type", "text", "placeholder", "Send a message...", 1, "form-control"], ["msg", ""], [1, "input-group-btn"], ["type", "submit", 1, "btn", "btn-primary", 2, "height", "31px", "margin-left", "5px", "padding-top", "2px", 3, "click"], [1, "table", "table-hover", "table-condensed"], ["style", "width:100%;", "class", "row", 4, "ngFor", "ngForOf"], [4, "ngIf"], [1, "row", 2, "width", "100%"], [2, "padding-right", "0px"], [2, "height", "20px", 3, "src"], [1, "col", "col-xs-11"], [1, "word-wrap:break-word", 2, "margin", "0px"]], template: function ChatComponent_Template(rf, ctx) { if (rf & 1) {
+        const _r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "h6", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Chat");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 5, 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](8, ChatComponent_table_8_Template, 3, 2, "table", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "form");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "div", 9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](12, "input", 10, 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "span", 12);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "button", 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ChatComponent_Template_button_click_15_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r6); const _r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](13); return ctx.sendMessage(_r2.value); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, "Send");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.chatMessages.length !== 0);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgIf"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgForm"], _angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudHMvY2hhdC9jaGF0LmNvbXBvbmVudC5zY3NzIn0= */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ChatComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        args: [{
+                selector: 'chat',
+                templateUrl: './chat.component.html',
+                styleUrls: ['./chat.component.scss']
+            }]
+    }], function () { return [{ type: src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_2__["WebSocketsService"] }]; }, { roomId: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }], user: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }] }); })();
+
+
+/***/ }),
+
+/***/ "./src/app/components/comment/comment.component.ts":
+/*!*********************************************************!*\
+  !*** ./src/app/components/comment/comment.component.ts ***!
+  \*********************************************************/
+/*! exports provided: CommentComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CommentComponent", function() { return CommentComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var src_app_entities_movieComment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/entities/movieComment */ "./src/app/entities/movieComment.ts");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
+/* harmony import */ var src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/services/websocket.service */ "./src/app/services/websocket.service.ts");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+
+
+
+
+
+
+function CommentComponent_div_0_Template(rf, ctx) { if (rf & 1) {
+    const _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "p");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Send comment:");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "input", 4, 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("keyup.enter", function CommentComponent_div_0_Template_input_keyup_enter_6_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r3); const _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](7); const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r2.sendComment(_r1.value); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "p");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("Current comment: ", ctx_r0.currentComment, "");
+} }
+class CommentComponent {
+    constructor(webSocketService) {
+        this.webSocketService = webSocketService;
+        this.comments = [];
+        this.currentComment = "";
+        this.movieCurrentTime = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+    }
+    ngOnInit() {
+        this.createCommentsReponsesSubscription();
+        this.createCommentUpdatesSubscription();
+    }
+    ngOnChanges(changes) {
+        if (!this.room || !this.user || !this.video) {
+            return;
+        }
+        this.webSocketService.sendMovieCommentsRequest(this.room.Movie.Id);
+        this.video.ontimeupdate = () => {
+            setTimeout(() => { this.movieCurrentTime.next(this.video.currentTime); }, 1000);
+        };
+    }
+    sendComment(value) {
+        let comment = new src_app_entities_movieComment__WEBPACK_IMPORTED_MODULE_1__["MovieComment"](this.room.Movie.Id, this.user, value, this.video.currentTime);
+        this.comments.push(comment);
+        this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
+    }
+    addComment(comment) {
+        if (comment == null) {
+            return;
+        }
+        if (comment.MovieId !== this.room.Movie.Id) {
+            return;
+        }
+        this.comments.push(comment);
+    }
+    setComments(comments) {
+        if (comments === null || comments === undefined || comments.length === 0) {
+            return;
+        }
+        if (comments[0].MovieId !== this.room.Movie.Id) {
+            return;
+        }
+        this.comments = comments;
+        this.show();
+    }
+    show() {
+        this.movieCurrentTime.subscribe(time => {
+            let comment = this.comments.find(x => x.Shown === undefined && x.CurrentTime - time < 2 && x.CurrentTime - time > -2);
+            if (comment) {
+                this.currentComment = `${comment.User.firstName}: ${comment.Comment}`;
+                comment.Shown = true;
+                setTimeout(() => { this.currentComment = ""; }, 2000);
+            }
+        });
+    }
+    createCommentsReponsesSubscription() {
+        let self = this;
+        const commentsResponseObserver = {
+            next: function (messages) {
+                if (!messages || messages.length === 0) {
+                    return;
+                }
+                self.setComments(messages);
+            },
+            error: function (err) {
+                console.error('Error: %o', err);
+            },
+            complete: function () {
+                console.log('No more chat messages responses');
+            }
+        };
+        this.webSocketService.subscribeToMovieCommentsReponses(commentsResponseObserver);
+    }
+    createCommentUpdatesSubscription() {
+        let self = this;
+        const commentsUpdateObserver = {
+            next: function (message) {
+                if (!message) {
+                    return;
+                }
+                self.addComment(message);
+            },
+            error: function (err) {
+                console.error('Error: %o', err);
+            },
+            complete: function () {
+                console.log('No more chat message updates');
+            }
+        };
+        this.webSocketService.subscribeToMovieCommentUpdates(commentsUpdateObserver);
+    }
+}
+CommentComponent.ɵfac = function CommentComponent_Factory(t) { return new (t || CommentComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_3__["WebSocketsService"])); };
+CommentComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: CommentComponent, selectors: [["comment"]], inputs: { room: "room", video: "video", user: "user" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]], decls: 1, vars: 1, consts: [[4, "ngIf"], [1, "row"], [1, "col", "col-sm-2"], [1, "col", "col-sm-1"], [3, "keyup.enter"], ["comm", ""]], template: function CommentComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, CommentComponent_div_0_Template, 10, 1, "div", 0);
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.video);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_4__["NgIf"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudHMvY29tbWVudC9jb21tZW50LmNvbXBvbmVudC5zY3NzIn0= */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](CommentComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        args: [{
+                selector: 'comment',
+                templateUrl: './comment.component.html',
+                styleUrls: ['./comment.component.scss']
+            }]
+    }], function () { return [{ type: src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_3__["WebSocketsService"] }]; }, { room: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }], video: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }], user: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }] }); })();
+
+
+/***/ }),
+
 /***/ "./src/app/components/empty/empty.component.ts":
 /*!*****************************************************!*\
   !*** ./src/app/components/empty/empty.component.ts ***!
@@ -312,199 +683,31 @@ LoginComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCom
 
 /***/ }),
 
-/***/ "./src/app/components/movie-room/movie-room.component.ts":
-/*!***************************************************************!*\
-  !*** ./src/app/components/movie-room/movie-room.component.ts ***!
-  \***************************************************************/
-/*! exports provided: MovieRoomComponent */
+/***/ "./src/app/components/movie-player/movie-player.component.ts":
+/*!*******************************************************************!*\
+  !*** ./src/app/components/movie-player/movie-player.component.ts ***!
+  \*******************************************************************/
+/*! exports provided: MoviePlayerComponent */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MovieRoomComponent", function() { return MovieRoomComponent; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MoviePlayerComponent", function() { return MoviePlayerComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
-/* harmony import */ var src_app_entities_chatMessage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/entities/chatMessage */ "./src/app/entities/chatMessage.ts");
-/* harmony import */ var src_app_entities_movieComment__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/entities/movieComment */ "./src/app/entities/movieComment.ts");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
-/* harmony import */ var src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/services/websocket.service */ "./src/app/services/websocket.service.ts");
-/* harmony import */ var angularx_social_login__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! angularx-social-login */ "./node_modules/angularx-social-login/__ivy_ngcc__/fesm2015/angularx-social-login.js");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var mat_video__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! mat-video */ "./node_modules/mat-video/__ivy_ngcc__/fesm2015/mat-video.js");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/__ivy_ngcc__/fesm2015/forms.js");
-
-
-
-
-
-
+/* harmony import */ var src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/services/websocket.service */ "./src/app/services/websocket.service.ts");
+/* harmony import */ var _comment_comment_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../comment/comment.component */ "./src/app/components/comment/comment.component.ts");
+/* harmony import */ var mat_video__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mat-video */ "./node_modules/mat-video/__ivy_ngcc__/fesm2015/mat-video.js");
 
 
 
 
 
 const _c0 = ["video"];
-function MovieRoomComponent_div_0_li_23_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "li");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "p");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} if (rf & 2) {
-    const user_r7 = ctx.$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](user_r7.name);
-} }
-function MovieRoomComponent_div_0_table_37_tr_1_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr", 34);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td", 35);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "td", 35);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "h4");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "td", 36);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "h4", 37);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} if (rf & 2) {
-    const message_r10 = ctx.$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", message_r10.User.photoUrl, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("", message_r10.User.firstName, ":");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](message_r10.Message);
-} }
-function MovieRoomComponent_div_0_table_37_tr_2_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "tr");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "td");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "p");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Nothin' here. ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "strong");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5, "Say something!");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} }
-function MovieRoomComponent_div_0_table_37_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "table", 31);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, MovieRoomComponent_div_0_table_37_tr_1_Template, 9, 3, "tr", 32);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, MovieRoomComponent_div_0_table_37_tr_2_Template, 6, 0, "tr", 33);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} if (rf & 2) {
-    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r5.chatMessages);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.chatMessages.length === 0);
-} }
-function MovieRoomComponent_div_0_Template(rf, ctx) { if (rf & 1) {
-    const _r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "div", 3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "img", 5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 6);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "p");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "p");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Send comment:");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div", 8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "input", 9, 10);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("keyup.enter", function MovieRoomComponent_div_0_Template_input_keyup_enter_13_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12); const _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](14); const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r11.sendComment(_r1.value); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "p");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "p");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "Users in room:");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "ul");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, MovieRoomComponent_div_0_li_23_Template, 3, 1, "li", 11);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "div", 12);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](25, "div", 13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](26, "mat-video", 14, 15);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("mutedChange", function MovieRoomComponent_div_0_Template_mat_video_mutedChange_26_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12); const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r13.muted = $event; })("timeChange", function MovieRoomComponent_div_0_Template_mat_video_timeChange_26_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12); const ctx_r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r14.currentTime = $event; });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "div", 16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "div", 17);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "div", 18);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](31, "h6", 19);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](32, "Chat");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](33, "div", 20);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "div", 21);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "div", 22, 23);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](37, MovieRoomComponent_div_0_table_37_Template, 3, 2, "table", 24);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](38, "div", 25);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](39, "form");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](40, "div", 26);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](41, "input", 27, 28);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](43, "span", 29);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](44, "button", 30);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function MovieRoomComponent_div_0_Template_button_click_44_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12); const _r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](42); const ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r15.sendMessage(_r6.value); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](45, "Send");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} if (rf & 2) {
-    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r0.user.photoUrl, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r0.user.name);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](9);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("Current comment: ", ctx_r0.currentComment, "");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r0.room.Users);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r0.src)("title", ctx_r0.title)("autoplay", ctx_r0.autoplay)("preload", ctx_r0.preload)("loop", ctx_r0.loop)("fullscreen", ctx_r0.fullscreen)("download", ctx_r0.download)("quality", ctx_r0.quality)("keyboard", ctx_r0.keyboard)("color", ctx_r0.color)("spinner", ctx_r0.spinner)("poster", ctx_r0.poster)("overlay", ctx_r0.overlay)("muted", ctx_r0.muted)("showFrameByFrame", ctx_r0.showFrameByFrame)("time", ctx_r0.currentTime);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](11);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r0.chatMessages.length !== 0);
-} }
-class MovieRoomComponent {
-    constructor(route, changeDetector, webSocketService, authService) {
-        this.route = route;
-        this.changeDetector = changeDetector;
+class MoviePlayerComponent {
+    constructor(webSocketService, changeDetector) {
         this.webSocketService = webSocketService;
-        this.authService = authService;
-        this.chatMessages = [];
-        this.comments = [];
-        this.currentComment = "";
+        this.changeDetector = changeDetector;
+        this.seekedByWS = false;
         this.src = "http://static.videogular.com/assets/videos/videogular.mp4";
         this.title = this.room ? this.room.Movie.Title : "Not loaded yet";
         this.autoplay = true;
@@ -518,161 +721,68 @@ class MovieRoomComponent {
         this.overlay = true;
         this.showFrameByFrame = false;
         this.currentTime = 1;
-        this.movieCurrentTime = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
-        this.seekedByWS = false;
-        this.route.params.subscribe(params => {
-            console.log(params);
-            this.authService.authState.subscribe(user => {
-                if (user !== null && user !== undefined) {
-                    this.user = user;
-                    this.roomId = params["room-id"];
-                    console.log(this.roomId);
-                    this.webSocketService.sendMovieRoomWithIdRequest(this.roomId);
-                    this.webSocketService.sendChatMessagesRequest(this.roomId);
-                }
-            });
-        });
     }
     set matVideo(matVideo) {
         if (matVideo) { // initially setter gets called with undefined
-            this.video = matVideo;
+            this.videoComp = matVideo;
+            this.video = this.videoComp.getVideoTag();
         }
     }
     ngOnInit() {
-        this.createMovieRoomResponsesSubscription();
-        this.createMovieRoomUpdatesSubscription();
         this.createMovieRoomPauseUpdatesSubscription();
         this.createMovieRoomPlayUpdatesSubscription();
         this.createMovieRoomSeekUpdatesSubscription();
-        this.createChatMessagesReponsesSubscription();
-        this.createChatMessageUpdatesSubscription();
-        this.createCommentsReponsesSubscription();
-        this.createCommentUpdatesSubscription();
     }
-    sendMessage(value) {
-        if (!value || value === "") {
+    ngOnChanges() {
+        if (!this.room || !this.user) {
             return;
         }
-        let chatMessage = new src_app_entities_chatMessage__WEBPACK_IMPORTED_MODULE_2__["ChatMessage"](this.roomId, this.user, value, "voice msg cica", new Date(), this.video.getVideoTag().currentTime);
-        this.chatMessages.push(chatMessage);
-        this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
-    }
-    sendComment(value) {
-        let comment = new src_app_entities_movieComment__WEBPACK_IMPORTED_MODULE_3__["MovieComment"](this.room.Movie.Id, this.user, value, this.video.getVideoTag().currentTime);
-        this.comments.push(comment);
-        this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
-    }
-    processMovieRoom(room) {
-        console.debug('Movie Room received through the observer:\n%o', room);
-        this.room = room;
-        this.title = room.Movie.Title;
+        this.title = this.room.Movie.Title;
         this.changeDetector.detectChanges();
-        this.currentTime = room.TimeWatched;
-        this.video.timeChange.subscribe(() => {
-            // send ws request to update timewatched 
-        });
-        this.video.getVideoTag().onpause = () => {
+        this.video.onpause = () => {
             // check if it's on pause already-> don't make request
-            console.log(`on pause called, current time: ${this.video.getVideoTag().currentTime}`);
+            console.log(`on pause called, current time: ${this.video.currentTime}`);
             // send ws request to pause video for all
-            this.webSocketService.sendPauseRequest(this.roomId, this.video.getVideoTag().currentTime);
+            this.webSocketService.sendPauseRequest(this.room.Id, this.video.currentTime);
         };
-        this.video.getVideoTag().onplay = () => {
-            console.log(`on play called, current time: ${this.video.getVideoTag().currentTime}`);
+        this.video.onplay = () => {
+            console.log(`on play called, current time: ${this.video.currentTime}`);
             // send ws reuqest to play the video
-            this.webSocketService.sendPlayRequest(this.roomId, this.video.getVideoTag().currentTime);
+            this.webSocketService.sendPlayRequest(this.room.Id, this.video.currentTime);
         };
-        this.video.getVideoTag().onseeked = () => {
-            console.log(`on seeked moved called, current time: ${this.video.getVideoTag().currentTime}`);
+        this.video.onseeked = () => {
+            console.log(`on seeked moved called, current time: ${this.video.currentTime}`);
             if (!this.seekedByWS) {
                 // send ws request to update the time
-                this.webSocketService.sendSeekRequest(this.roomId, this.video.getVideoTag().currentTime);
+                this.webSocketService.sendSeekRequest(this.room.Id, this.video.currentTime);
             }
             this.seekedByWS = false;
         };
-        this.video.getVideoTag().ontimeupdate = () => {
-            setTimeout(() => { this.movieCurrentTime.next(this.video.getVideoTag().currentTime); }, 1000);
-        };
-        console.log(`title: ${this.video.title}`);
-        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])(room);
     }
     pause(roomId, currentTime) {
-        if (roomId !== this.roomId) {
+        if (roomId !== this.room.Id) {
             return;
         }
         this.changeDetector.detectChanges();
-        this.video.getVideoTag().pause();
+        this.video.pause();
         this.currentTime = currentTime;
     }
     play(roomId, currentTime) {
-        if (roomId !== this.roomId) {
+        if (roomId !== this.room.Id) {
             return;
         }
         this.changeDetector.detectChanges();
-        this.video.getVideoTag().play();
+        this.video.play();
         this.currentTime = currentTime;
     }
     seek(roomId, currentTime) {
-        if (roomId !== this.roomId) {
+        if (roomId !== this.room.Id) {
             return;
         }
         this.changeDetector.detectChanges();
         this.seekedByWS = true;
-        this.video.getVideoTag().currentTime = currentTime;
+        this.video.currentTime = currentTime;
         this.currentTime = currentTime;
-    }
-    setChatMessages(roomId, chatMessages) {
-        if (roomId !== this.roomId) {
-            return;
-        }
-        if (!chatMessages) {
-            return;
-        }
-        this.chatMessages = chatMessages;
-    }
-    addChatMessage(chatMessage) {
-        if (!chatMessage) {
-            return;
-        }
-        if (chatMessage.RoomId !== this.roomId) {
-            return;
-        }
-        this.chatMessages.push(chatMessage);
-    }
-    createMovieRoomResponsesSubscription() {
-        let self = this;
-        const movieRoomResponsesObserver = {
-            next: function (room) {
-                self.processMovieRoom(room).subscribe(room => {
-                    self.webSocketService.sendMovieCommentsRequest(room.Movie.Id);
-                });
-            },
-            error: function (err) {
-                console.error('Error: %o', err);
-            },
-            complete: function () {
-                console.log('No more movies responses');
-            }
-        };
-        this.webSocketService.subscribeToMovieRoomResponses(movieRoomResponsesObserver);
-    }
-    createMovieRoomUpdatesSubscription() {
-        let self = this;
-        const movieRoomUpdatesObserver = {
-            next: function (room) {
-                if (room.Id !== self.roomId) {
-                    return;
-                }
-                self.processMovieRoom(room);
-            },
-            error: function (err) {
-                console.error('Error: %o', err);
-            },
-            complete: function () {
-                console.log('No more movies responses');
-            }
-        };
-        this.webSocketService.subscribeToMovieRoomUpdates(movieRoomUpdatesObserver);
     }
     createMovieRoomPauseUpdatesSubscription() {
         let self = this;
@@ -719,119 +829,196 @@ class MovieRoomComponent {
         };
         this.webSocketService.subscribeToMovieRoomSeekUpdates(movieRoomUpdatesObserver);
     }
-    createChatMessagesReponsesSubscription() {
-        let self = this;
-        const chatMessagesResponseObserver = {
-            next: function (messages) {
-                if (!messages || messages.length === 0) {
-                    return;
-                }
-                self.setChatMessages(messages[0].RoomId, messages);
-            },
-            error: function (err) {
-                console.error('Error: %o', err);
-            },
-            complete: function () {
-                console.log('No more chat messages responses');
-            }
-        };
-        this.webSocketService.subscribeToChatMessagesReponses(chatMessagesResponseObserver);
-    }
-    createChatMessageUpdatesSubscription() {
-        let self = this;
-        const chatMessagesUpdateObserver = {
-            next: function (message) {
-                if (!message) {
-                    return;
-                }
-                self.addChatMessage(message);
-            },
-            error: function (err) {
-                console.error('Error: %o', err);
-            },
-            complete: function () {
-                console.log('No more chat message updates');
-            }
-        };
-        this.webSocketService.subscribeToChatMessageUpdates(chatMessagesUpdateObserver);
-    }
-    createCommentsReponsesSubscription() {
-        let self = this;
-        const commentsResponseObserver = {
-            next: function (messages) {
-                if (!messages || messages.length === 0) {
-                    return;
-                }
-                self.setComments(messages);
-            },
-            error: function (err) {
-                console.error('Error: %o', err);
-            },
-            complete: function () {
-                console.log('No more chat messages responses');
-            }
-        };
-        this.webSocketService.subscribeToMovieCommentsReponses(commentsResponseObserver);
-    }
-    createCommentUpdatesSubscription() {
-        let self = this;
-        const commentsUpdateObserver = {
-            next: function (message) {
-                if (!message) {
-                    return;
-                }
-                self.addComment(message);
-            },
-            error: function (err) {
-                console.error('Error: %o', err);
-            },
-            complete: function () {
-                console.log('No more chat message updates');
-            }
-        };
-        this.webSocketService.subscribeToMovieCommentUpdates(commentsUpdateObserver);
-    }
-    addComment(comment) {
-        if (comment == null) {
-            return;
-        }
-        if (comment.MovieId !== this.room.Movie.Id) {
-            return;
-        }
-        this.comments.push(comment);
-    }
-    setComments(comments) {
-        if (comments === null || comments === undefined || comments.length === 0) {
-            return;
-        }
-        if (comments[0].MovieId !== this.room.Movie.Id) {
-            return;
-        }
-        this.comments = comments;
-        this.show();
-    }
-    show() {
-        this.movieCurrentTime.subscribe(time => {
-            let comment = this.comments.find(x => x.Shown === undefined && x.CurrentTime - time < 2 && x.CurrentTime - time > -2);
-            if (comment) {
-                this.currentComment = `${comment.User.firstName}: ${comment.Comment}`;
-                comment.Shown = true;
-                setTimeout(() => { this.currentComment = ""; }, 2000);
-            }
-        });
-    }
 }
-MovieRoomComponent.ɵfac = function MovieRoomComponent_Factory(t) { return new (t || MovieRoomComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_4__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ChangeDetectorRef"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_5__["WebSocketsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](angularx_social_login__WEBPACK_IMPORTED_MODULE_6__["AuthService"])); };
-MovieRoomComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: MovieRoomComponent, selectors: [["app-movie-room"]], viewQuery: function MovieRoomComponent_Query(rf, ctx) { if (rf & 1) {
+MoviePlayerComponent.ɵfac = function MoviePlayerComponent_Factory(t) { return new (t || MoviePlayerComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_1__["WebSocketsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["ChangeDetectorRef"])); };
+MoviePlayerComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: MoviePlayerComponent, selectors: [["movie-player"]], viewQuery: function MoviePlayerComponent_Query(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, true);
     } if (rf & 2) {
         var _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.matVideo = _t.first);
-    } }, decls: 1, vars: 1, consts: [["style", "padding: 10px;", 4, "ngIf"], [2, "padding", "10px"], [1, "row"], [1, "col", "col-lg-10"], [2, "display", "inline-flex"], [2, "height", "20px", 3, "src"], [2, "display", "inline-flex", "margin-left", "8px"], [1, "col", "col-sm-2"], [1, "col", "col-sm-1"], [3, "keyup.enter"], ["comm", ""], [4, "ngFor", "ngForOf"], [1, "row", "col-lg-12", 2, "max-height", "60vh"], [1, "col-lg-8"], [3, "src", "title", "autoplay", "preload", "loop", "fullscreen", "download", "quality", "keyboard", "color", "spinner", "poster", "overlay", "muted", "showFrameByFrame", "time", "mutedChange", "timeChange"], ["video", ""], [1, "col-lg-4", "hidden-md", "hidden-sm", "hidden-xs"], [1, "panel", "panel-primary"], [1, "panel-heading", 2, "padding", "0"], [1, "panel-title", 2, "display", "inline"], [1, "clearfix"], [1, "panel-body", 2, "padding", "0"], [2, "max-height", "70vh", "max-width", "100%", "overflow-y", "auto", "overflow-x", "hidden", "padding", "0px"], ["msgContainer", ""], ["class", "table table-hover table-condensed", 4, "ngIf"], [1, "panel-footer"], [1, "input-group", "input-group-sm"], ["type", "text", "placeholder", "Send a message...", 1, "form-control"], ["msg", ""], [1, "input-group-btn"], ["type", "submit", 1, "btn", "btn-primary", 2, "height", "31px", "margin-left", "5px", "padding-top", "2px", 3, "click"], [1, "table", "table-hover", "table-condensed"], ["style", "width:100%;", "class", "row", 4, "ngFor", "ngForOf"], [4, "ngIf"], [1, "row", 2, "width", "100%"], [2, "padding-right", "0px"], [1, "col", "col-xs-11"], [1, "word-wrap:break-word", 2, "margin", "0px"]], template: function MovieRoomComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, MovieRoomComponent_div_0_Template, 46, 21, "div", 0);
+    } }, inputs: { room: "room", user: "user" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]], decls: 3, vars: 19, consts: [[3, "room", "user", "video"], [3, "src", "title", "autoplay", "preload", "loop", "fullscreen", "download", "quality", "keyboard", "color", "spinner", "poster", "overlay", "muted", "showFrameByFrame", "time", "mutedChange", "timeChange"], ["video", ""]], template: function MoviePlayerComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "comment", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "mat-video", 1, 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("mutedChange", function MoviePlayerComponent_Template_mat_video_mutedChange_1_listener($event) { return ctx.muted = $event; })("timeChange", function MoviePlayerComponent_Template_mat_video_timeChange_1_listener($event) { return ctx.currentTime = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    } if (rf & 2) {
+        const _r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("room", ctx.room)("user", ctx.user)("video", _r0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx.src)("title", ctx.title)("autoplay", ctx.autoplay)("preload", ctx.preload)("loop", ctx.loop)("fullscreen", ctx.fullscreen)("download", ctx.download)("quality", ctx.quality)("keyboard", ctx.keyboard)("color", ctx.color)("spinner", ctx.spinner)("poster", ctx.poster)("overlay", ctx.overlay)("muted", ctx.muted)("showFrameByFrame", ctx.showFrameByFrame)("time", ctx.currentTime);
+    } }, directives: [_comment_comment_component__WEBPACK_IMPORTED_MODULE_2__["CommentComponent"], mat_video__WEBPACK_IMPORTED_MODULE_3__["ɵb"]], styles: ["[_nghost-%COMP%]  .progress {\n  background-color: unset !important;\n}\n\n[_nghost-%COMP%]  mat-seek-progress-control {\n  width: 100%;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50cy9tb3ZpZS1wbGF5ZXIvRDpcXF9Db2RlUGVyc29uYWxcXERpc2VydGF0aWVcXHZpZGVvU3RyZWFtZXJcXFZpZGVvU3RyZWFtZXJVSS9zcmNcXGFwcFxcY29tcG9uZW50c1xcbW92aWUtcGxheWVyXFxtb3ZpZS1wbGF5ZXIuY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL2NvbXBvbmVudHMvbW92aWUtcGxheWVyL21vdmllLXBsYXllci5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNJLGtDQUFBO0FDQ0o7O0FERUU7RUFDRSxXQUFBO0FDQ0oiLCJmaWxlIjoic3JjL2FwcC9jb21wb25lbnRzL21vdmllLXBsYXllci9tb3ZpZS1wbGF5ZXIuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyI6aG9zdDo6bmctZGVlcCAucHJvZ3Jlc3N7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB1bnNldCAhaW1wb3J0YW50O1xyXG4gIH1cclxuICBcclxuICA6aG9zdDo6bmctZGVlcCBtYXQtc2Vlay1wcm9ncmVzcy1jb250cm9se1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgfSIsIjpob3N0OjpuZy1kZWVwIC5wcm9ncmVzcyB7XG4gIGJhY2tncm91bmQtY29sb3I6IHVuc2V0ICFpbXBvcnRhbnQ7XG59XG5cbjpob3N0OjpuZy1kZWVwIG1hdC1zZWVrLXByb2dyZXNzLWNvbnRyb2wge1xuICB3aWR0aDogMTAwJTtcbn0iXX0= */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MoviePlayerComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        args: [{
+                selector: 'movie-player',
+                templateUrl: './movie-player.component.html',
+                styleUrls: ['./movie-player.component.scss']
+            }]
+    }], function () { return [{ type: src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_1__["WebSocketsService"] }, { type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ChangeDetectorRef"] }]; }, { matVideo: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"],
+            args: ['video']
+        }], room: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }], user: [{
+            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Input"]
+        }] }); })();
+
+
+/***/ }),
+
+/***/ "./src/app/components/movie-room/movie-room.component.ts":
+/*!***************************************************************!*\
+  !*** ./src/app/components/movie-room/movie-room.component.ts ***!
+  \***************************************************************/
+/*! exports provided: MovieRoomComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MovieRoomComponent", function() { return MovieRoomComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/services/websocket.service */ "./src/app/services/websocket.service.ts");
+/* harmony import */ var angularx_social_login__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! angularx-social-login */ "./node_modules/angularx-social-login/__ivy_ngcc__/fesm2015/angularx-social-login.js");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var _movie_player_movie_player_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../movie-player/movie-player.component */ "./src/app/components/movie-player/movie-player.component.ts");
+/* harmony import */ var _chat_chat_component__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../chat/chat.component */ "./src/app/components/chat/chat.component.ts");
+
+
+
+
+
+
+
+
+
+function MovieRoomComponent_div_0_li_14_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "li");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "p");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const user_r2 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](user_r2.name);
+} }
+function MovieRoomComponent_div_0_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "div", 3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "img", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "p");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "p");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](11, "Users in room:");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "ul");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](14, MovieRoomComponent_div_0_li_14_Template, 3, 1, "li", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "div", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "div", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "movie-player", 11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "div", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](19, "chat", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r0.user.photoUrl, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r0.user.name);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r0.room.Users);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("room", ctx_r0.room)("user", ctx_r0.user);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("roomId", ctx_r0.roomId)("user", ctx_r0.user);
+} }
+class MovieRoomComponent {
+    constructor(route, webSocketService, authService) {
+        this.route = route;
+        this.webSocketService = webSocketService;
+        this.authService = authService;
+        this.route.params.subscribe(params => {
+            console.log(params);
+            this.authService.authState.subscribe(user => {
+                if (user !== null && user !== undefined) {
+                    this.user = user;
+                    this.roomId = params["room-id"];
+                    console.log(this.roomId);
+                    this.webSocketService.sendMovieRoomWithIdRequest(this.roomId);
+                }
+            });
+        });
+    }
+    ngOnInit() {
+        this.createMovieRoomResponsesSubscription();
+        this.createMovieRoomUpdatesSubscription();
+    }
+    processMovieRoom(room) {
+        console.debug('Movie Room received through the observer:\n%o', room);
+        this.room = room;
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["of"])(room);
+    }
+    createMovieRoomResponsesSubscription() {
+        let self = this;
+        const movieRoomResponsesObserver = {
+            next: function (room) {
+                self.processMovieRoom(room).subscribe(room => {
+                    self.webSocketService.sendMovieCommentsRequest(room.Movie.Id);
+                });
+            },
+            error: function (err) {
+                console.error('Error: %o', err);
+            },
+            complete: function () {
+                console.log('No more movies responses');
+            }
+        };
+        this.webSocketService.subscribeToMovieRoomResponses(movieRoomResponsesObserver);
+    }
+    createMovieRoomUpdatesSubscription() {
+        let self = this;
+        const movieRoomUpdatesObserver = {
+            next: function (room) {
+                if (room.Id !== self.roomId) {
+                    return;
+                }
+                self.processMovieRoom(room);
+            },
+            error: function (err) {
+                console.error('Error: %o', err);
+            },
+            complete: function () {
+                console.log('No more movies responses');
+            }
+        };
+        this.webSocketService.subscribeToMovieRoomUpdates(movieRoomUpdatesObserver);
+    }
+}
+MovieRoomComponent.ɵfac = function MovieRoomComponent_Factory(t) { return new (t || MovieRoomComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_3__["WebSocketsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](angularx_social_login__WEBPACK_IMPORTED_MODULE_4__["AuthService"])); };
+MovieRoomComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: MovieRoomComponent, selectors: [["app-movie-room"]], decls: 1, vars: 1, consts: [["style", "padding: 10px;", 4, "ngIf"], [2, "padding", "10px"], [1, "row"], [1, "col", "col-lg-10"], [2, "display", "inline-flex"], [2, "height", "20px", 3, "src"], [2, "display", "inline-flex", "margin-left", "8px"], [1, "col", "col-sm-2"], [4, "ngFor", "ngForOf"], [1, "row", "col-lg-12", 2, "max-height", "60vh"], [1, "col-lg-8"], [3, "room", "user"], [1, "col-lg-4", "hidden-md", "hidden-sm", "hidden-xs"], [3, "roomId", "user"]], template: function MovieRoomComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, MovieRoomComponent_div_0_Template, 20, 7, "div", 0);
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.room !== undefined);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_7__["NgIf"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgForOf"], mat_video__WEBPACK_IMPORTED_MODULE_8__["ɵb"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_9__["NgForm"]], styles: ["[_nghost-%COMP%]  .progress {\n  background-color: unset !important;\n}\n\n[_nghost-%COMP%]  mat-seek-progress-control {\n  width: 100%;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvY29tcG9uZW50cy9tb3ZpZS1yb29tL0Q6XFxfQ29kZVBlcnNvbmFsXFxEaXNlcnRhdGllXFx2aWRlb1N0cmVhbWVyXFxWaWRlb1N0cmVhbWVyVUkvc3JjXFxhcHBcXGNvbXBvbmVudHNcXG1vdmllLXJvb21cXG1vdmllLXJvb20uY29tcG9uZW50LnNjc3MiLCJzcmMvYXBwL2NvbXBvbmVudHMvbW92aWUtcm9vbS9tb3ZpZS1yb29tLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUtBO0VBQ0ksa0NBQUE7QUNKSjs7QURPRTtFQUNFLFdBQUE7QUNKSiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudHMvbW92aWUtcm9vbS9tb3ZpZS1yb29tLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLy8gOjpuZy1kZWVwIC5wcm9ncmVzc3tcclxuLy8gICAgIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50ICFpbXBvcnRhbnQ7XHJcbi8vIH1cclxuXHJcblxyXG46aG9zdDo6bmctZGVlcCAucHJvZ3Jlc3N7XHJcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB1bnNldCAhaW1wb3J0YW50O1xyXG4gIH1cclxuICBcclxuICA6aG9zdDo6bmctZGVlcCBtYXQtc2Vlay1wcm9ncmVzcy1jb250cm9se1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgfSIsIjpob3N0OjpuZy1kZWVwIC5wcm9ncmVzcyB7XG4gIGJhY2tncm91bmQtY29sb3I6IHVuc2V0ICFpbXBvcnRhbnQ7XG59XG5cbjpob3N0OjpuZy1kZWVwIG1hdC1zZWVrLXByb2dyZXNzLWNvbnRyb2wge1xuICB3aWR0aDogMTAwJTtcbn0iXX0= */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], _movie_player_movie_player_component__WEBPACK_IMPORTED_MODULE_6__["MoviePlayerComponent"], _chat_chat_component__WEBPACK_IMPORTED_MODULE_7__["ChatComponent"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL2NvbXBvbmVudHMvbW92aWUtcm9vbS9tb3ZpZS1yb29tLmNvbXBvbmVudC5zY3NzIn0= */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MovieRoomComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -839,10 +1026,7 @@ MovieRoomComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
                 templateUrl: './movie-room.component.html',
                 styleUrls: ['./movie-room.component.scss']
             }]
-    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_4__["ActivatedRoute"] }, { type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ChangeDetectorRef"] }, { type: src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_5__["WebSocketsService"] }, { type: angularx_social_login__WEBPACK_IMPORTED_MODULE_6__["AuthService"] }]; }, { matVideo: [{
-            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"],
-            args: ['video']
-        }] }); })();
+    }], function () { return [{ type: _angular_router__WEBPACK_IMPORTED_MODULE_2__["ActivatedRoute"] }, { type: src_app_services_websocket_service__WEBPACK_IMPORTED_MODULE_3__["WebSocketsService"] }, { type: angularx_social_login__WEBPACK_IMPORTED_MODULE_4__["AuthService"] }]; }, null); })();
 
 
 /***/ }),

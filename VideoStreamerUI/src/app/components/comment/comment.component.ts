@@ -3,7 +3,6 @@ import { MovieComment } from 'src/app/entities/movieComment';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { SocialUser } from 'angularx-social-login';
 import { MovieRoom } from 'src/app/entities/movieRoom';
-import { MatVideoComponent } from 'mat-video/lib/video.component';
 import { Observer, Subject } from 'rxjs';
 
 @Component({
@@ -38,7 +37,6 @@ export class CommentComponent implements OnInit, OnChanges {
     this.video.ontimeupdate = () => {
       setTimeout(() => { this.movieCurrentTime.next(this.video.currentTime); }, 1000)
     }
-
   }
 
   sendComment(value: string) {

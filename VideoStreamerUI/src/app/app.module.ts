@@ -13,6 +13,7 @@ import { MatVideoModule } from 'mat-video';
 import { FormsModule } from '@angular/forms';
 import { ChatComponent } from './components/chat/chat.component';
 import { CommentComponent } from './components/comment/comment.component';
+import { MoviePlayerComponent } from './components/movie-player/movie-player.component';
 
 const config = new AuthServiceConfig([
   {
@@ -31,7 +32,8 @@ export function provideConfig() {
     MovieRoomComponent,
     EmptyComponent,
     ChatComponent,
-    CommentComponent
+    CommentComponent,
+    MoviePlayerComponent
   ],
   imports: [
     BrowserModule,
