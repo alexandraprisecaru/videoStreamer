@@ -81,3 +81,11 @@ msbuild.wrn
 
 # Visual Studio 2015
 .vs/
+VideoStreamerUI/dist/videostreamer/main-es5.js
+VideoStreamerUI/dist/videostreamer/main-es5.js.map
+VideoStreamerUI/dist/videostreamer/main-es2015.js
+VideoStreamerUI/dist/videostreamer/main-es2015.js.map
+VideoStreamerUI/dist/videostreamer/styles-es5.js
+VideoStreamerUI/dist/videostreamer/styles-es5.js.map
+VideoStreamerUI/dist/videostreamer/styles-es2015.js
+VideoStreamerUI/dist/videostreamer/styles-es2015.js.map
