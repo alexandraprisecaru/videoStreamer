@@ -18,6 +18,7 @@ export class CommentComponent implements OnInit, OnChanges {
 
   comments: MovieComment[] = [];
   currentComment: string = "";
+  inputComment: string = "";
 
   movieCurrentTime: Subject<number> = new Subject<number>();
 
@@ -39,19 +40,23 @@ export class CommentComponent implements OnInit, OnChanges {
     }
   }
 
-  sendComment(value: string) {
+  sendComment() {
+    if (!this.inputComment || this.inputComment === "") {
+      return;
+    }
+
     let comment: MovieComment = new MovieComment(
       this.room.Movie.Id,
       this.user,
-      value,
+      this.inputComment,
       this.video.currentTime);
 
     this.comments.push(comment);
-
+    this.inputComment = "";
     this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
   }
 
-  spacePressed(event: Event) {
+  stopPropagation(event: Event) {
     event.stopPropagation();
   }
 

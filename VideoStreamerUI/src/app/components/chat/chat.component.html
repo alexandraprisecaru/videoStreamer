@@ -35,10 +35,11 @@
         </div>
     </div>
     <div class="panel-footer">
-        <form>
+        <form #msgForm>
             <div class="input-group input-group-sm">
                 <input #msg type="text" class="form-control" placeholder="Send a message..." 
-                (keyup.space)="spacePressed($event)"/>
+                (keyup.space)="stopPropagation($event)"
+                (keyup.m)="stopPropagation($event)"/>
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit"
                         style="height: 31px; margin-left: 5px; padding-top: 2px;"

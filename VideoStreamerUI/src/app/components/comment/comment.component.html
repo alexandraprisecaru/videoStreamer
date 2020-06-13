@@ -4,7 +4,10 @@
             <p>Send comment:</p>
         </div>
         <div class="col col-sm-1">
-            <input #comm (keyup.enter)="sendComment(comm.value)" (keyup.space)="spacePressed($event)">
+            <input #comm (keyup.enter)="sendComment()"
+                (keyup.space)="stopPropagation($event)"
+                (keyup.m)="stopPropagation($event)"
+                [(ngModel)]="inputComment">
         </div>
     </div>
 
