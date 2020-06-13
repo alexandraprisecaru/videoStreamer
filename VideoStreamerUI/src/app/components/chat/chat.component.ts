@@ -19,8 +19,10 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewInit {
 
   chatMessages: ChatMessage[] = [];
 
+  newMessagesCount: number = 0;
   private scrollContainer: any;
   isNearBottom: boolean = true;
+  sentMessage: boolean = false;
 
   constructor(private webSocketService: WebSocketsService) {
   }
@@ -57,6 +59,8 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewInit {
     );
 
     this.chatMessages.push(chatMessage);
+    this.sentMessage = true;
+
     this.formValues.nativeElement.reset();
     this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
   }
@@ -68,12 +72,13 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewInit {
   // Scroll automatically:
 
   private onItemElementsChanged(): void {
-    if (this.isNearBottom) {
+    if (this.isNearBottom || this.sentMessage) {
       this.scrollToBottom();
+      this.sentMessage = false;
     }
   }
 
-  private scrollToBottom(): void {
+  scrollToBottom(): void {
     this.scrollContainer.scroll({
       top: this.scrollContainer.scrollHeight,
       left: 0,
@@ -90,6 +95,9 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewInit {
 
   scrolled(event: any): void {
     this.isNearBottom = this.isUserNearBottom();
+    if (this.isNearBottom) {
+      this.newMessagesCount = 0;
+    }
   }
 
   // WebSocket handlers:
@@ -116,6 +124,7 @@ export class ChatComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     this.chatMessages.push(chatMessage);
+    this.newMessagesCount += 1;
   }
 
   // Subscriptions:

@@ -12,7 +12,11 @@
     </div> -->
         <div class="clearfix"></div>
     </div>
-    <div class="panel-body" style="padding:0;" >
+
+    <div *ngIf="newMessagesCount!==0">
+        <button (click)="scrollToBottom()">You have {{newMessagesCount}} new messages</button>
+    </div>
+    <div class="panel-body" style="padding:0;">
         <div #scrollframe class="frame" (scroll)="scrolled($event)"
             style="max-height:70vh; max-width:100%;overflow-y:auto;overflow-x:hidden; padding: 0px;">
             <table class="table table-hover table-condensed" *ngIf="chatMessages.length !== 0">
@@ -38,9 +42,8 @@
     <div class="panel-footer">
         <form #msgForm>
             <div class="input-group input-group-sm">
-                <input #msg type="text" class="form-control" placeholder="Send a message..." 
-                (keyup.space)="stopPropagation($event)"
-                (keyup.m)="stopPropagation($event)"/>
+                <input #msg type="text" class="form-control" placeholder="Send a message..."
+                    (keyup.space)="stopPropagation($event)" (keyup.m)="stopPropagation($event)" />
                 <span class="input-group-btn">
                     <button class="btn btn-primary" type="submit"
                         style="height: 31px; margin-left: 5px; padding-top: 2px;"
