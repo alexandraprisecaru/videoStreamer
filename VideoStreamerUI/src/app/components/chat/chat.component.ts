@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ViewChild, QueryList, ElementRef, ViewChildren, AfterViewInit } from '@angular/core';
 import { ChatMessage } from 'src/app/entities/chatMessage';
 import { SocialUser } from 'angularx-social-login';
 import { WebSocketsService } from 'src/app/services/websocket.service';
@@ -9,13 +9,18 @@ import { Observer } from 'rxjs';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit, OnChanges {
-  @ViewChild('msgForm') formValues; // Added this
+export class ChatComponent implements OnInit, OnChanges, AfterViewInit {
+  @ViewChild('msgForm') formValues;
+  @ViewChild('scrollframe', { static: false }) scrollFrame: ElementRef;
+  @ViewChildren('item') itemElements: QueryList<ChatMessage>;
 
   @Input() roomId: string;
   @Input() user: SocialUser;
 
   chatMessages: ChatMessage[] = [];
+
+  private scrollContainer: any;
+  isNearBottom: boolean = true;
 
   constructor(private webSocketService: WebSocketsService) {
   }
@@ -31,6 +36,11 @@ export class ChatComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.createChatMessagesReponsesSubscription();
     this.createChatMessageUpdatesSubscription();
+  }
+
+  ngAfterViewInit() {
+    this.scrollContainer = this.scrollFrame.nativeElement;
+    this.itemElements.changes.subscribe(_ => this.onItemElementsChanged());
   }
 
   sendMessage(value: string) {
@@ -55,6 +65,35 @@ export class ChatComponent implements OnInit, OnChanges {
     event.stopPropagation();
   }
 
+  // Scroll automatically:
+
+  private onItemElementsChanged(): void {
+    if (this.isNearBottom) {
+      this.scrollToBottom();
+    }
+  }
+
+  private scrollToBottom(): void {
+    this.scrollContainer.scroll({
+      top: this.scrollContainer.scrollHeight,
+      left: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  private isUserNearBottom(): boolean {
+    const threshold = 150;
+    const position = this.scrollContainer.scrollTop + this.scrollContainer.offsetHeight;
+    const height = this.scrollContainer.scrollHeight;
+    return position > height - threshold;
+  }
+
+  scrolled(event: any): void {
+    this.isNearBottom = this.isUserNearBottom();
+  }
+
+  // WebSocket handlers:
+
   private setChatMessages(roomId: string, chatMessages: ChatMessage[]) {
     if (roomId !== this.roomId) {
       return;
@@ -78,6 +117,8 @@ export class ChatComponent implements OnInit, OnChanges {
 
     this.chatMessages.push(chatMessage);
   }
+
+  // Subscriptions:
 
   private createChatMessagesReponsesSubscription() {
     let self = this;
@@ -124,5 +165,4 @@ export class ChatComponent implements OnInit, OnChanges {
 
     this.webSocketService.subscribeToChatMessageUpdates(chatMessagesUpdateObserver);
   }
-
 }
