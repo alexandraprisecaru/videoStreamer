@@ -2,6 +2,7 @@ import { ImmutableModel } from '../../shared/immutable-model';
 
 export interface IWebRTCClient {
   id?: string;
+  roomId: string;
   stream: MediaStream;
 }
 
@@ -12,6 +13,10 @@ export class WebRTCClient extends ImmutableModel<IWebRTCClient, WebRTCClient> {
 
   get id(): string {
     return this.data.get('id');
+  }
+
+  get roomId(): string {
+    return this.data.get('roomId');
   }
 
   get stream(): MediaStream {

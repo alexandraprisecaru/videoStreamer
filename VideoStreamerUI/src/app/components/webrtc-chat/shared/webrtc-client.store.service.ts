@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { List } from 'immutable';
 
 import { WebRTCClient } from './webrtc-client.model';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 
 @Injectable()
 export class WebRTCClientStore {

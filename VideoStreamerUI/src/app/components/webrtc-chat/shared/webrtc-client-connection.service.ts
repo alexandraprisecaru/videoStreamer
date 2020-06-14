@@ -54,7 +54,7 @@ export class WebRTCConnectionService {
     });
   }
 
-  public connectToRoom() {
+  public connectToRoom(roomId: string) {
     this.mediaStream
       .getMediaStream()
       .then((stream: MediaStream) => {
@@ -62,81 +62,91 @@ export class WebRTCConnectionService {
         this.socket.emit(SOCKET_EVENT_CONNECT_TO_ROOM);
 
         // add myself to the list
-        const me = new WebRTCClient({ id: this.socket.id, stream: this.myMediaStream });
+        const me = new WebRTCClient({ id: this.socket.id, roomId: roomId, stream: this.myMediaStream });
         this.webrtcClientStore.addClient(me);
       })
       .catch(err => console.error('Can\'t get media stream', err));
   }
 
-  private makeOffer(clientId: string) {
-    const peerConnection = this.getPeerConnection(clientId);
-    const options = {
-      iceRestart: false,
-      offerToReceiveVideo: true,
-      offerToReceiveAudio: true,
-      voiceActivityDetection: true
-    };
+  private makeOffer(roomId: string) {
+    const peerConnections = this.getPeerConnections(roomId);
+    if (!peerConnections || peerConnections.length === 0) {
+      return;
+    }
 
-    peerConnection
-      .createOffer(options)
-      .then((sdp: RTCSessionDescriptionInit) => {
-        return peerConnection
-          .setLocalDescription(sdp)
-          .then(() => {
-            this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
-              by: this.peerId,
-              to: clientId,
-              sdp: sdp,
-              type: RTC_PEER_MESSAGE_SDP_OFFER
+    peerConnections.forEach(peerConnection => {
+      const options = {
+        iceRestart: false,
+        offerToReceiveVideo: true,
+        offerToReceiveAudio: true,
+        voiceActivityDetection: true
+      };
+
+      peerConnection
+        .createOffer(options)
+        .then((sdp: RTCSessionDescriptionInit) => {
+          return peerConnection
+            .setLocalDescription(sdp)
+            .then(() => {
+              this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
+                by: this.peerId,
+                to: roomId,
+                sdp: sdp,
+                type: RTC_PEER_MESSAGE_SDP_OFFER
+              })
             })
-          })
-      })
+        })
+    })
   }
 
   private handleRTCPeerMessage(message) {
-
-    const peerConnection = this.getPeerConnection(message.by);
-
-    switch (message.type) {
-      case RTC_PEER_MESSAGE_SDP_OFFER:
-        peerConnection
-          .setRemoteDescription(new RTCSessionDescription(message.sdp))
-          .then(() => {
-            console.log('Setting remote description by offer');
-            return peerConnection
-              .createAnswer()
-              .then((sdp: RTCSessionDescriptionInit) => {
-                return peerConnection.setLocalDescription(sdp)
-                  .then(() => {
-                    this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
-                      by: this.peerId,
-                      to: message.by,
-                      sdp: sdp,
-                      type: RTC_PEER_MESSAGE_SDP_ANSWER
-                    });
-                  })
-              });
-          })
-          .catch(err => {
-            console.error('Error on SDP-Offer:', err);
-          });
-        break;
-      case RTC_PEER_MESSAGE_SDP_ANSWER:
-        peerConnection
-          .setRemoteDescription(new RTCSessionDescription(message.sdp))
-          .then(() => console.log('Setting remote description by answer'))
-          .catch(err => console.error('Error on SDP-Answer:', err));
-        break;
-      case RTC_PEER_MESSAGE_ICE:
-        if (message.ice) {
-          console.log('Adding ice candidate');
-          peerConnection.addIceCandidate(message.ice);
-        }
-        break;
+    const peerConnections = this.getPeerConnections(message.roomId);
+    if (!peerConnections || peerConnections.length === 0) {
+      return;
     }
+
+    peerConnections.forEach(peerConnection => {
+      switch (message.type) {
+        case RTC_PEER_MESSAGE_SDP_OFFER:
+          peerConnection
+            .setRemoteDescription(new RTCSessionDescription(message.sdp))
+            .then(() => {
+              console.log('Setting remote description by offer');
+              return peerConnection
+                .createAnswer()
+                .then((sdp: RTCSessionDescriptionInit) => {
+                  return peerConnection.setLocalDescription(sdp)
+                    .then(() => {
+                      this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
+                        by: this.peerId,
+                        to: message.by,
+                        sdp: sdp,
+                        type: RTC_PEER_MESSAGE_SDP_ANSWER
+                      });
+                    })
+                });
+            })
+            .catch(err => {
+              console.error('Error on SDP-Offer:', err);
+            });
+          break;
+        case RTC_PEER_MESSAGE_SDP_ANSWER:
+          peerConnection
+            .setRemoteDescription(new RTCSessionDescription(message.sdp))
+            .then(() => console.log('Setting remote description by answer'))
+            .catch(err => console.error('Error on SDP-Answer:', err));
+          break;
+        case RTC_PEER_MESSAGE_ICE:
+          if (message.ice) {
+            console.log('Adding ice candidate');
+            peerConnection.addIceCandidate(message.ice);
+          }
+          break;
+      }
+    })
   }
 
-  private getPeerConnection(id): RTCPeerConnection {
+  private getPeerConnection(id: string, roomId: string): RTCPeerConnection {
     if (this.peerConnections[id]) {
       return this.peerConnections[id];
     }
@@ -168,14 +178,14 @@ export class WebRTCConnectionService {
       (peerConnection as any).addStream(this.myMediaStream);
       (peerConnection as any).onaddstream = (event) => {
         console.log('Received new stream');
-        const client = new WebRTCClient({ id: id, stream: event.stream });
+        const client = new WebRTCClient({ id: id, roomId: roomId, stream: event.stream });
         this.webrtcClientStore.addClient(client);
       };
     } else {  // Firefox
       peerConnection.addTrack(this.myMediaStream.getVideoTracks()[0], this.myMediaStream);
       peerConnection.ontrack = (event: RTCTrackEvent) => {
         console.log('Received new stream');
-        const client = new WebRTCClient({ id: id, stream: event.streams[0] });
+        const client = new WebRTCClient({ id: id, roomId: roomId, stream: event.streams[0] });
         this.webrtcClientStore.addClient(client);
       }
     }
@@ -183,4 +193,17 @@ export class WebRTCConnectionService {
     return peerConnection;
   }
 
+  private getPeerConnections(roomId: string): RTCPeerConnection[] {
+    if (this.peerConnections[roomId]) {
+      return this.peerConnections[roomId];
+    }
+
+    let connections: RTCPeerConnection[] = [];
+    this.peerConnections[roomId].array.forEach(element => {
+      let conn = this.getPeerConnection[element.id];
+      connections.push(conn);
+    });
+
+    return connections;
+  }
 }

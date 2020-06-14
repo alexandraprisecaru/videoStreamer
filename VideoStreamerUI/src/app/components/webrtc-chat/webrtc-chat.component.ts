@@ -20,10 +20,6 @@ export class WebRTCChatComponent implements OnChanges {
     private webrtcConnectionService: WebRTCConnectionService,
     private sanitizer: DomSanitizer
   ) {
-    this.webrtcClientStoreService.clients$.subscribe(
-      clientList => this.webrtcClients = clientList.toArray(),
-      err => console.error('Error updating the client list:', err)
-    );
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
@@ -33,15 +29,16 @@ export class WebRTCChatComponent implements OnChanges {
     }
 
     this.webrtcClientStoreService.clients$.subscribe(
-      clientList => this.webrtcClients = clientList.toArray(),
+      clientList => {
+        this.webrtcClients = clientList.filter(c => c.roomId === this.roomId).toArray();
+      }
+      ,
       err => console.error('Error updating the client list:', err)
     );
-
-
   }
 
   public onClickConnectToRoom() {
-    this.webrtcConnectionService.connectToRoom();
+    this.webrtcConnectionService.connectToRoom(this.roomId);
   }
 
   // DEPRECATED
