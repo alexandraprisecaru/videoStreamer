@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { ChatComponent } from './components/chat/chat.component';
 import { CommentComponent } from './components/comment/comment.component';
 import { MoviePlayerComponent } from './components/movie-player/movie-player.component';
+import { VideoChatComponent } from './components/video-chat/video-chat.component';
+import { WebRTCChatModule } from './components/webrtc-chat/webrtc-chat.module';
 
 const config = new AuthServiceConfig([
   {
@@ -33,7 +35,8 @@ export function provideConfig() {
     EmptyComponent,
     ChatComponent,
     CommentComponent,
-    MoviePlayerComponent
+    MoviePlayerComponent,
+    VideoChatComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,8 @@ export function provideConfig() {
     ReactiveFormsModule,
     SocialLoginModule,
     BrowserAnimationsModule,
-    MatVideoModule
+    MatVideoModule,
+    WebRTCChatModule
   ],
   providers: [
     {

@@ -86,7 +86,7 @@ namespace StreamProviderWS
 
             app.UseWebSockets();
 
-            app.MapWebSocketManager("/chat", serviceProvider.GetService<ChatMessageHandler>());
+            app.MapWebSocketManager("/chat", serviceProvider.GetService<ChatHandler>());
             app.MapWebSocketManager("/movies", serviceProvider.GetService<MovieRequestsHandler>());
 
             app.UseStaticFiles();

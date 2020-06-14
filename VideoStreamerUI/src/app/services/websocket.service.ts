@@ -481,38 +481,38 @@ export class WebSocketsService {
         this.chatMessageUpdateSubject.next(message);
         break;
 
-        case MessageType.MOVIE_COMMENTS_RESPONSE:
-          let comments: MovieComment[];
-          try {
-            comments = JSON.parse(messageWrapper.payload);
-          } catch (error) {
-            console.error('Get movie comments response: Unable to deserialize MovieComment[] object: %s',
-              messageWrapper.payload);
-            return;
-          }
-  
-          console.debug('Movie comments received: %o', comments);
-          this.commentsReponseSubject.next(comments);
-          break;
-  
-        case MessageType.MOVIE_COMMENT_UPDATE:
-          let comment: MovieComment;
-          try {
-            comment = JSON.parse(messageWrapper.payload);
-          } catch (error) {
-            console.error('Get movie comment update : Unable to deserialize MovieComment object: %s',
-              messageWrapper.payload);
-            return;
-          }
-  
-          if (comment.User.id === this.user.id) {
-            // if the message was sent by the current user, exit
-            return;
-          }
-  
-          console.debug('Chat Message received: %o', comment);
-          this.commentUpdateSubject.next(comment);
-          break;
+      case MessageType.MOVIE_COMMENTS_RESPONSE:
+        let comments: MovieComment[];
+        try {
+          comments = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Get movie comments response: Unable to deserialize MovieComment[] object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Movie comments received: %o', comments);
+        this.commentsReponseSubject.next(comments);
+        break;
+
+      case MessageType.MOVIE_COMMENT_UPDATE:
+        let comment: MovieComment;
+        try {
+          comment = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Get movie comment update : Unable to deserialize MovieComment object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        if (comment.User.id === this.user.id) {
+          // if the message was sent by the current user, exit
+          return;
+        }
+
+        console.debug('Chat Message received: %o', comment);
+        this.commentUpdateSubject.next(comment);
+        break;
 
       default: break;
     }
