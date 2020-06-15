@@ -17,6 +17,7 @@ import {
 import { MediaStreamService } from '../../shared/mediastream.service';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { VideoInfo } from 'src/app/entities/videoInfo';
+import { RTCPeerConnectionRoom } from 'src/app/entities/rtcPeerConnectionRoom';
 
 // TODO
 // Configure ICE Server
@@ -24,7 +25,7 @@ import { VideoInfo } from 'src/app/entities/videoInfo';
 @Injectable()
 export class WebRTCConnectionService {
   private socket: SocketIOClient;
-  private peerConnections: RTCPeerConnection[] = [];
+  private peerConnections: RTCPeerConnectionRoom[] = [];
   private myMediaStream: MediaStream = undefined;
   private peerId: string;
 
@@ -45,7 +46,7 @@ export class WebRTCConnectionService {
     });
 
     this.socket.on(SOCKET_EVENT_PEER_CONNECTED, (data) => {
-      this.makeOffer(data.id);
+      this.makeOffer(data.id, data.videoInfo.roomId);
     });
 
     this.socket.on(SOCKET_EVENT_PEER_DISCONNECTED, (data) => {
@@ -62,20 +63,32 @@ export class WebRTCConnectionService {
       .getMediaStream()
       .then((stream: MediaStream) => {
         this.myMediaStream = stream;
-        this.webSocketService.sendConnectVideoRequest(videoInfo);
-        this.webSocketService.sendConnectAudioRequest(videoInfo);
-
-        this.socket.emit(SOCKET_EVENT_CONNECT_TO_ROOM);
 
         // add myself to the list
         const me = new WebRTCClient({ id: this.socket.id, roomId: videoInfo.roomId, stream: this.myMediaStream });
-        this.webrtcClientStore.addClient(me);
+
+        let wasAdded = this.webrtcClientStore.tryAddClient(me);
+        if (wasAdded) {
+          this.webSocketService.sendConnectVideoRequest(videoInfo);
+          this.webSocketService.sendConnectAudioRequest(videoInfo);
+  
+          this.socket.emit(SOCKET_EVENT_CONNECT_TO_ROOM, {
+            by: this.peerId,
+            videoInfo: videoInfo
+          });
+          
+          this.addStream();
+        }
       })
       .catch(err => console.error('Can\'t get media stream', err));
   }
 
-  private makeOffer(roomId: string) {
-    const peerConnections = this.getPeerConnections(roomId);
+  private makeOffer(socketId: string, roomId: string) {
+    if (socketId === this.peerId) {
+      return;
+    }
+
+    const peerConnections = this.getPeerConnections(socketId, roomId);
     if (!peerConnections || peerConnections.length === 0) {
       return;
     }
@@ -96,7 +109,8 @@ export class WebRTCConnectionService {
             .then(() => {
               this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
                 by: this.peerId,
-                to: roomId,
+                to: socketId,
+                roomId: roomId,
                 sdp: sdp,
                 type: RTC_PEER_MESSAGE_SDP_OFFER
               })
@@ -106,7 +120,11 @@ export class WebRTCConnectionService {
   }
 
   private handleRTCPeerMessage(message) {
-    const peerConnections = this.getPeerConnections(message.roomId);
+    if (message.by === this.peerId) {
+      return;
+    }
+
+    const peerConnections = this.getPeerConnections(message.by, message.roomId);
     if (!peerConnections || peerConnections.length === 0) {
       return;
     }
@@ -126,6 +144,7 @@ export class WebRTCConnectionService {
                       this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
                         by: this.peerId,
                         to: message.by,
+                        roomId: message.roomId,
                         sdp: sdp,
                         type: RTC_PEER_MESSAGE_SDP_ANSWER
                       });
@@ -152,64 +171,82 @@ export class WebRTCConnectionService {
     })
   }
 
-  private getPeerConnection(id: string, roomId: string): RTCPeerConnection {
-    if (this.peerConnections[id]) {
-      return this.peerConnections[id];
+  private getPeerConnection(socketId: string, roomId: string): RTCPeerConnectionRoom {
+    let connection = this.peerConnections.find(x => x.socketId === socketId && x.roomId === roomId);
+    if (connection) {
+      return connection;
     }
 
-    const peerConnection = new RTCPeerConnection();
-    this.peerConnections[id] = peerConnection;
+    const peerConnection = new RTCPeerConnectionRoom(roomId, socketId);
 
     peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
       this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
         by: this.peerId,
-        to: id,
+        to: socketId,
         ice: event.candidate,
+        roomId: roomId,
         type: RTC_PEER_MESSAGE_ICE
       })
     };
 
-    peerConnection.onnegotiationneeded = () => {
-      console.log('Need negotiation:', id);
+    // peerConnection.onnegotiationneeded = () => {
+    //   console.log('Need negotiation:', socketId);
+    // }
+
+    peerConnection.onnegotiationneeded = async e => {
+      try {
+        // await peerConnection.setLocalDescription(await peerConnection.createOffer());
+        // await pc2.setRemoteDescription(peerConnection.localDescription);
+        // await pc2.setLocalDescription(await pc2.createAnswer());
+        // await pc1.setRemoteDescription(pc2.localDescription);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     peerConnection.onsignalingstatechange = () => {
-      console.log('ICE signaling state changed to:', peerConnection.signalingState, 'for client', id);
+      console.log('ICE signaling state changed to:', peerConnection.signalingState, 'for client', socketId);
     }
 
     // Workaround for Chrome 
     // see: https://github.com/webrtc/adapter/issues/361
     if (window.navigator.userAgent.toLowerCase().indexOf('chrome') > - 1) { // Chrome
       // DEPECRATED https://developer.mozilla.org/de/docs/Web/API/RTCPeerConnection/addStream
-      (peerConnection as any).addStream(this.myMediaStream);
+
+      if (this.myMediaStream) {
+        (peerConnection as any).addStream(this.myMediaStream);
+      }
+
       (peerConnection as any).onaddstream = (event) => {
         console.log('Received new stream');
-        const client = new WebRTCClient({ id: id, roomId: roomId, stream: event.stream });
-        this.webrtcClientStore.addClient(client);
+        const client = new WebRTCClient({ id: socketId, roomId: roomId, stream: event.stream });
+        this.webrtcClientStore.tryAddClient(client);
       };
     } else {  // Firefox
       peerConnection.addTrack(this.myMediaStream.getVideoTracks()[0], this.myMediaStream);
       peerConnection.ontrack = (event: RTCTrackEvent) => {
         console.log('Received new stream');
-        const client = new WebRTCClient({ id: id, roomId: roomId, stream: event.streams[0] });
-        this.webrtcClientStore.addClient(client);
+        const client = new WebRTCClient({ id: socketId, roomId: roomId, stream: event.streams[0] });
+        this.webrtcClientStore.tryAddClient(client);
       }
     }
 
     return peerConnection;
   }
 
-  private getPeerConnections(roomId: string): RTCPeerConnection[] {
-    if (this.peerConnections[roomId]) {
-      return this.peerConnections[roomId];
+  private getPeerConnections(socketId: string, roomId: string): RTCPeerConnectionRoom[] {
+    let roomConnections = this.peerConnections.filter(x => x.roomId === roomId && x.socketId !== undefined && x.socketId === socketId);
+    if (!roomConnections || roomConnections.length === 0) {
+      let connection1 = this.getPeerConnection(socketId, roomId);
+      this.peerConnections.push(connection1);
     }
 
-    let connections: RTCPeerConnection[] = [];
-    this.peerConnections[roomId].array.forEach(element => {
-      let conn = this.getPeerConnection[element.id];
-      connections.push(conn);
-    });
+    return this.peerConnections.filter(x => x.roomId === roomId);
+  }
 
-    return connections;
+  private addStream() {
+    this.peerConnections.forEach(connection => {
+      (connection as any).addStream(this.myMediaStream);
+    });
   }
 }

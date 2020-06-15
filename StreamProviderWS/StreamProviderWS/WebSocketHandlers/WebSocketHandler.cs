@@ -71,6 +71,12 @@ namespace StreamProviderWS.WebSocketHandlers
             foreach (string socketId in socketIds)
             {
                 var socket = WebSocketConnectionManager.GetSocketById(socketId);
+                if (socket == null)
+                {
+                    _roomSocketsManager.DeleteBySocketId(socketId);
+                    continue;
+                }
+
                 if (socket.State == WebSocketState.Open)
                 {
                     await SendMessageAsync(socket, message);

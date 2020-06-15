@@ -14,8 +14,13 @@ export class WebRTCClientStore {
     return this._clients.asObservable();
   }
 
-  public addClient(newClient: WebRTCClient): void {
+  public tryAddClient(newClient: WebRTCClient): boolean {
+    if (this._clients.getValue().find(x => x.id === newClient.id)) {
+      return false;
+    }
+
     this._clients.next(this._clients.getValue().push(newClient));
+    return true
   }
 
   public removeClient(clientId: string): void {
