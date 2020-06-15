@@ -34,7 +34,6 @@ export class WebRTCConnectionService {
     this.createPeerConnectedSubscription();
     this.createPeerDisconnectedSubscription();
     this.createPeerMessageSubscription();
-
   }
 
   public connectVideoAndAudio(videoInfo: VideoInfo) {
@@ -221,6 +220,9 @@ export class WebRTCConnectionService {
   private userDisconnected(socketStatus: SocketStatusUpdate) {
     this.webrtcClientStore.removeClient(socketStatus.SocketId);
     this.peerConnections = this.peerConnections.filter(x => x.socketId !== socketStatus.SocketId);
+    
+    this.myMediaStream.getVideoTracks()[0].stop();
+    this.myMediaStream.getAudioTracks()[0].stop();
   }
 
   private createUserDisconnectedSubscription() {

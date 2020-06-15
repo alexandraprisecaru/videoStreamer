@@ -206,7 +206,6 @@ export class WebSocketsService {
   private connect(url: string): void {
     this.webSocket = new WebSocket(url);
 
-
     this.webSocket.onopen = function (messageEvent: MessageEvent) {
       console.info('WebSocket connection has been opened: %o', messageEvent);
     };
