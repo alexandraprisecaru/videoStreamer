@@ -4,7 +4,10 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using StreamProviderWS.Managers;
+using StreamProviderWS.Models.WebSocket;
+using StreamProviderWS.Models.WebSocket.RequestsMessages;
 using StreamProviderWS.Services;
 
 namespace StreamProviderWS.WebSocketHandlers
@@ -23,10 +26,36 @@ namespace StreamProviderWS.WebSocketHandlers
         public virtual async Task OnConnected(WebSocket socket)
         {
             WebSocketConnectionManager.AddSocket(socket);
+
+            var socketId = WebSocketConnectionManager.GetId(socket);
+            var statusUpdate = new SocketStatusUpdate {IsConnected = true, SocketId = socketId};
+            var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
+
+            MessageWrapper messageWrapper = new MessageWrapper
+            {
+                type = MessageType.SOCKET_STATUS,
+                payload = jsonStatus
+            };
+
+            var json = JsonConvert.SerializeObject(messageWrapper);
+            await SendMessageAsync(socket, json);
         }
 
         public virtual async Task OnDisconnected(WebSocket socket)
         {
+            var socketId = WebSocketConnectionManager.GetId(socket);
+            var statusUpdate = new SocketStatusUpdate { IsConnected = false, SocketId = socketId };
+            var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
+
+            MessageWrapper messageWrapper = new MessageWrapper
+            {
+                type = MessageType.SOCKET_STATUS,
+                payload = jsonStatus
+            };
+
+            var json = JsonConvert.SerializeObject(messageWrapper);
+            await SendMessageAsync(socket, json);
+
             await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
         }
 

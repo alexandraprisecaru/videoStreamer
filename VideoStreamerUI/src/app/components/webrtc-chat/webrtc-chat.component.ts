@@ -46,9 +46,7 @@ export class WebRTCChatComponent implements OnChanges {
       ,
       err => console.error('Error updating the client list:', err)
     );
-  }
-
-  public onClickConnectToRoom() {
+    
     let videoInfo = new VideoInfo(this.userId, this.roomId, this.isAudioEnabled, this.isVideoEnabled);
     this.webrtcConnectionService.connectVideoAndAudio(videoInfo);
   }

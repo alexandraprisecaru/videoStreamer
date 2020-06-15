@@ -28,6 +28,7 @@ import { DisconnectAudioRequest } from '../entities/requests/video/disconnectAud
 import { DisconnectVideoRequest } from '../entities/requests/video/disconnectVideoRequest';
 import { ConnectVideoRequest } from '../entities/requests/video/connectVideoRequest';
 import { VideoInfoUpdates } from '../entities/responses/VideoInfoUpdates';
+import { SocketStatusUpdate } from '../entities/responses/SocketStatusUpdate';
 
 @Injectable({
   providedIn: 'root'
@@ -57,6 +58,9 @@ export class WebSocketsService {
   private commentUpdateSubject: Subject<MovieComment>;
 
   private videoInfoUpdatesSubject: Subject<VideoInfoUpdates>;
+  private userConnected: Subject<SocketStatusUpdate>;
+  private userDisconnected: Subject<SocketStatusUpdate>;
+  socketId: string = "";
 
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.authService.authState.subscribe((user) => {
@@ -65,6 +69,9 @@ export class WebSocketsService {
         console.log(this.user);
       }
     });
+
+    this.userConnected = new Subject<SocketStatusUpdate>();
+    this.userDisconnected = new Subject<SocketStatusUpdate>();
 
     this.movieListResponseSubject = new Subject<Movie[]>();
     this.movieListUpdateSubject = new Subject<Movie[]>();
@@ -97,6 +104,14 @@ export class WebSocketsService {
     if (this.webSocket != null) {
       this.webSocket.close();
     }
+  }
+
+  public subscribeToUserConnected(observer: Observer<SocketStatusUpdate>): void {
+    this.userConnected.subscribe(observer);
+  }
+
+  public subscribeToUserDisconnected(observer: Observer<SocketStatusUpdate>): void {
+    this.userDisconnected.subscribe(observer);
   }
 
   public subscribeToMovieListResponses(observer: Observer<Movie[]>): void {
@@ -175,7 +190,7 @@ export class WebSocketsService {
           self.user = user;
           self.handleMessage(jsonReceived);
         }
-      })
+      });
 
     };;
 
@@ -366,6 +381,24 @@ export class WebSocketsService {
     let messageWrapper = this.validateAndGetMessage(messageRecieved);
 
     switch (messageWrapper.type) {
+      case MessageType.SOCKET_STATUS:
+        let socketStatus: SocketStatusUpdate;
+        try {
+          socketStatus = JSON.parse(messageWrapper.payload);
+          socketStatus.isConnected
+            ? this.userConnected.next(socketStatus)
+            : this.userDisconnected.next(socketStatus)
+
+          this.socketId = socketStatus.socketId;
+        } catch (error) {
+          console.error('Movie list reponse: Unable to deserialize Movie[] object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Movies message received: %o', socketStatus);
+        break;
+
       case MessageType.MOVIE_LIST_RESPONSE:
         let movies: Movie[] = [];
         try {

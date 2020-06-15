@@ -55,7 +55,8 @@
         public const string DISCONNECT_VIDEO_REQUEST = "DISCONNECT_VIDEO_REQUEST";
 
         public const string VIDEO_INFO_UPDATE = "VIDEO_INFO_UPDATE";
-        
+        public const string SOCKET_STATUS = "SOCKET_STATUS";
+
         // hmm............... idk if personal is needed or doable in the current implementation
         public const string MOVIE_CLOSE_PERSONAL_REQUEST = "MOVIE_CLOSE_PERSONAL_REQUEST";
         public const string MOVIE_CLOSE_PERSONAL_RESPONSE = "MOVIE_CLOSE_PERSONAL_RESPONSE";
