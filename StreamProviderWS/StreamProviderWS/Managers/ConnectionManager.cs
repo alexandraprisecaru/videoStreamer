@@ -32,6 +32,11 @@ namespace StreamProviderWS.Managers
 
         public async Task RemoveSocket(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return;
+            }
+
             WebSocket socket;
             _sockets.TryRemove(id, out socket);
 

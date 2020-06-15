@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StreamProviderWS.Managers;
 using StreamProviderWS.Models.WebSocket;
+using StreamProviderWS.Services;
 
 namespace StreamProviderWS.WebSocketHandlers
 {
     public class ChatHandler : WebSocketHandler
     {
-        public ChatHandler(ConnectionManager webSocketConnectionManager) : base(webSocketConnectionManager)
+        public ChatHandler(ConnectionManager webSocketConnectionManager, IRoomSocketsManager roomSocketsManager) : base(webSocketConnectionManager, roomSocketsManager)
         {
         }
 
@@ -32,9 +33,23 @@ namespace StreamProviderWS.WebSocketHandlers
             // todo: checkups
 
             switch (messageWrapper.type)
-            { 
-                    case ChatMessageType.RTC_PEER_MESSAGE_ICE:
-                break;
+            {
+                case ChatMessageType.SOCKET_EVENT_PEER_MESSAGE:
+                    //console.log('Forward WebRTC peer message:', JSON.stringify(data));
+
+                    await SendMessageToAllAsync(messageWrapper.payload);
+                    //socket..emit('api/v1/webrtc/peermessage', data);
+                    break;
+
+                case ChatMessageType.SOCKET_EVENT_CONNECT_TO_ROOM:
+                    //console.log(`Client ${ socket.id} connected to room`);
+
+                    //await SendMessageToAllAsync($"\{ \"id\": {socketId} \}");
+                    //socket.broadcast.emit('api/v1/webrtc/peer-connected', { id: socket.id });
+                    break;
+
+                default:
+                    break;
             }
 
             var message = $"{socketId} said: {Encoding.UTF8.GetString(buffer, 0, result.Count)}";

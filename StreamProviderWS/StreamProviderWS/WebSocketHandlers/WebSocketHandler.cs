@@ -1,18 +1,22 @@
 ﻿using System;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using StreamProviderWS.Managers;
+using StreamProviderWS.Services;
 
 namespace StreamProviderWS.WebSocketHandlers
 {
     public abstract class WebSocketHandler
     {
+        private readonly IRoomSocketsManager _roomSocketsManager;
         protected ConnectionManager WebSocketConnectionManager { get; set; }
 
-        public WebSocketHandler(ConnectionManager webSocketConnectionManager)
+        public WebSocketHandler(ConnectionManager webSocketConnectionManager, IRoomSocketsManager roomSocketsManager)
         {
+            _roomSocketsManager = roomSocketsManager;
             WebSocketConnectionManager = webSocketConnectionManager;
         }
 
@@ -52,6 +56,32 @@ namespace StreamProviderWS.WebSocketHandlers
                     await SendMessageAsync(pair.Value, message);
             }
         }
+
+        public async Task SendMessageToAllInRoomAsync(string roomId, string message)
+        {
+            var socketIds = _roomSocketsManager.GetByRoomId(roomId)?.SelectMany(x => x.UserSockets)
+                .Select(x => x.SocketId)
+                .ToList();
+
+            if (socketIds == null || socketIds.Count == 0)
+            {
+                return;
+            }
+
+            foreach (string socketId in socketIds)
+            {
+                var socket = WebSocketConnectionManager.GetSocketById(socketId);
+                if (socket.State == WebSocketState.Open)
+                {
+                    await SendMessageAsync(socket, message);
+                }
+                else
+                {
+                    _roomSocketsManager.DeleteBySocketId(socketId);
+                }
+            }
+        }
+
 
         //TODO - decide if exposing the message string is better than exposing the result and buffer
         public abstract Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer);

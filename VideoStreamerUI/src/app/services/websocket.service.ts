@@ -22,6 +22,12 @@ import { ChatMessagesRequest } from '../entities/requests/chatMessagesRequest';
 import { MovieComment } from '../entities/movieComment';
 import { MovieCommentsRequest } from '../entities/requests/movieCommentsRequest';
 import { SendMovieCommentRequest } from '../entities/requests/sendMovieCommentRequest';
+import { ConnectAudioRequest } from '../entities/requests/video/connectAudioRequest';
+import { VideoInfo } from '../entities/videoInfo';
+import { DisconnectAudioRequest } from '../entities/requests/video/disconnectAudioRequest';
+import { DisconnectVideoRequest } from '../entities/requests/video/disconnectVideoRequest';
+import { ConnectVideoRequest } from '../entities/requests/video/connectVideoRequest';
+import { VideoInfoUpdates } from '../entities/responses/VideoInfoUpdates';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +56,8 @@ export class WebSocketsService {
   private commentsReponseSubject: Subject<MovieComment[]>;
   private commentUpdateSubject: Subject<MovieComment>;
 
+  private videoInfoUpdatesSubject: Subject<VideoInfoUpdates>;
+
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.authService.authState.subscribe((user) => {
       if (user !== null && user !== undefined) {
@@ -76,6 +84,8 @@ export class WebSocketsService {
 
     this.commentsReponseSubject = new Subject<MovieComment[]>();
     this.commentUpdateSubject = new Subject<MovieComment>();
+
+    this.videoInfoUpdatesSubject = new Subject<VideoInfoUpdates>();
   }
 
   public start(): void {
@@ -139,6 +149,10 @@ export class WebSocketsService {
 
   public subscribeToMovieCommentUpdates(observer: Observer<MovieComment>): void {
     this.commentUpdateSubject.subscribe(observer);
+  }
+
+  public subscribeToVideoInfoUpdates(observer: Observer<VideoInfoUpdates>): void {
+    this.videoInfoUpdatesSubject.subscribe(observer);
   }
 
   private connect(url: string): void {
@@ -288,6 +302,34 @@ export class WebSocketsService {
     });
   }
 
+  public sendConnectAudioRequest(videoInfo: VideoInfo): void {
+    const request: ConnectAudioRequest = new ConnectAudioRequest(videoInfo);
+    const message: MessageWrapper = new MessageWrapper(MessageType.CONNECT_AUDIO_REQUEST, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
+  public sendDisconnectAudioRequest(videoInfo: VideoInfo): void {
+    const request: DisconnectAudioRequest = new DisconnectAudioRequest(videoInfo);
+    const message: MessageWrapper = new MessageWrapper(MessageType.DISCONNECT_AUDIO_REQUEST, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
+  public sendConnectVideoRequest(videoInfo: VideoInfo): void {
+    const request: ConnectVideoRequest = new ConnectVideoRequest(videoInfo);
+    const message: MessageWrapper = new MessageWrapper(MessageType.CONNECT_VIDEO_REQUEST, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
+  public sendDisconnectVideoRequest(videoInfo: VideoInfo): void {
+    const request: DisconnectVideoRequest = new DisconnectVideoRequest(videoInfo);
+    const message: MessageWrapper = new MessageWrapper(MessageType.DISCONNECT_VIDEO_REQUEST, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
   private waitForOpenConnection(socket: WebSocket) {
     return new Promise((resolve, reject) => {
       const maxNumberOfAttempts = 10
@@ -337,6 +379,7 @@ export class WebSocketsService {
         console.debug('Movies message received: %o', movies);
         this.movieListResponseSubject.next(movies);
         break;
+
       case MessageType.MOVIE_ROOMS_RESPONSE:
         let rooms: MovieRoom[];
         try {
@@ -512,6 +555,21 @@ export class WebSocketsService {
 
         console.debug('Chat Message received: %o', comment);
         this.commentUpdateSubject.next(comment);
+        break;
+
+
+      case MessageType.VIDEO_INFO_UPDATE:
+        let videoInfoUpdate: VideoInfoUpdates;
+        try {
+          videoInfoUpdate = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Get videoInfo updates : Unable to deserialize VideoInfoUpdates object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('VideoInfoUpdates received: %o', videoInfoUpdate);
+        this.videoInfoUpdatesSubject.next(videoInfoUpdate);
         break;
 
       default: break;

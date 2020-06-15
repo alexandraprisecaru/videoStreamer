@@ -48,6 +48,13 @@
 
         public const string MOVIE_CLOSE_REQUEST = "MOVIE_CLOSE_REQUEST";
         public const string MOVIE_CLOSE_RESPONSE = "MOVIE_CLOSE_RESPONSE";
+
+        public const string CONNECT_AUDIO_REQUEST = "CONNECT_AUDIO_REQUEST";
+        public const string DISCONNECT_AUDIO_REQUEST = "DISCONNECT_AUDIO_REQUEST";
+        public const string CONNECT_VIDEO_REQUEST = "CONNECT_VIDEO_REQUEST";
+        public const string DISCONNECT_VIDEO_REQUEST = "DISCONNECT_VIDEO_REQUEST";
+
+        public const string VIDEO_INFO_UPDATE = "VIDEO_INFO_UPDATE";
         
         // hmm............... idk if personal is needed or doable in the current implementation
         public const string MOVIE_CLOSE_PERSONAL_REQUEST = "MOVIE_CLOSE_PERSONAL_REQUEST";
