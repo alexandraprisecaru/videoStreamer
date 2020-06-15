@@ -50,11 +50,6 @@ export class WebRTCChatComponent implements OnChanges {
     this.webrtcConnectionService.connectVideoAndAudio(videoInfo);
   }
 
-  // DEPRECATED
-  public getVideoStreamURL(stream: MediaStream): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(stream));
-  }
-
   private createVideoInfoUpdatesSubscription() {
     let self = this;
     const videoInfoUpdatesObserver: Observer<VideoInfoUpdates> = {
