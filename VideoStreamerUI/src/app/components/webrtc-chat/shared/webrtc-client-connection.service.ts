@@ -36,9 +36,12 @@ export class WebRTCConnectionService {
 
   public connectVideoAndAudio(videoInfo: VideoInfo) {
     this.mediaStream
-      .getMediaStream(videoInfo.IsAudioEnabled, videoInfo.IsVideoEnabled)
+      .getMediaStream()
       .then((stream: MediaStream) => {
         this.myMediaStream = stream;
+
+        this.myMediaStream.getAudioTracks()[0].enabled = videoInfo.IsAudioEnabled;
+        this.myMediaStream.getVideoTracks()[0].enabled = videoInfo.IsVideoEnabled;
 
         // add myself to the list
         const me = new WebRTCClient({ id: this.webSocketService.socketId, roomId: videoInfo.RoomId, stream: this.myMediaStream });
@@ -223,6 +226,14 @@ export class WebRTCConnectionService {
       this.myMediaStream.getVideoTracks()[0].stop();
       this.myMediaStream.getAudioTracks()[0].stop();
     }
+  }
+
+  triggerVideo(isVideoEnabled: boolean) {
+    this.myMediaStream.getVideoTracks()[0].enabled = isVideoEnabled;
+  }
+
+  triggerAudio(isAudioEnabled: boolean) {
+    this.myMediaStream.getAudioTracks()[0].enabled = isAudioEnabled;
   }
 
   private createUserDisconnectedSubscription() {

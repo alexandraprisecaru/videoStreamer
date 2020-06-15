@@ -1,7 +1,10 @@
+<button (click)="triggerAudio()" type="button">audio</button>
+<button (click)="triggerVideo()" type="button">video</button>
 <mat-grid-list cols="3" rows="3">
   <mat-grid-tile *ngFor="let client of webrtcClients">
     <!--<span>{{ client.id }}</span>-->
-    <video controls autoplay width="320" height="240" [srcObject]="client.stream">
+   
+    <video controls autoplay width="320" height="240" [srcObject]="client.stream" [muted]="client.id === socketId">
       <!-- <source [src]="getVideoStreamURL(index, client.stream)"/> -->
     </video>
   </mat-grid-tile>

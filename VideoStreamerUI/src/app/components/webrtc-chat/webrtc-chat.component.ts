@@ -24,6 +24,9 @@ export class WebRTCChatComponent implements OnChanges {
   isAudioEnabled = false;
   isVideoEnabled = true;
 
+  isMuted = false;
+  socketId: string;
+
   constructor(
     private webrtcClientStoreService: WebRTCClientStore,
     private webrtcConnectionService: WebRTCConnectionService,
@@ -41,7 +44,7 @@ export class WebRTCChatComponent implements OnChanges {
     }
 
     let cookieVideo = cookieService.get("isVideoEnabled");
-    if (!cookieVideo) {cookieService
+    if (!cookieVideo) {
       cookieService.set("isVideoEnabled", "true");
       this.isVideoEnabled = true;
     } else {
@@ -55,6 +58,8 @@ export class WebRTCChatComponent implements OnChanges {
       return;
     }
 
+    this.socketId = this.webSocketService.socketId;
+    
     this.webrtcClientStoreService.clients$.subscribe(
       clientList => {
         this.webrtcClients = clientList.filter(c => c.roomId === this.roomId).toArray();
@@ -65,6 +70,18 @@ export class WebRTCChatComponent implements OnChanges {
 
     let videoInfo = new VideoInfo(this.userId, this.roomId, this.isAudioEnabled, this.isVideoEnabled);
     this.webrtcConnectionService.connectVideoAndAudio(videoInfo);
+  }
+
+  triggerAudio() {
+    this.isAudioEnabled = !this.isAudioEnabled;
+    this.cookieService.set("isAudioEnabled", String(this.isAudioEnabled));
+    this.webrtcConnectionService.triggerAudio(this.isAudioEnabled);
+  }
+
+  triggerVideo() {
+    this.isVideoEnabled = !this.isVideoEnabled;
+    this.cookieService.set("isVideoEnabled", String(this.isVideoEnabled));
+    this.webrtcConnectionService.triggerVideo(this.isVideoEnabled);
   }
 
   private createVideoInfoUpdatesSubscription() {
