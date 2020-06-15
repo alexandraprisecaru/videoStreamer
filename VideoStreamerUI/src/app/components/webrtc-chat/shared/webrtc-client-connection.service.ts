@@ -15,6 +15,8 @@ import {
   RTC_PEER_MESSAGE_SDP_OFFER
 } from './webrtc-event-messages';
 import { MediaStreamService } from '../../shared/mediastream.service';
+import { WebSocketsService } from 'src/app/services/websocket.service';
+import { VideoInfo } from 'src/app/entities/videoInfo';
 
 // TODO
 // Configure ICE Server
@@ -28,7 +30,8 @@ export class WebRTCConnectionService {
 
   constructor(
     private webrtcClientStore: WebRTCClientStore,
-    private mediaStream: MediaStreamService
+    private mediaStream: MediaStreamService,
+    private webSocketService: WebSocketsService
   ) {
     this.socket = io.connect('http://localhost:3000');
 
@@ -54,15 +57,18 @@ export class WebRTCConnectionService {
     });
   }
 
-  public connectToRoom(roomId: string) {
+  public connectVideoAndAudio(videoInfo: VideoInfo) {
     this.mediaStream
       .getMediaStream()
       .then((stream: MediaStream) => {
         this.myMediaStream = stream;
+        this.webSocketService.sendConnectVideoRequest(videoInfo);
+        this.webSocketService.sendConnectAudioRequest(videoInfo);
+
         this.socket.emit(SOCKET_EVENT_CONNECT_TO_ROOM);
 
         // add myself to the list
-        const me = new WebRTCClient({ id: this.socket.id, roomId: roomId, stream: this.myMediaStream });
+        const me = new WebRTCClient({ id: this.socket.id, roomId: videoInfo.roomId, stream: this.myMediaStream });
         this.webrtcClientStore.addClient(me);
       })
       .catch(err => console.error('Can\'t get media stream', err));

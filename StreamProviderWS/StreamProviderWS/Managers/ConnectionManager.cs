@@ -37,8 +37,11 @@ namespace StreamProviderWS.Managers
                 return;
             }
 
-            WebSocket socket;
-            _sockets.TryRemove(id, out socket);
+            _sockets.TryRemove(id, out WebSocket socket);
+            if (socket == null)
+            {
+                return;
+            }
 
             await socket.CloseAsync(closeStatus: WebSocketCloseStatus.NormalClosure,
                 statusDescription: "Closed by the ConnectionManager",
