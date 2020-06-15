@@ -28,7 +28,7 @@ namespace StreamProviderWS.WebSocketHandlers
             WebSocketConnectionManager.AddSocket(socket);
 
             var socketId = WebSocketConnectionManager.GetId(socket);
-            var statusUpdate = new SocketStatusUpdate {IsConnected = true, SocketId = socketId};
+            var statusUpdate = new SocketStatusUpdate { IsConnected = true, SocketId = socketId };
             var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
 
             MessageWrapper messageWrapper = new MessageWrapper
@@ -55,6 +55,14 @@ namespace StreamProviderWS.WebSocketHandlers
 
             var json = JsonConvert.SerializeObject(messageWrapper);
             await SendMessageAsync(socket, json);
+
+            var roomSockets = _roomSocketsManager.GetBySocketId(socketId);
+            if (roomSockets == null || roomSockets.Count == 0)
+            {
+                return;
+            }
+
+            roomSockets.ForEach(async x => { await SendMessageToAllInRoomAsync(x.RoomId, json); });
 
             await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
         }

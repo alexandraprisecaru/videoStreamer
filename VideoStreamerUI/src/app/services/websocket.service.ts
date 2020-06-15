@@ -121,6 +121,8 @@ export class WebSocketsService {
 
   public stop(): void {
     if (this.webSocket != null) {
+      let socketStatus: SocketStatusUpdate = { IsConnected: false, SocketId: this.socketId };
+      this.userDisconnected.next(socketStatus);
       this.webSocket.close();
     }
   }
@@ -204,6 +206,7 @@ export class WebSocketsService {
   private connect(url: string): void {
     this.webSocket = new WebSocket(url);
 
+
     this.webSocket.onopen = function (messageEvent: MessageEvent) {
       console.info('WebSocket connection has been opened: %o', messageEvent);
     };
@@ -231,6 +234,8 @@ export class WebSocketsService {
 
     this.webSocket.onclose = function (closeEvent: CloseEvent) {
       console.info('WebSocket connection has been closed: %o', closeEvent);
+      let socketStatus: SocketStatusUpdate = { IsConnected: false, SocketId: self.socketId };
+      self.userDisconnected.next(socketStatus);
     };
   }
 
@@ -419,7 +424,6 @@ export class WebSocketsService {
       }
     }
 
-    let msg = JSON.stringify(message);
     socket.send(JSON.stringify(message))
   }
 

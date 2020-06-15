@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer, Observable, of, Subject } from 'rxjs';
+import { Observer, Observable, of, Subject, BehaviorSubject } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { AuthService, SocialUser } from 'angularx-social-login';
+import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdate';
 
 @Component({
   selector: 'app-movie-room',
@@ -15,6 +16,7 @@ export class MovieRoomComponent implements OnInit {
   roomId: string;
 
   user: SocialUser;
+  isConnected: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   constructor(private route: ActivatedRoute,
     private webSocketService: WebSocketsService,
@@ -39,6 +41,7 @@ export class MovieRoomComponent implements OnInit {
   ngOnInit(): void {
     this.createMovieRoomResponsesSubscription();
     this.createMovieRoomUpdatesSubscription();
+    this.createUserDisconnectedSubscription();
   }
 
   private processMovieRoom(room: MovieRoom): Observable<MovieRoom> {
@@ -91,5 +94,30 @@ export class MovieRoomComponent implements OnInit {
     };
 
     this.webSocketService.subscribeToMovieRoomUpdates(movieRoomUpdatesObserver);
+  }
+
+  private createUserDisconnectedSubscription() {
+    let self = this;
+    const socketStatusUpdatesObserver: Observer<SocketStatusUpdate> = {
+      next: function (status: SocketStatusUpdate): void {
+        self.userDisconnected(status);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more socket status updates');
+      }
+    };
+
+    this.webSocketService.subscribeToUserDisconnected(socketStatusUpdatesObserver);
+  }
+
+  userDisconnected(status: SocketStatusUpdate) {
+    if (status.SocketId === this.webSocketService.socketId) {
+      this.isConnected.next(false);
+    }
   }
 }

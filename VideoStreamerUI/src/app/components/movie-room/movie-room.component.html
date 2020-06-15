@@ -1,3 +1,10 @@
+<div *ngIf="(isConnected | async) === false">
+    <h1>Seems like you connected somewhere else. Byee</h1>
+
+</div>
+
+<div *ngIf="(isConnected | async) === true">
+
 <div *ngIf="room!==undefined" style="padding: 10px;">
     <div class="row">
         <div class="col col-lg-10"></div>
@@ -34,3 +41,4 @@
             </div>
         </div>
     </div>
+</div>
