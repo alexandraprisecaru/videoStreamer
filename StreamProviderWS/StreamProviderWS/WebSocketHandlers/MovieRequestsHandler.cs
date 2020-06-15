@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -41,64 +42,117 @@ namespace StreamProviderWS.WebSocketHandlers
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
-            var a = Encoding.UTF8.GetString(buffer, 0, result.Count);
-            var messageWrapper = JsonConvert.DeserializeObject<MessageWrapper>(a);
-
-            // todo: checkups
-
-            switch (messageWrapper.type)
+            try
             {
-                case MessageType.SAVE_USER_REQUEST:
-                    await HandleSaveUserRequest(messageWrapper);
-                    break;
+                var a = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                var messageWrapper = JsonConvert.DeserializeObject<MessageWrapper>(a);
 
-                case MessageType.MOVIE_LIST_REQUEST:
-                    await HandleMovieListRequest(socket);
-                    break;
+                // todo: checkups
 
-                case MessageType.MOVIE_ROOM_REQUEST:
-                    await HandleMovieRoomRequest(socket, messageWrapper);
-                    break;
+                switch (messageWrapper.type)
+                {
+                    case MessageType.SAVE_USER_REQUEST:
+                        await HandleSaveUserRequest(messageWrapper);
+                        break;
 
-                case MessageType.MOVIE_ROOM_WITH_ID_REQUEST:
-                    await HandleMovieRoomWithIdRequest(socket, messageWrapper);
-                    break;
+                    case MessageType.MOVIE_LIST_REQUEST:
+                        await HandleMovieListRequest(socket);
+                        break;
 
-                case MessageType.MOVIE_ROOM_PAUSE_REQUEST:
-                    await HandleMovieRoomPauseRequest(messageWrapper);
-                    break;
+                    case MessageType.MOVIE_ROOM_REQUEST:
+                        await HandleMovieRoomRequest(socket, messageWrapper);
+                        break;
 
-                case MessageType.MOVIE_ROOM_PLAY_REQUEST:
-                    await HandleMovieRoomPlayRequest(messageWrapper);
-                    break;
+                    case MessageType.MOVIE_ROOM_WITH_ID_REQUEST:
+                        await HandleMovieRoomWithIdRequest(socket, messageWrapper);
+                        break;
 
-                case MessageType.MOVIE_ROOM_SEEK_REQUEST:
-                    await HandleMovieRoomSeekRequest(messageWrapper);
-                    break;
+                    case MessageType.MOVIE_ROOM_PAUSE_REQUEST:
+                        await HandleMovieRoomPauseRequest(messageWrapper);
+                        break;
 
-                case MessageType.MOVIE_ROOMS_REQUEST:
-                    await HandleMovieRoomsRequest(socket, messageWrapper);
-                    break;
+                    case MessageType.MOVIE_ROOM_PLAY_REQUEST:
+                        await HandleMovieRoomPlayRequest(messageWrapper);
+                        break;
 
-                case MessageType.CHAT_MESSAGES_REQUEST:
-                    await HandleChatMessagesRequest(socket, messageWrapper);
-                    break;
+                    case MessageType.MOVIE_ROOM_SEEK_REQUEST:
+                        await HandleMovieRoomSeekRequest(messageWrapper);
+                        break;
 
-                case MessageType.SEND_CHAT_MESSAGE_REQUEST:
-                    await HandleSendChatMessageRequest(messageWrapper);
-                    break;
+                    case MessageType.MOVIE_ROOMS_REQUEST:
+                        await HandleMovieRoomsRequest(socket, messageWrapper);
+                        break;
 
-                case MessageType.MOVIE_COMMENTS_REQUEST:
-                    await HandleMovieCommentsRequest(socket, messageWrapper);
-                    break;
+                    case MessageType.CHAT_MESSAGES_REQUEST:
+                        await HandleChatMessagesRequest(socket, messageWrapper);
+                        break;
 
-                case MessageType.SEND_MOVIE_COMMENT_REQUEST:
-                    await HandleSendMovieCommentRequest(messageWrapper);
-                    break;
+                    case MessageType.SEND_CHAT_MESSAGE_REQUEST:
+                        await HandleSendChatMessageRequest(messageWrapper);
+                        break;
 
-                default:
-                    break;
+                    case MessageType.MOVIE_COMMENTS_REQUEST:
+                        await HandleMovieCommentsRequest(socket, messageWrapper);
+                        break;
+
+                    case MessageType.SEND_MOVIE_COMMENT_REQUEST:
+                        await HandleSendMovieCommentRequest(messageWrapper);
+                        break;
+
+                    case MessageType.SOCKET_EVENT_CONNECT_TO_ROOM:
+                        await HandleSocketConnectToRoomRequest(messageWrapper);
+                        break;
+                    case MessageType.SOCKET_EVENT_PEER_MESSAGE:
+                        await HandleSocketPeerMessageRequest(messageWrapper);
+                        break;
+                    default:
+                        break;
+                }
             }
+            catch (Exception exception)
+            {
+
+            }
+        }
+
+        private async Task HandleSocketPeerMessageRequest(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<PeerMessageRequest>(messageWrapper.payload);
+            if (request?.PeerMessage == null)
+            {
+                return;
+            }
+
+            var jsonMessage = JsonConvert.SerializeObject(request.PeerMessage);
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.SOCKET_EVENT_PEER_MESSAGE,
+                payload = jsonMessage
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllInRoomAsync(request.PeerMessage.RoomId, json);
+        }
+
+        private async Task HandleSocketConnectToRoomRequest(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<ConnectToRoomRequest>(messageWrapper.payload);
+            if (request?.ConnectToRoom == null)
+            {
+                return;
+            }
+
+            var jsonConnect = JsonConvert.SerializeObject(request.ConnectToRoom);
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.SOCKET_EVENT_PEER_CONNECTED,
+                payload = jsonConnect
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllInRoomAsync(request.ConnectToRoom.VideoInfo.RoomId, json);
         }
 
         private async Task HandleMovieRoomsRequest(WebSocket socket, MessageWrapper messageWrapper)

@@ -1,15 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import * as io from 'socket.io-client';
-
 import { WebRTCClientStore } from './webrtc-client.store.service';
 import { WebRTCClient } from './webrtc-client.model';
-import { SocketIOClient } from 'socket.io-client/lib';
 import {
-  SOCKET_EVENT_PEER_CONNECTED,
-  SOCKET_EVENT_PEER_DISCONNECTED,
-  SOCKET_EVENT_PEER_MESSAGE,
-  SOCKET_EVENT_CONNECT_TO_ROOM,
   RTC_PEER_MESSAGE_ICE,
   RTC_PEER_MESSAGE_SDP_ANSWER,
   RTC_PEER_MESSAGE_SDP_OFFER
@@ -18,44 +11,30 @@ import { MediaStreamService } from '../../shared/mediastream.service';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { VideoInfo } from 'src/app/entities/videoInfo';
 import { RTCPeerConnectionRoom } from 'src/app/entities/rtcPeerConnectionRoom';
+import { Observer } from 'rxjs';
+import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdate';
+import { ConnectToRoom } from 'src/app/entities/video-chat/connectToRoom';
+import { PeerMessage } from 'src/app/entities/video-chat/peerMessage';
 
 // TODO
 // Configure ICE Server
-
 @Injectable()
 export class WebRTCConnectionService {
-  private socket: SocketIOClient;
   private peerConnections: RTCPeerConnectionRoom[] = [];
   private myMediaStream: MediaStream = undefined;
-  private peerId: string;
 
   constructor(
     private webrtcClientStore: WebRTCClientStore,
     private mediaStream: MediaStreamService,
     private webSocketService: WebSocketsService
   ) {
-    this.socket = io.connect('http://localhost:3000');
 
-    this.socket.on('connect', () => {
-      console.log('Socket connected. I am', this.socket.id);
-      this.peerId = this.socket.id;
-    });
+    this.createUserDisconnectedSubscription();
 
-    this.socket.on('disconnect', () => {
-      console.log('Socket disconnected. I was', this.socket.id);
-    });
+    this.createPeerConnectedSubscription();
+    this.createPeerDisconnectedSubscription();
+    this.createPeerMessageSubscription();
 
-    this.socket.on(SOCKET_EVENT_PEER_CONNECTED, (data) => {
-      this.makeOffer(data.id, data.videoInfo.roomId);
-    });
-
-    this.socket.on(SOCKET_EVENT_PEER_DISCONNECTED, (data) => {
-      // todo
-    });
-
-    this.socket.on(SOCKET_EVENT_PEER_MESSAGE, (data) => {
-      this.handleRTCPeerMessage(data);
-    });
   }
 
   public connectVideoAndAudio(videoInfo: VideoInfo) {
@@ -65,18 +44,11 @@ export class WebRTCConnectionService {
         this.myMediaStream = stream;
 
         // add myself to the list
-        const me = new WebRTCClient({ id: this.socket.id, roomId: videoInfo.roomId, stream: this.myMediaStream });
+        const me = new WebRTCClient({ id: this.webSocketService.socketId, roomId: videoInfo.RoomId, stream: this.myMediaStream });
 
         let wasAdded = this.webrtcClientStore.tryAddClient(me);
         if (wasAdded) {
-          this.webSocketService.sendConnectVideoRequest(videoInfo);
-          this.webSocketService.sendConnectAudioRequest(videoInfo);
-  
-          this.socket.emit(SOCKET_EVENT_CONNECT_TO_ROOM, {
-            by: this.peerId,
-            videoInfo: videoInfo
-          });
-          
+          this.webSocketService.sendConnectToRoomVideoRequest(new ConnectToRoom(this.webSocketService.socketId, videoInfo));
           this.addStream();
         }
       })
@@ -84,7 +56,7 @@ export class WebRTCConnectionService {
   }
 
   private makeOffer(socketId: string, roomId: string) {
-    if (socketId === this.peerId) {
+    if (socketId === this.webSocketService.socketId) {
       return;
     }
 
@@ -107,33 +79,36 @@ export class WebRTCConnectionService {
           return peerConnection
             .setLocalDescription(sdp)
             .then(() => {
-              this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
-                by: this.peerId,
-                to: socketId,
-                roomId: roomId,
-                sdp: sdp,
-                type: RTC_PEER_MESSAGE_SDP_OFFER
-              })
+              this.webSocketService.sendPeerMessageRequest(
+                new PeerMessage(
+                  this.webSocketService.socketId,
+                  socketId,
+                  roomId,
+                  RTC_PEER_MESSAGE_SDP_OFFER,
+                  null,
+                  sdp
+                )
+              );
             })
         })
     })
   }
 
-  private handleRTCPeerMessage(message) {
-    if (message.by === this.peerId) {
+  private handleRTCPeerMessage(message: PeerMessage) {
+    if (message.By === this.webSocketService.socketId) {
       return;
     }
 
-    const peerConnections = this.getPeerConnections(message.by, message.roomId);
+    const peerConnections = this.getPeerConnections(message.By, message.RoomId);
     if (!peerConnections || peerConnections.length === 0) {
       return;
     }
 
     peerConnections.forEach(peerConnection => {
-      switch (message.type) {
+      switch (message.Type) {
         case RTC_PEER_MESSAGE_SDP_OFFER:
           peerConnection
-            .setRemoteDescription(new RTCSessionDescription(message.sdp))
+            .setRemoteDescription(new RTCSessionDescription(message.Sdp))
             .then(() => {
               console.log('Setting remote description by offer');
               return peerConnection
@@ -141,13 +116,14 @@ export class WebRTCConnectionService {
                 .then((sdp: RTCSessionDescriptionInit) => {
                   return peerConnection.setLocalDescription(sdp)
                     .then(() => {
-                      this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
-                        by: this.peerId,
-                        to: message.by,
-                        roomId: message.roomId,
-                        sdp: sdp,
-                        type: RTC_PEER_MESSAGE_SDP_ANSWER
-                      });
+                      this.webSocketService.sendPeerMessageRequest(new PeerMessage(
+                        this.webSocketService.socketId,
+                        message.By,
+                        message.RoomId,
+                        RTC_PEER_MESSAGE_SDP_ANSWER,
+                        null,
+                        sdp
+                      ));
                     })
                 });
             })
@@ -157,14 +133,14 @@ export class WebRTCConnectionService {
           break;
         case RTC_PEER_MESSAGE_SDP_ANSWER:
           peerConnection
-            .setRemoteDescription(new RTCSessionDescription(message.sdp))
+            .setRemoteDescription(new RTCSessionDescription(message.Sdp))
             .then(() => console.log('Setting remote description by answer'))
             .catch(err => console.error('Error on SDP-Answer:', err));
           break;
         case RTC_PEER_MESSAGE_ICE:
-          if (message.ice) {
+          if (message.Ice) {
             console.log('Adding ice candidate');
-            peerConnection.addIceCandidate(message.ice);
+            peerConnection.addIceCandidate(message.Ice);
           }
           break;
       }
@@ -180,25 +156,19 @@ export class WebRTCConnectionService {
     const peerConnection = new RTCPeerConnectionRoom(roomId, socketId);
 
     peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-      this.socket.emit(SOCKET_EVENT_PEER_MESSAGE, {
-        by: this.peerId,
-        to: socketId,
-        ice: event.candidate,
-        roomId: roomId,
-        type: RTC_PEER_MESSAGE_ICE
-      })
+      this.webSocketService.sendPeerMessageRequest(new PeerMessage(
+        this.webSocketService.socketId,
+        socketId,
+        roomId,
+        RTC_PEER_MESSAGE_ICE,
+        event.candidate,
+        null
+      ));
     };
-
-    // peerConnection.onnegotiationneeded = () => {
-    //   console.log('Need negotiation:', socketId);
-    // }
 
     peerConnection.onnegotiationneeded = async e => {
       try {
-        // await peerConnection.setLocalDescription(await peerConnection.createOffer());
-        // await pc2.setRemoteDescription(peerConnection.localDescription);
-        // await pc2.setLocalDescription(await pc2.createAnswer());
-        // await pc1.setRemoteDescription(pc2.localDescription);
+        console.log('Need negotiation:', socketId);
       } catch (e) {
         console.log(e);
       }
@@ -211,8 +181,6 @@ export class WebRTCConnectionService {
     // Workaround for Chrome 
     // see: https://github.com/webrtc/adapter/issues/361
     if (window.navigator.userAgent.toLowerCase().indexOf('chrome') > - 1) { // Chrome
-      // DEPECRATED https://developer.mozilla.org/de/docs/Web/API/RTCPeerConnection/addStream
-
       if (this.myMediaStream) {
         (peerConnection as any).addStream(this.myMediaStream);
       }
@@ -248,5 +216,86 @@ export class WebRTCConnectionService {
     this.peerConnections.forEach(connection => {
       (connection as any).addStream(this.myMediaStream);
     });
+  }
+
+  private userDisconnected(socketStatus: SocketStatusUpdate) {
+    this.webrtcClientStore.removeClient(socketStatus.SocketId);
+    this.peerConnections = this.peerConnections.filter(x => x.socketId !== socketStatus.SocketId);
+  }
+
+  private createUserDisconnectedSubscription() {
+    let self = this;
+    const socketStatusUpdatesObserver: Observer<SocketStatusUpdate> = {
+      next: function (status: SocketStatusUpdate): void {
+        self.userDisconnected(status);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more socket status updates');
+      }
+    };
+
+    this.webSocketService.subscribeToUserDisconnected(socketStatusUpdatesObserver);
+  }
+
+  private createPeerConnectedSubscription() {
+    let self = this;
+    const peerConnectedObserver: Observer<ConnectToRoom> = {
+      next: function (connectToRoom: ConnectToRoom): void {
+        self.makeOffer(connectToRoom.SocketId, connectToRoom.VideoInfo.RoomId);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more connect to room updates');
+      }
+    };
+
+    this.webSocketService.subscribeToPeerConnected(peerConnectedObserver);
+  }
+
+  private createPeerDisconnectedSubscription() {
+    let self = this;
+    const peerDisconnectedObserver: Observer<ConnectToRoom> = {
+      next: function (connectToRoom: ConnectToRoom): void {
+        // self.makeOffer(connectToRoom.socketId, connectToRoom.videoInfo.roomId);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more disconnect from room updates');
+      }
+    };
+
+    this.webSocketService.subscribeToPeerDisconnected(peerDisconnectedObserver);
+  }
+
+  private createPeerMessageSubscription() {
+    let self = this;
+    const peerMessageObserver: Observer<PeerMessage> = {
+      next: function (message: PeerMessage): void {
+        self.handleRTCPeerMessage(message);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more peer message updates');
+      }
+    };
+
+    this.webSocketService.subscribeToPeerMessage(peerMessageObserver);
   }
 }

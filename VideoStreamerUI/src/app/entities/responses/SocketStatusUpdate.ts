@@ -1,4 +1,4 @@
 export class SocketStatusUpdate {
-    isConnected: boolean;
-    socketId: string;
+    IsConnected: boolean;
+    SocketId: string;
 }

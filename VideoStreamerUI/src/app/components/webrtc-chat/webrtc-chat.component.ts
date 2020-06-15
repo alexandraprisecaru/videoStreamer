@@ -19,7 +19,6 @@ export class WebRTCChatComponent implements OnChanges {
   @Input() roomId: string;
 
   public webrtcClients: WebRTCClient[];
-  private blobs: string[] = [];
 
   isAudioEnabled = true;
   isVideoEnabled = true;
@@ -46,7 +45,7 @@ export class WebRTCChatComponent implements OnChanges {
       ,
       err => console.error('Error updating the client list:', err)
     );
-    
+
     let videoInfo = new VideoInfo(this.userId, this.roomId, this.isAudioEnabled, this.isVideoEnabled);
     this.webrtcConnectionService.connectVideoAndAudio(videoInfo);
   }
@@ -78,5 +77,4 @@ export class WebRTCChatComponent implements OnChanges {
   processVideoInfoUpdates(videoInfoUpdates: VideoInfoUpdates) {
     throw new Error("Method not implemented.");
   }
-
 }

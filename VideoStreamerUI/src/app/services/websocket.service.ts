@@ -29,6 +29,10 @@ import { DisconnectVideoRequest } from '../entities/requests/video/disconnectVid
 import { ConnectVideoRequest } from '../entities/requests/video/connectVideoRequest';
 import { VideoInfoUpdates } from '../entities/responses/VideoInfoUpdates';
 import { SocketStatusUpdate } from '../entities/responses/SocketStatusUpdate';
+import { PeerMessage } from '../entities/video-chat/peerMessage';
+import { ConnectToRoom } from '../entities/video-chat/connectToRoom';
+import { ConnectToRoomRequest } from '../entities/requests/video/connectToRoomRequest';
+import { PeerMessageRequest } from '../entities/requests/video/peerMessageRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -62,6 +66,17 @@ export class WebSocketsService {
   private userDisconnected: Subject<SocketStatusUpdate>;
   socketId: string = "";
 
+  SOCKET_EVENT_PEER_MESSAGE = "SOCKET_EVENT_PEER_MESSAGE";
+  SOCKET_EVENT_PEER_CONNECTED = "SOCKET_EVENT_PEER_CONNECTED";
+  SOCKET_EVENT_PEER_DISCONNECTED = "SOCKET_EVENT_PEER_DISCONNECTED";
+  SOCKET_EVENT_CONNECT_TO_ROOM = "SOCKET_EVENT_CONNECT_TO_ROOM";
+
+  private socketEventPeerMessageSubject: Subject<PeerMessage>;
+  private socketEventPeerConnectedSubject: Subject<ConnectToRoom>;
+  private socketEventPeerDisconnectedSubject: Subject<ConnectToRoom>;
+
+  private socketEventPeerConnectToRoomSubject: Subject<string>;// don't think needed, send request!
+
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.authService.authState.subscribe((user) => {
       if (user !== null && user !== undefined) {
@@ -93,6 +108,10 @@ export class WebSocketsService {
     this.commentUpdateSubject = new Subject<MovieComment>();
 
     this.videoInfoUpdatesSubject = new Subject<VideoInfoUpdates>();
+
+    this.socketEventPeerMessageSubject = new Subject<PeerMessage>();
+    this.socketEventPeerConnectedSubject = new Subject<ConnectToRoom>();
+    this.socketEventPeerDisconnectedSubject = new Subject<ConnectToRoom>();
   }
 
   public start(): void {
@@ -104,6 +123,18 @@ export class WebSocketsService {
     if (this.webSocket != null) {
       this.webSocket.close();
     }
+  }
+
+  public subscribeToPeerMessage(observer: Observer<PeerMessage>): void {
+    this.socketEventPeerMessageSubject.subscribe(observer);
+  }
+
+  public subscribeToPeerConnected(observer: Observer<ConnectToRoom>): void {
+    this.socketEventPeerConnectedSubject.subscribe(observer);
+  }
+
+  public subscribeToPeerDisconnected(observer: Observer<ConnectToRoom>): void {
+    this.socketEventPeerDisconnectedSubject.subscribe(observer);
   }
 
   public subscribeToUserConnected(observer: Observer<SocketStatusUpdate>): void {
@@ -201,6 +232,20 @@ export class WebSocketsService {
     this.webSocket.onclose = function (closeEvent: CloseEvent) {
       console.info('WebSocket connection has been closed: %o', closeEvent);
     };
+  }
+
+  public sendConnectToRoomVideoRequest(connectToRoom: ConnectToRoom) {
+    const request: ConnectToRoomRequest = new ConnectToRoomRequest(connectToRoom);
+    const message: MessageWrapper = new MessageWrapper(MessageType.SOCKET_EVENT_CONNECT_TO_ROOM, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
+  public sendPeerMessageRequest(peerMessage: PeerMessage) {
+    const request: PeerMessageRequest = new PeerMessageRequest(peerMessage);
+    const message: MessageWrapper = new MessageWrapper(MessageType.SOCKET_EVENT_PEER_MESSAGE, request);
+
+    this.sendMessage(this.webSocket, message);
   }
 
   public sendSaveUserRequest(user: SocialUser): void {
@@ -374,6 +419,7 @@ export class WebSocketsService {
       }
     }
 
+    let msg = JSON.stringify(message);
     socket.send(JSON.stringify(message))
   }
 
@@ -385,11 +431,11 @@ export class WebSocketsService {
         let socketStatus: SocketStatusUpdate;
         try {
           socketStatus = JSON.parse(messageWrapper.payload);
-          socketStatus.isConnected
+          socketStatus.IsConnected
             ? this.userConnected.next(socketStatus)
             : this.userDisconnected.next(socketStatus)
 
-          this.socketId = socketStatus.socketId;
+          this.socketId = socketStatus.SocketId;
         } catch (error) {
           console.error('Movie list reponse: Unable to deserialize Movie[] object: %s',
             messageWrapper.payload);
@@ -397,6 +443,51 @@ export class WebSocketsService {
         }
 
         console.debug('Movies message received: %o', socketStatus);
+        break;
+
+      case MessageType.SOCKET_EVENT_PEER_CONNECTED:
+        let peerConnected: ConnectToRoom;
+        try {
+          peerConnected = JSON.parse(messageWrapper.payload);
+
+        } catch (error) {
+          console.error('Peer connected reponse: Unable to deserialize ConnectToRoom object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('ConnectToRoom message received: %o', peerConnected);
+        this.socketEventPeerConnectedSubject.next(peerConnected);
+        break;
+
+      case MessageType.SOCKET_EVENT_PEER_CONNECTED:
+        let peerDisconnected: ConnectToRoom;
+        try {
+          peerDisconnected = JSON.parse(messageWrapper.payload);
+
+        } catch (error) {
+          console.error('Peer connected reponse: Unable to deserialize ConnectToRoom object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('ConnectToRoom message received: %o', peerDisconnected);
+        this.socketEventPeerDisconnectedSubject.next(peerDisconnected);
+        break;
+
+      case MessageType.SOCKET_EVENT_PEER_MESSAGE:
+        let peerMessage: PeerMessage;
+        try {
+          peerMessage = JSON.parse(messageWrapper.payload);
+
+        } catch (error) {
+          console.error('PeerMessage reponse: Unable to deserialize PeerMessage object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('PeerMessage message received: %o', peerMessage);
+        this.socketEventPeerMessageSubject.next(peerMessage);
         break;
 
       case MessageType.MOVIE_LIST_RESPONSE:

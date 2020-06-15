@@ -60,5 +60,12 @@
         // hmm............... idk if personal is needed or doable in the current implementation
         public const string MOVIE_CLOSE_PERSONAL_REQUEST = "MOVIE_CLOSE_PERSONAL_REQUEST";
         public const string MOVIE_CLOSE_PERSONAL_RESPONSE = "MOVIE_CLOSE_PERSONAL_RESPONSE";
+
+
+        // --------------Socket peering connections
+        public const string SOCKET_EVENT_PEER_MESSAGE = "SOCKET_EVENT_PEER_MESSAGE";
+        public const string SOCKET_EVENT_PEER_CONNECTED = "SOCKET_EVENT_PEER_CONNECTED";
+        public const string SOCKET_EVENT_PEER_DISCONNECTED = "SOCKET_EVENT_PEER_DISCONNECTED";
+        public const string SOCKET_EVENT_CONNECT_TO_ROOM = "SOCKET_EVENT_CONNECT_TO_ROOM";
     }
 }
