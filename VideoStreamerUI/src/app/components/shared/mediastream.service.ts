@@ -4,13 +4,17 @@ import { Injectable } from '@angular/core';
 export class MediaStreamService {
   private mediaStream: MediaStream = undefined;
 
-  public getMediaStream(): Promise<MediaStream> {
+  public getMediaStream(isAudioEnabled: boolean, isVideoEnabled: boolean): Promise<MediaStream> {
+
+    let constraints = isAudioEnabled && isVideoEnabled
+      ? { audio: true, video: true }
+      : (isAudioEnabled
+        ? { audio: true } 
+        : { video: true });
+
     if (!this.mediaStream) {
       return navigator.mediaDevices
-        .getUserMedia({
-          audio: true,
-          video: true
-        })
+        .getUserMedia(constraints)
         .then((stream: MediaStream) => {
           return Promise.resolve(stream);
         })

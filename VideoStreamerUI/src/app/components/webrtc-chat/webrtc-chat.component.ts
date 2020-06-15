@@ -1,5 +1,4 @@
 import { Component, Input, OnChanges } from '@angular/core';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 import { WebRTCClient } from './shared/webrtc-client.model';
 import { WebRTCClientStore } from './shared/webrtc-client.store.service';
@@ -8,9 +7,11 @@ import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer } from 'rxjs';
 import { VideoInfo } from 'src/app/entities/videoInfo';
 import { VideoInfoUpdates } from 'src/app/entities/responses/VideoInfoUpdates';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'webrtc-chat',
+  styleUrls: ['./webrtc-client.component.scss'],
   templateUrl: './webrtc-chat.component.html'
 })
 export class WebRTCChatComponent implements OnChanges {
@@ -20,16 +21,32 @@ export class WebRTCChatComponent implements OnChanges {
 
   public webrtcClients: WebRTCClient[];
 
-  isAudioEnabled = true;
+  isAudioEnabled = false;
   isVideoEnabled = true;
 
   constructor(
     private webrtcClientStoreService: WebRTCClientStore,
     private webrtcConnectionService: WebRTCConnectionService,
     private webSocketService: WebSocketsService,
-    private sanitizer: DomSanitizer
+    private cookieService: CookieService
   ) {
     this.createVideoInfoUpdatesSubscription();
+
+    let cookieAudio = cookieService.get("isAudioEnabled");
+    if (!cookieAudio) {
+      cookieService.set("isAudioEnabled", "true");
+      this.isAudioEnabled = true;
+    } else {
+      this.isAudioEnabled = cookieAudio === "true";
+    }
+
+    let cookieVideo = cookieService.get("isVideoEnabled");
+    if (!cookieVideo) {cookieService
+      cookieService.set("isVideoEnabled", "true");
+      this.isVideoEnabled = true;
+    } else {
+      this.isVideoEnabled = cookieVideo === "true";
+    }
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {

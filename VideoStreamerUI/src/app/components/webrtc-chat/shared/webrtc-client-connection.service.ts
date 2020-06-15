@@ -16,8 +16,6 @@ import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdat
 import { ConnectToRoom } from 'src/app/entities/video-chat/connectToRoom';
 import { PeerMessage } from 'src/app/entities/video-chat/peerMessage';
 
-// TODO
-// Configure ICE Server
 @Injectable()
 export class WebRTCConnectionService {
   private peerConnections: RTCPeerConnectionRoom[] = [];
@@ -38,7 +36,7 @@ export class WebRTCConnectionService {
 
   public connectVideoAndAudio(videoInfo: VideoInfo) {
     this.mediaStream
-      .getMediaStream()
+      .getMediaStream(videoInfo.IsAudioEnabled, videoInfo.IsVideoEnabled)
       .then((stream: MediaStream) => {
         this.myMediaStream = stream;
 
@@ -220,9 +218,11 @@ export class WebRTCConnectionService {
   private userDisconnected(socketStatus: SocketStatusUpdate) {
     this.webrtcClientStore.removeClient(socketStatus.SocketId);
     this.peerConnections = this.peerConnections.filter(x => x.socketId !== socketStatus.SocketId);
-    
-    this.myMediaStream.getVideoTracks()[0].stop();
-    this.myMediaStream.getAudioTracks()[0].stop();
+
+    if (socketStatus.SocketId === this.webSocketService.socketId) {
+      this.myMediaStream.getVideoTracks()[0].stop();
+      this.myMediaStream.getAudioTracks()[0].stop();
+    }
   }
 
   private createUserDisconnectedSubscription() {
