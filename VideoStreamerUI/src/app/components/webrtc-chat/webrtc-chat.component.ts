@@ -20,8 +20,7 @@ export class WebRTCChatComponent implements OnChanges {
   @ViewChild('vid') video: ElementRef;
 
   @Input() user: SocialUser;
-  @Input() room: MovieRoom;
-  @Input() isVisible: boolean;
+  @Input() roomId: string;
 
   public webrtcClients: WebRTCClient[];
 
@@ -45,7 +44,7 @@ export class WebRTCChatComponent implements OnChanges {
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
-    if (!this.room.Id || !this.user) {
+    if (!this.roomId || !this.user) {
       return;
     }
 
@@ -60,7 +59,7 @@ export class WebRTCChatComponent implements OnChanges {
 
     this.webrtcClientStoreService.clients$.subscribe(
       clientList => {
-        this.webrtcClients = clientList.filter(c => c.roomId === this.room.Id).toArray();
+        this.webrtcClients = clientList.filter(c => c.roomId === this.roomId).toArray();
       }
       ,
       err => console.error('Error updating the client list:', err)
@@ -84,7 +83,7 @@ export class WebRTCChatComponent implements OnChanges {
       this.isVideoEnabled = cookieVideo === "true";
     }
 
-    let videoInfo = new VideoInfo(this.user.id, this.room.Id, this.isAudioEnabled, this.isVideoEnabled);
+    let videoInfo = new VideoInfo(this.user.id, this.roomId, this.isAudioEnabled, this.isVideoEnabled);
     this.webrtcConnectionService.connectVideoAndAudio(this.user, videoInfo);
   }
 
@@ -98,7 +97,7 @@ export class WebRTCChatComponent implements OnChanges {
     this.cookieService.delete(this.IS_AUDIO_ENABLED);
     this.cookieService.set(this.IS_AUDIO_ENABLED, String(this.isAudioEnabled));
     this.webrtcConnectionService.triggerAudio(this.isAudioEnabled);
-    this.webSocketService.sendStoppedAudioNotification(this.user, this.room.Id, this.socketId);
+    this.webSocketService.sendStoppedAudioNotification(this.user, this.roomId, this.socketId);
   }
 
   triggerVideo() {
@@ -106,7 +105,7 @@ export class WebRTCChatComponent implements OnChanges {
     this.cookieService.delete(this.IS_VIDEO_ENABLED);
     this.cookieService.set(this.IS_VIDEO_ENABLED, String(this.isVideoEnabled));
     this.webrtcConnectionService.triggerVideo(this.isVideoEnabled);
-    this.webSocketService.sendStoppedVideoNotification(this.user, this.room.Id, this.socketId);
+    this.webSocketService.sendStoppedVideoNotification(this.user, this.roomId, this.socketId);
   }
 
   private createStoppedVideoNotificationSubscription() {

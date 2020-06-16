@@ -1,12 +1,12 @@
 <mat-tab-group (selectedTabChange)="selectionChange($event)">
     <mat-tab label="Users">
     </mat-tab>
-    <mat-tab label="Chat" >
+    <mat-tab label="Chat">
     </mat-tab>
 </mat-tab-group>
 
 <div *ngIf="isUsersTabSelected">
-    <webrtc-chat [room]="room" [user]="user"></webrtc-chat>
+    <webrtc-chat [roomId]="room.Id" [user]="user"></webrtc-chat>
 </div>
 <div *ngIf="!isUsersTabSelected">
     <chat-room [roomId]="room.Id" [user]="user"></chat-room>
