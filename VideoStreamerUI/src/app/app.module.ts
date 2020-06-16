@@ -20,6 +20,7 @@ import { MenuComponent } from './components/menu/menu.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
 import { ChatRoomComponent } from './components/chat-room/chat-room.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 const config = new AuthServiceConfig([
   {
@@ -54,6 +55,7 @@ export function provideConfig() {
     SocialLoginModule,
     BrowserAnimationsModule,
     MatVideoModule,
+    MatTabsModule,
     WebRTCChatModule
   ],
   providers: [

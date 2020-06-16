@@ -1,2 +1,8 @@
-<webrtc-chat [roomId]="roomId" [user]="user"></webrtc-chat>
-<chat-room  [roomId]="roomId" [user]="user"></chat-room>
+<mat-tab-group>
+    <mat-tab label="Users">
+        <webrtc-chat [roomId]="roomId" [user]="user"></webrtc-chat>
+    </mat-tab>
+    <mat-tab label="Chat">
+        <chat-room [roomId]="roomId" [user]="user"></chat-room>
+    </mat-tab>
+</mat-tab-group>

@@ -1,8 +1,7 @@
-import { Component, OnInit, Input, OnChanges, ViewChild, QueryList, ElementRef, ViewChildren, AfterViewInit } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, QueryList, ElementRef, ViewChildren } from '@angular/core';
 import { ChatMessage } from 'src/app/entities/chatMessage';
 import { SocialUser } from 'angularx-social-login';
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer } from 'rxjs';
 
 @Component({
   selector: 'chat',
