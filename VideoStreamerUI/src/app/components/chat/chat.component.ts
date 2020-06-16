@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, ViewChild, QueryList, ElementRef, ViewChil
 import { ChatMessage } from 'src/app/entities/chatMessage';
 import { SocialUser } from 'angularx-social-login';
 import { WebSocketsService } from 'src/app/services/websocket.service';
+import { MovieRoom } from 'src/app/entities/movieRoom';
 
 @Component({
   selector: 'chat',
@@ -13,7 +14,7 @@ export class ChatComponent implements OnChanges {
   @ViewChild('scrollframe', { static: false }) scrollFrame: ElementRef;
   @ViewChildren('item') itemElements: QueryList<ChatMessage>;
 
-  @Input() roomId: string;
+  @Input() room: MovieRoom;
   @Input() user: SocialUser;
 
   newMessagesCount: number = 0;
@@ -22,7 +23,7 @@ export class ChatComponent implements OnChanges {
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
-    if (!this.roomId || !this.user) {
+    if (!this.room || !this.user) {
       return;
     }
   }

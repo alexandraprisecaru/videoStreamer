@@ -21,6 +21,7 @@ import { UserInfoComponent } from './components/user-info/user-info.component';
 import { ChatRoomComponent } from './components/chat-room/chat-room.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { ActionsComponent } from './components/actions/actions.component';
 
 const config = new AuthServiceConfig([
   {
@@ -45,7 +46,8 @@ export function provideConfig() {
     MenuComponent,
     UserInfoComponent,
     ChatRoomComponent,
-    UserMenuComponent
+    UserMenuComponent,
+    ActionsComponent
   ],
   imports: [
     BrowserModule,
