@@ -33,6 +33,7 @@ import { PeerMessage } from '../entities/video-chat/peerMessage';
 import { ConnectToRoom } from '../entities/video-chat/connectToRoom';
 import { ConnectToRoomRequest } from '../entities/requests/video/connectToRoomRequest';
 import { PeerMessageRequest } from '../entities/requests/video/peerMessageRequest';
+import { StoppedVideoNotification } from '../entities/requests/video/stoppedVideoNotfication';
 
 @Injectable({
   providedIn: 'root'
@@ -66,16 +67,10 @@ export class WebSocketsService {
   private userDisconnected: Subject<SocketStatusUpdate>;
   socketId: string = "";
 
-  SOCKET_EVENT_PEER_MESSAGE = "SOCKET_EVENT_PEER_MESSAGE";
-  SOCKET_EVENT_PEER_CONNECTED = "SOCKET_EVENT_PEER_CONNECTED";
-  SOCKET_EVENT_PEER_DISCONNECTED = "SOCKET_EVENT_PEER_DISCONNECTED";
-  SOCKET_EVENT_CONNECT_TO_ROOM = "SOCKET_EVENT_CONNECT_TO_ROOM";
-
   private socketEventPeerMessageSubject: Subject<PeerMessage>;
   private socketEventPeerConnectedSubject: Subject<ConnectToRoom>;
   private socketEventPeerDisconnectedSubject: Subject<ConnectToRoom>;
-
-  private socketEventPeerConnectToRoomSubject: Subject<string>;// don't think needed, send request!
+  private userStoppedVideoSubject: Subject<StoppedVideoNotification>;
 
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.authService.authState.subscribe((user) => {
@@ -112,6 +107,7 @@ export class WebSocketsService {
     this.socketEventPeerMessageSubject = new Subject<PeerMessage>();
     this.socketEventPeerConnectedSubject = new Subject<ConnectToRoom>();
     this.socketEventPeerDisconnectedSubject = new Subject<ConnectToRoom>();
+    this.userStoppedVideoSubject = new Subject<StoppedVideoNotification>();
   }
 
   public start(): void {
@@ -127,10 +123,13 @@ export class WebSocketsService {
     }
   }
 
+  public subscribeToUserStoppedVideo(observer: Observer<StoppedVideoNotification>): void {
+    this.userStoppedVideoSubject.subscribe(observer);
+  }
+
   public subscribeToPeerMessage(observer: Observer<PeerMessage>): void {
     this.socketEventPeerMessageSubject.subscribe(observer);
   }
-
   public subscribeToPeerConnected(observer: Observer<ConnectToRoom>): void {
     this.socketEventPeerConnectedSubject.subscribe(observer);
   }
@@ -248,6 +247,13 @@ export class WebSocketsService {
   public sendPeerMessageRequest(peerMessage: PeerMessage) {
     const request: PeerMessageRequest = new PeerMessageRequest(peerMessage);
     const message: MessageWrapper = new MessageWrapper(MessageType.SOCKET_EVENT_PEER_MESSAGE, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
+  public sendStoppedVideoNotification(user: SocialUser, roomId: string, socketId: string) {
+    const request: StoppedVideoNotification = new StoppedVideoNotification(user, roomId, socketId);
+    const message: MessageWrapper = new MessageWrapper(MessageType.STOPPED_VIDEO_NOTIFICATION, request);
 
     this.sendMessage(this.webSocket, message);
   }
@@ -430,6 +436,20 @@ export class WebSocketsService {
     let messageWrapper = this.validateAndGetMessage(messageRecieved);
 
     switch (messageWrapper.type) {
+      case MessageType.STOPPED_VIDEO_NOTIFICATION:
+        let stop: StoppedVideoNotification;
+        try {
+          stop = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Movie list reponse: Unable to deserialize Movie[] object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Movies message received: %o', stop);
+        this.userStoppedVideoSubject.next(stop);
+        break;
+
       case MessageType.SOCKET_STATUS:
         let socketStatus: SocketStatusUpdate;
         try {

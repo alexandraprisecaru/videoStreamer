@@ -1,13 +1,15 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, ElementRef } from '@angular/core';
 
 import { WebRTCClient } from './shared/webrtc-client.model';
 import { WebRTCClientStore } from './shared/webrtc-client.store.service';
 import { WebRTCConnectionService } from './shared/webrtc-client-connection.service';
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer } from 'rxjs';
+import { Observer, BehaviorSubject } from 'rxjs';
 import { VideoInfo } from 'src/app/entities/videoInfo';
 import { VideoInfoUpdates } from 'src/app/entities/responses/VideoInfoUpdates';
 import { CookieService } from 'ngx-cookie-service';
+import { SocialUser } from 'angularx-social-login';
+import { StoppedVideoNotification } from 'src/app/entities/requests/video/stoppedVideoNotfication';
 
 @Component({
   selector: 'webrtc-chat',
@@ -15,14 +17,15 @@ import { CookieService } from 'ngx-cookie-service';
   templateUrl: './webrtc-chat.component.html'
 })
 export class WebRTCChatComponent implements OnChanges {
+  @ViewChild('vid') video: ElementRef;
 
-  @Input() userId: string;
+  @Input() user: SocialUser;
   @Input() roomId: string;
 
   public webrtcClients: WebRTCClient[];
 
   isAudioEnabled = false;
-  isVideoEnabled = true;
+  isVideoEnabled: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   isMuted = false;
   socketId: string;
@@ -33,7 +36,7 @@ export class WebRTCChatComponent implements OnChanges {
     private webSocketService: WebSocketsService,
     private cookieService: CookieService
   ) {
-    this.createVideoInfoUpdatesSubscription();
+    this.createStoppedVideoNotificationSubscription();
 
     let cookieAudio = cookieService.get("isAudioEnabled");
     if (!cookieAudio) {
@@ -46,20 +49,21 @@ export class WebRTCChatComponent implements OnChanges {
     let cookieVideo = cookieService.get("isVideoEnabled");
     if (!cookieVideo) {
       cookieService.set("isVideoEnabled", "true");
-      this.isVideoEnabled = true;
+      this.isVideoEnabled.next(true);
     } else {
-      this.isVideoEnabled = cookieVideo === "true";
+      this.isVideoEnabled.next(cookieVideo === "true");
     }
+
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
 
-    if (!this.roomId || !this.userId) {
+    if (!this.roomId || !this.user) {
       return;
     }
 
     this.socketId = this.webSocketService.socketId;
-    
+
     this.webrtcClientStoreService.clients$.subscribe(
       clientList => {
         this.webrtcClients = clientList.filter(c => c.roomId === this.roomId).toArray();
@@ -68,8 +72,13 @@ export class WebRTCChatComponent implements OnChanges {
       err => console.error('Error updating the client list:', err)
     );
 
-    let videoInfo = new VideoInfo(this.userId, this.roomId, this.isAudioEnabled, this.isVideoEnabled);
-    this.webrtcConnectionService.connectVideoAndAudio(videoInfo);
+    let videoInfo = new VideoInfo(this.user.id, this.roomId, this.isAudioEnabled, this.isVideoEnabled.getValue());
+    this.webrtcConnectionService.connectVideoAndAudio(this.user, videoInfo);
+  }
+
+  hasVideo(client: WebRTCClient) {
+    // client.stream.getVideoTracks()[0].muted
+    return client.stream.getVideoTracks()[0].enabled;
   }
 
   triggerAudio() {
@@ -79,16 +88,17 @@ export class WebRTCChatComponent implements OnChanges {
   }
 
   triggerVideo() {
-    this.isVideoEnabled = !this.isVideoEnabled;
-    this.cookieService.set("isVideoEnabled", String(this.isVideoEnabled));
-    this.webrtcConnectionService.triggerVideo(this.isVideoEnabled);
+    this.isVideoEnabled.next(!this.isVideoEnabled.getValue());
+    this.cookieService.set("isVideoEnabled", String(this.isVideoEnabled.getValue()));
+    this.webrtcConnectionService.triggerVideo(this.isVideoEnabled.getValue());
+    this.webSocketService.sendStoppedVideoNotification(this.user, this.roomId, this.socketId);
   }
 
-  private createVideoInfoUpdatesSubscription() {
+  private createStoppedVideoNotificationSubscription() {
     let self = this;
-    const videoInfoUpdatesObserver: Observer<VideoInfoUpdates> = {
-      next: function (videoInfoUpdates: VideoInfoUpdates): void {
-        self.processVideoInfoUpdates(videoInfoUpdates);
+    const stoppedVideoObserver: Observer<StoppedVideoNotification> = {
+      next: function (stoppedVideo: StoppedVideoNotification): void {
+        self.processUserStoppedVideo(stoppedVideo);
       },
 
       error: function (err: any): void {
@@ -100,10 +110,18 @@ export class WebRTCChatComponent implements OnChanges {
       }
     };
 
-    this.webSocketService.subscribeToVideoInfoUpdates(videoInfoUpdatesObserver);
+    this.webSocketService.subscribeToUserStoppedVideo(stoppedVideoObserver);
   }
 
-  processVideoInfoUpdates(videoInfoUpdates: VideoInfoUpdates) {
-    throw new Error("Method not implemented.");
+  processUserStoppedVideo(stoppedVideoNotfication: StoppedVideoNotification) {
+    this.webrtcClients.forEach(client => {
+      if (client.user.id === stoppedVideoNotfication.User.id) {
+        if (client.user.id === this.user.id) {
+          return;
+        }
+        client.stream.getVideoTracks()[0].enabled = !client.stream.getVideoTracks()[0].enabled;
+        // client.setUser(stoppedVideoNotfication.User);
+      }
+    });
   }
 }

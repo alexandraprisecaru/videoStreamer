@@ -15,11 +15,13 @@ import { Observer } from 'rxjs';
 import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdate';
 import { ConnectToRoom } from 'src/app/entities/video-chat/connectToRoom';
 import { PeerMessage } from 'src/app/entities/video-chat/peerMessage';
+import { SocialUser } from 'angularx-social-login';
 
 @Injectable()
 export class WebRTCConnectionService {
   private peerConnections: RTCPeerConnectionRoom[] = [];
   private myMediaStream: MediaStream = undefined;
+  user: SocialUser;
 
   constructor(
     private webrtcClientStore: WebRTCClientStore,
@@ -34,7 +36,8 @@ export class WebRTCConnectionService {
     this.createPeerMessageSubscription();
   }
 
-  public connectVideoAndAudio(videoInfo: VideoInfo) {
+  public connectVideoAndAudio(user: SocialUser, videoInfo: VideoInfo) {
+    this.user = user;
     this.mediaStream
       .getMediaStream()
       .then((stream: MediaStream) => {
@@ -44,23 +47,23 @@ export class WebRTCConnectionService {
         this.myMediaStream.getVideoTracks()[0].enabled = videoInfo.IsVideoEnabled;
 
         // add myself to the list
-        const me = new WebRTCClient({ id: this.webSocketService.socketId, roomId: videoInfo.RoomId, stream: this.myMediaStream });
+        const me = new WebRTCClient({ id: this.webSocketService.socketId, user: this.user, roomId: videoInfo.RoomId, stream: this.myMediaStream });
 
         let wasAdded = this.webrtcClientStore.tryAddClient(me);
         if (wasAdded) {
-          this.webSocketService.sendConnectToRoomVideoRequest(new ConnectToRoom(this.webSocketService.socketId, videoInfo));
+          this.webSocketService.sendConnectToRoomVideoRequest(new ConnectToRoom(this.webSocketService.socketId, videoInfo, this.user));
           this.addStream();
         }
       })
       .catch(err => console.error('Can\'t get media stream', err));
   }
 
-  private makeOffer(socketId: string, roomId: string) {
+  private makeOffer(socketId: string, roomId: string, user: SocialUser) {
     if (socketId === this.webSocketService.socketId) {
       return;
     }
 
-    const peerConnections = this.getPeerConnections(socketId, roomId);
+    const peerConnections = this.getPeerConnections(socketId, roomId, user);
     if (!peerConnections || peerConnections.length === 0) {
       return;
     }
@@ -85,6 +88,7 @@ export class WebRTCConnectionService {
                   socketId,
                   roomId,
                   RTC_PEER_MESSAGE_SDP_OFFER,
+                  this.user, // ????
                   null,
                   sdp
                 )
@@ -99,7 +103,7 @@ export class WebRTCConnectionService {
       return;
     }
 
-    const peerConnections = this.getPeerConnections(message.By, message.RoomId);
+    const peerConnections = this.getPeerConnections(message.By, message.RoomId, message.User);
     if (!peerConnections || peerConnections.length === 0) {
       return;
     }
@@ -121,6 +125,7 @@ export class WebRTCConnectionService {
                         message.By,
                         message.RoomId,
                         RTC_PEER_MESSAGE_SDP_ANSWER,
+                        this.user, // ???
                         null,
                         sdp
                       ));
@@ -147,13 +152,13 @@ export class WebRTCConnectionService {
     })
   }
 
-  private getPeerConnection(socketId: string, roomId: string): RTCPeerConnectionRoom {
+  private getPeerConnection(socketId: string, roomId: string, user: SocialUser): RTCPeerConnectionRoom {
     let connection = this.peerConnections.find(x => x.socketId === socketId && x.roomId === roomId);
     if (connection) {
       return connection;
     }
 
-    const peerConnection = new RTCPeerConnectionRoom(roomId, socketId);
+    const peerConnection = new RTCPeerConnectionRoom(roomId, socketId, user);
 
     peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
       this.webSocketService.sendPeerMessageRequest(new PeerMessage(
@@ -161,6 +166,7 @@ export class WebRTCConnectionService {
         socketId,
         roomId,
         RTC_PEER_MESSAGE_ICE,
+        this.user, // ???
         event.candidate,
         null
       ));
@@ -187,14 +193,15 @@ export class WebRTCConnectionService {
 
       (peerConnection as any).onaddstream = (event) => {
         console.log('Received new stream');
-        const client = new WebRTCClient({ id: socketId, roomId: roomId, stream: event.stream });
+        const client = new WebRTCClient({ id: peerConnection.socketId, user: peerConnection.user, roomId: peerConnection.roomId, stream: event.stream });
         this.webrtcClientStore.tryAddClient(client);
+
       };
     } else {  // Firefox
       peerConnection.addTrack(this.myMediaStream.getVideoTracks()[0], this.myMediaStream);
-      peerConnection.ontrack = (event: RTCTrackEvent) => {
+      peerConnection.ontrack = (event: any) => {
         console.log('Received new stream');
-        const client = new WebRTCClient({ id: socketId, roomId: roomId, stream: event.streams[0] });
+        const client = new WebRTCClient({ id: peerConnection.socketId, user: peerConnection.user, roomId: peerConnection.roomId, stream: event.stream });
         this.webrtcClientStore.tryAddClient(client);
       }
     }
@@ -202,10 +209,10 @@ export class WebRTCConnectionService {
     return peerConnection;
   }
 
-  private getPeerConnections(socketId: string, roomId: string): RTCPeerConnectionRoom[] {
+  private getPeerConnections(socketId: string, roomId: string, user: SocialUser): RTCPeerConnectionRoom[] {
     let roomConnections = this.peerConnections.filter(x => x.roomId === roomId && x.socketId !== undefined && x.socketId === socketId);
     if (!roomConnections || roomConnections.length === 0) {
-      let connection1 = this.getPeerConnection(socketId, roomId);
+      let connection1 = this.getPeerConnection(socketId, roomId, user);
       this.peerConnections.push(connection1);
     }
 
@@ -259,7 +266,7 @@ export class WebRTCConnectionService {
     let self = this;
     const peerConnectedObserver: Observer<ConnectToRoom> = {
       next: function (connectToRoom: ConnectToRoom): void {
-        self.makeOffer(connectToRoom.SocketId, connectToRoom.VideoInfo.RoomId);
+        self.makeOffer(connectToRoom.SocketId, connectToRoom.VideoInfo.RoomId, connectToRoom.User);
       },
 
       error: function (err: any): void {

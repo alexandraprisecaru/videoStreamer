@@ -105,6 +105,9 @@ namespace StreamProviderWS.WebSocketHandlers
                     case MessageType.SOCKET_EVENT_PEER_MESSAGE:
                         await HandleSocketPeerMessageRequest(messageWrapper);
                         break;
+                    case MessageType.STOPPED_VIDEO_NOTIFICATION:
+                        await HandleStoppedVideoNotification(messageWrapper);
+                        break;
                     default:
                         break;
                 }
@@ -113,6 +116,26 @@ namespace StreamProviderWS.WebSocketHandlers
             {
 
             }
+        }
+
+        private async Task HandleStoppedVideoNotification(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<StoppedVideoNotification>(messageWrapper.payload);
+            if (request == null)
+            {
+                return;
+            }
+
+            var jsonMessage = JsonConvert.SerializeObject(request);
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.STOPPED_VIDEO_NOTIFICATION,
+                payload = jsonMessage
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllInRoomAsync(request.RoomId, json);
         }
 
         private async Task HandleSocketPeerMessageRequest(MessageWrapper messageWrapper)
@@ -578,6 +601,18 @@ namespace StreamProviderWS.WebSocketHandlers
                 {
                     if (!userSocket.SocketId.Equals(socketId))
                     {
+                        var statusUpdate = new SocketStatusUpdate { IsConnected = false, SocketId = userSocket.SocketId };
+                        var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
+
+                        MessageWrapper messageWrapper = new MessageWrapper
+                        {
+                            type = MessageType.SOCKET_STATUS,
+                            payload = jsonStatus
+                        };
+
+                        var json = JsonConvert.SerializeObject(messageWrapper);
+                         await SendMessageToAllInRoomAsync(roomSocket.RoomId, json);
+
                         await WebSocketConnectionManager.RemoveSocket(userSocket.SocketId);
                         _roomSocketsManager.DeleteBySocketId(userSocket.SocketId);
                         _roomSocketsManager.AddUserSocket(roomId, new UserSocket { UserId = userId, SocketId = socketId });

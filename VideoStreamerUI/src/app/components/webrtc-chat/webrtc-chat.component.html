@@ -2,10 +2,14 @@
 <button (click)="triggerVideo()" type="button">video</button>
 <mat-grid-list cols="3" rows="3">
   <mat-grid-tile *ngFor="let client of webrtcClients">
-    <!--<span>{{ client.id }}</span>-->
-   
-    <video controls autoplay width="320" height="240" [srcObject]="client.stream" [muted]="client.id === socketId">
-      <!-- <source [src]="getVideoStreamURL(index, client.stream)"/> -->
-    </video>
+
+    <div *ngIf="client.stream.getVideoTracks()[0].enabled">
+      <video autoplay width="320" height="240" [srcObject]="client.stream" [muted]="client.id === socketId"></video>
+    </div>
+
+    <div *ngIf="!client.stream.getVideoTracks()[0].enabled">
+      <img  width="320" height="240" [src]="client.user.photoUrl" />
+    </div>
+
   </mat-grid-tile>
 </mat-grid-list>

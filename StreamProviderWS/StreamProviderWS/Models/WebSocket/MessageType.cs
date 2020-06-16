@@ -3,6 +3,7 @@
     public class MessageType
     {
         public const string SAVE_USER_REQUEST = "SAVE_USER_REQUEST";
+        public const string STOPPED_VIDEO_NOTIFICATION = "STOPPED_VIDEO_NOTIFICATION";
 
         public const string MOVIE_LIST_REQUEST = "MOVIE_LIST_REQUEST";
         public const string MOVIE_LIST_RESPONSE = "MOVIE_LIST_RESPONSE";
@@ -17,7 +18,7 @@
 
         public const string MOVIE_ROOM_PLAY_REQUEST = "MOVIE_ROOM_PLAY_REQUEST";
         public const string MOVIE_ROOM_PLAY_UPDATE = "MOVIE_ROOM_PLAY_UPDATE";
-        
+
         public const string MOVIE_ROOM_SEEK_REQUEST = "MOVIE_ROOM_SEEK_REQUEST";
         public const string MOVIE_ROOM_SEEK_UPDATE = "MOVIE_ROOM_SEEK_UPDATE";
 
@@ -25,14 +26,14 @@
         public const string MOVIE_ROOM_WITH_ID_REQUEST = "MOVIE_ROOM_WITH_ID_REQUEST";
         public const string MOVIE_ROOM_RESPONSE = "MOVIE_ROOM_RESPONSE";
         public const string MOVIE_ROOM_UPDATE = "MOVIE_ROOM_UPDATE";
-        
+
         public const string MOVIE_STREAM_REQUEST = "MOVIE_STREAM_REQUEST";
         public const string MOVIE_STREAM_RESPONSE = "MOVIE_STREAM_RESPONSE";
         public const string MOVIE_STREAM_UPDATE = "MOVIE_STREAM_UPDATE";
 
         public const string SEND_CHAT_MESSAGE_REQUEST = "SEND_CHAT_MESSAGE_REQUEST";
         public const string CHAT_MESSAGE_UPDATE = "CHAT_MESSAGE_UPDATE";
-        
+
         public const string CHAT_MESSAGES_REQUEST = "CHAT_MESSAGES_REQUEST";
         public const string CHAT_MESSAGES_RESPONSE = "CHAT_MESSAGES_RESPONSE";
 
