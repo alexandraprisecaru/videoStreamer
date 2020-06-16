@@ -9,6 +9,7 @@ namespace StreamProviderWS.Models.WebSocket.RequestsMessages
         public string RoomId { get; set; }
         public string Type { get; set; }
         public User User { get; set; }
+        public VideoInfo VideoInfo { get; set; }
         public object Ice { get; set; }
         public object Sdp { get; set; }
     }

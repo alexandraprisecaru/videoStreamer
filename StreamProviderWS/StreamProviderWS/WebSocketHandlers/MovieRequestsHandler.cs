@@ -107,6 +107,9 @@ namespace StreamProviderWS.WebSocketHandlers
                         break;
                     case MessageType.STOPPED_VIDEO_NOTIFICATION:
                         await HandleStoppedVideoNotification(messageWrapper);
+                        break;       
+                    case MessageType.STOPPED_AUDIO_NOTIFICATION:
+                        await HandleStoppedAudioNotification(messageWrapper);
                         break;
                     default:
                         break;
@@ -120,7 +123,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
         private async Task HandleStoppedVideoNotification(MessageWrapper messageWrapper)
         {
-            var request = JsonConvert.DeserializeObject<StoppedVideoNotification>(messageWrapper.payload);
+            var request = JsonConvert.DeserializeObject<StoppedMediaNotification>(messageWrapper.payload);
             if (request == null)
             {
                 return;
@@ -130,6 +133,26 @@ namespace StreamProviderWS.WebSocketHandlers
             var messageResponseWrapper = new MessageWrapper
             {
                 type = MessageType.STOPPED_VIDEO_NOTIFICATION,
+                payload = jsonMessage
+            };
+
+            var json = JsonConvert.SerializeObject(messageResponseWrapper);
+
+            await SendMessageToAllInRoomAsync(request.RoomId, json);
+        }
+
+        private async Task HandleStoppedAudioNotification(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<StoppedMediaNotification>(messageWrapper.payload);
+            if (request == null)
+            {
+                return;
+            }
+
+            var jsonMessage = JsonConvert.SerializeObject(request);
+            var messageResponseWrapper = new MessageWrapper
+            {
+                type = MessageType.STOPPED_AUDIO_NOTIFICATION,
                 payload = jsonMessage
             };
 

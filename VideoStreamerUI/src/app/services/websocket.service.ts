@@ -33,7 +33,7 @@ import { PeerMessage } from '../entities/video-chat/peerMessage';
 import { ConnectToRoom } from '../entities/video-chat/connectToRoom';
 import { ConnectToRoomRequest } from '../entities/requests/video/connectToRoomRequest';
 import { PeerMessageRequest } from '../entities/requests/video/peerMessageRequest';
-import { StoppedVideoNotification } from '../entities/requests/video/stoppedVideoNotfication';
+import { StoppedMediaNotification } from '../entities/requests/video/stoppedMediaNotfication';
 
 @Injectable({
   providedIn: 'root'
@@ -70,7 +70,9 @@ export class WebSocketsService {
   private socketEventPeerMessageSubject: Subject<PeerMessage>;
   private socketEventPeerConnectedSubject: Subject<ConnectToRoom>;
   private socketEventPeerDisconnectedSubject: Subject<ConnectToRoom>;
-  private userStoppedVideoSubject: Subject<StoppedVideoNotification>;
+
+  private userStoppedAudioSubject: Subject<StoppedMediaNotification>;
+  private userStoppedVideoSubject: Subject<StoppedMediaNotification>;
 
   constructor(private appConfigService: AppConfigService, private authService: AuthService) {
     this.authService.authState.subscribe((user) => {
@@ -107,7 +109,9 @@ export class WebSocketsService {
     this.socketEventPeerMessageSubject = new Subject<PeerMessage>();
     this.socketEventPeerConnectedSubject = new Subject<ConnectToRoom>();
     this.socketEventPeerDisconnectedSubject = new Subject<ConnectToRoom>();
-    this.userStoppedVideoSubject = new Subject<StoppedVideoNotification>();
+
+    this.userStoppedAudioSubject = new Subject<StoppedMediaNotification>();
+    this.userStoppedVideoSubject = new Subject<StoppedMediaNotification>();
   }
 
   public start(): void {
@@ -123,13 +127,18 @@ export class WebSocketsService {
     }
   }
 
-  public subscribeToUserStoppedVideo(observer: Observer<StoppedVideoNotification>): void {
+  public subscribeToUserStoppedAudio(observer: Observer<StoppedMediaNotification>): void {
+    this.userStoppedAudioSubject.subscribe(observer);
+  }
+
+  public subscribeToUserStoppedVideo(observer: Observer<StoppedMediaNotification>): void {
     this.userStoppedVideoSubject.subscribe(observer);
   }
 
   public subscribeToPeerMessage(observer: Observer<PeerMessage>): void {
     this.socketEventPeerMessageSubject.subscribe(observer);
   }
+
   public subscribeToPeerConnected(observer: Observer<ConnectToRoom>): void {
     this.socketEventPeerConnectedSubject.subscribe(observer);
   }
@@ -252,8 +261,15 @@ export class WebSocketsService {
   }
 
   public sendStoppedVideoNotification(user: SocialUser, roomId: string, socketId: string) {
-    const request: StoppedVideoNotification = new StoppedVideoNotification(user, roomId, socketId);
+    const request: StoppedMediaNotification = new StoppedMediaNotification(user, roomId, socketId);
     const message: MessageWrapper = new MessageWrapper(MessageType.STOPPED_VIDEO_NOTIFICATION, request);
+
+    this.sendMessage(this.webSocket, message);
+  }
+
+  public sendStoppedAudioNotification(user: SocialUser, roomId: string, socketId: string) {
+    const request: StoppedMediaNotification = new StoppedMediaNotification(user, roomId, socketId);
+    const message: MessageWrapper = new MessageWrapper(MessageType.STOPPED_AUDIO_NOTIFICATION, request);
 
     this.sendMessage(this.webSocket, message);
   }
@@ -437,17 +453,31 @@ export class WebSocketsService {
 
     switch (messageWrapper.type) {
       case MessageType.STOPPED_VIDEO_NOTIFICATION:
-        let stop: StoppedVideoNotification;
+        let stop: StoppedMediaNotification;
         try {
           stop = JSON.parse(messageWrapper.payload);
         } catch (error) {
-          console.error('Movie list reponse: Unable to deserialize Movie[] object: %s',
+          console.error('StoppedMediaNotification reponse: Unable to deserialize StoppedMediaNotification object: %s',
             messageWrapper.payload);
           return;
         }
 
-        console.debug('Movies message received: %o', stop);
+        console.debug('StoppedMediaNotification message received: %o', stop);
         this.userStoppedVideoSubject.next(stop);
+        break;
+
+      case MessageType.STOPPED_AUDIO_NOTIFICATION:
+        let stopAudio: StoppedMediaNotification;
+        try {
+          stopAudio = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('StoppedMediaNotification reponse: Unable to deserialize StoppedMediaNotification object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('StoppedMediaNotification message received: %o', stopAudio);
+        this.userStoppedAudioSubject.next(stopAudio);
         break;
 
       case MessageType.SOCKET_STATUS:

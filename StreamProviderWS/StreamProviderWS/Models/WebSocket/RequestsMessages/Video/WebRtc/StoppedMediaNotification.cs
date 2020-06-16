@@ -2,7 +2,7 @@
 
 namespace StreamProviderWS.Models.WebSocket.RequestsMessages
 {
-    public class StoppedVideoNotification
+    public class StoppedMediaNotification
     {
         public User User { get; set; }
         public string RoomId { get; set; }

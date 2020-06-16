@@ -3,6 +3,7 @@
     public class MessageType
     {
         public const string SAVE_USER_REQUEST = "SAVE_USER_REQUEST";
+        public const string STOPPED_AUDIO_NOTIFICATION = "STOPPED_AUDIO_NOTIFICATION";
         public const string STOPPED_VIDEO_NOTIFICATION = "STOPPED_VIDEO_NOTIFICATION";
 
         public const string MOVIE_LIST_REQUEST = "MOVIE_LIST_REQUEST";
