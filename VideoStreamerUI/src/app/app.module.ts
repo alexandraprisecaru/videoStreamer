@@ -16,6 +16,10 @@ import { CommentComponent } from './components/comment/comment.component';
 import { MoviePlayerComponent } from './components/movie-player/movie-player.component';
 import { VideoChatComponent } from './components/video-chat/video-chat.component';
 import { WebRTCChatModule } from './components/webrtc-chat/webrtc-chat.module';
+import { MenuComponent } from './components/menu/menu.component';
+import { UserInfoComponent } from './components/user-info/user-info.component';
+import { ChatRoomComponent } from './components/chat-room/chat-room.component';
+import { UserMenuComponent } from './components/user-menu/user-menu.component';
 
 const config = new AuthServiceConfig([
   {
@@ -36,7 +40,11 @@ export function provideConfig() {
     ChatComponent,
     CommentComponent,
     MoviePlayerComponent,
-    VideoChatComponent
+    VideoChatComponent,
+    MenuComponent,
+    UserInfoComponent,
+    ChatRoomComponent,
+    UserMenuComponent
   ],
   imports: [
     BrowserModule,
