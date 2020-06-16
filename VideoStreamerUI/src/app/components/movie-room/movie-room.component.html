@@ -1,12 +1,11 @@
 <div *ngIf="(isConnected | async) === false">
     <h1>Seems like you connected somewhere else. Byee</h1>
-
 </div>
 
 <div *ngIf="(isConnected | async) === true">
 
-<div *ngIf="room!==undefined" style="padding: 10px;">
-    <div class="row">
+    <div *ngIf="room!==undefined" style="padding: 10px;">
+        <!-- <div class="row">
         <div class="col col-lg-10"></div>
         <div style="display: inline-flex;">
             <img [src]="user.photoUrl" style="height: 20px;">
@@ -14,30 +13,20 @@
         <div style="display: inline-flex; margin-left: 8px;">
             <p>{{user.name}}</p>
         </div>
-    </div>
+    </div> -->
 
-    <div class="row">
-        <div class="col col-sm-2">
-            <p>Users in room:</p>
-        </div>
-        <div>
-            <ul>
-                <li *ngFor="let user of room.Users">
-                    <p>{{user.name}}</p>
-                </li>
-            </ul>
-        </div>
+        <div class="row">
+            <div class="row col-lg-12" style="max-height: 60vh;">
 
-        <div class="row col-lg-12" style="max-height: 60vh;">
+                <!-- video  -->
+                <div class="col-lg-9">
+                    <movie-player [room]="room" [user]="user"></movie-player>
+                </div>
 
-            <!-- video  -->
-            <div class="col-lg-8">
-                <movie-player [room]="room" [user]="user"></movie-player>
-            </div>
-
-            <!-- chat -->
-            <div class="col-lg-4 hidden-md hidden-sm hidden-xs">
-                <menu [room]="room" [user]="user"></menu>
+                <!-- chat -->
+                <div class="col-lg-3 hidden-md hidden-sm hidden-xs">
+                    <menu [room]="room" [user]="user"></menu>
+                </div>
             </div>
         </div>
     </div>

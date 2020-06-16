@@ -1,28 +1,42 @@
 <button (click)="triggerAudio()" type="button">audio</button>
 <button (click)="triggerVideo()" type="button">video</button>
-<mat-grid-list cols="3" rows="3">
-  <mat-grid-tile *ngFor="let client of webrtcClients">
-    <div>
-      <div *ngIf="client.stream.getVideoTracks()[0].enabled">
-        <video autoplay width="150" height="100"
-         [srcObject]="client.stream"
-         [muted]="client.id === socketId"
-         (onPlay)="stopPropagation($event)"
-         (onPause)="stopPropagation($event)"></video>
-      </div>
+<!-- 
+<div class="row">
+  <div class="col col-sm-6">
+    <p>Users in room:</p>
+  </div>
+  <div>
+    <ul>
+      <li *ngFor="let user of room.Users">
+        <p>{{user.name}}</p>
+      </li>
+    </ul>
+  </div>
+</div> -->
 
-      <div *ngIf="!client.stream.getVideoTracks()[0].enabled">
-        <img width="150" height="100" [src]="client.user.photoUrl" />
-      </div>
+<div *ngIf="webrtcClients!== undefined && webrtcClients.length!==0">
+
+  <mat-grid-list [cols]='webrtcClients.length<=4? 1 : 2' rows="3">
+    <mat-grid-tile *ngFor="let client of webrtcClients">
+      <div>
+        <div *ngIf="client.stream.getVideoTracks()[0].enabled">
+          <video autoplay width="320" height="240" [srcObject]="client.stream" [muted]="client.id === socketId"
+            (onPlay)="stopPropagation($event)" (onPause)="stopPropagation($event)"></video>
+        </div>
+
+        <div *ngIf="!client.stream.getVideoTracks()[0].enabled">
+          <img width="320" height="240" [src]="client.user.photoUrl" />
+        </div>
 
 
-      <div *ngIf="client.stream.getAudioTracks()[0].enabled">
-        <p>sound on</p>
-      </div>
+        <div *ngIf="client.stream.getAudioTracks()[0].enabled">
+          <p>sound on</p>
+        </div>
 
-      <div *ngIf="!client.stream.getAudioTracks()[0].enabled">
-        <p>sound off</p>
+        <div *ngIf="!client.stream.getAudioTracks()[0].enabled">
+          <p>sound off</p>
+        </div>
       </div>
-    </div>
-  </mat-grid-tile>
-</mat-grid-list>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

@@ -3,6 +3,7 @@ import { ChatMessage } from 'src/app/entities/chatMessage';
 import { SocialUser } from 'angularx-social-login';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { MovieRoom } from 'src/app/entities/movieRoom';
+import { MatTabChangeEvent } from '@angular/material/tabs';
 
 @Component({
   selector: 'chat',
@@ -18,6 +19,7 @@ export class ChatComponent implements OnChanges {
   @Input() user: SocialUser;
 
   newMessagesCount: number = 0;
+  isUsersTabSelected: boolean = true;
 
   constructor(private webSocketService: WebSocketsService) {
   }
@@ -26,5 +28,10 @@ export class ChatComponent implements OnChanges {
     if (!this.room || !this.user) {
       return;
     }
+  }
+
+  selectionChange(event: MatTabChangeEvent) {
+    console.log(event.index);
+    this.isUsersTabSelected = event.index === 0;
   }
 }
