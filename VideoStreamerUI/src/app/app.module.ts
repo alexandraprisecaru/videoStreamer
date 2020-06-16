@@ -22,6 +22,10 @@ import { ChatRoomComponent } from './components/chat-room/chat-room.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActionsComponent } from './components/actions/actions.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 const config = new AuthServiceConfig([
   {
@@ -58,7 +62,11 @@ export function provideConfig() {
     BrowserAnimationsModule,
     MatVideoModule,
     MatTabsModule,
-    WebRTCChatModule
+    MatIconModule,
+    MatButtonModule,
+    WebRTCChatModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [
     {

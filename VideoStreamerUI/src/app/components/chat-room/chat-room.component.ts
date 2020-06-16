@@ -25,6 +25,8 @@ export class ChatRoomComponent implements OnInit {
   isNearBottom: boolean = true;
   sentMessage: boolean = false;
 
+  message: string = "";
+
   constructor(private webSocketService: WebSocketsService) {
   }
 
@@ -46,14 +48,14 @@ export class ChatRoomComponent implements OnInit {
     this.itemElements.changes.subscribe(_ => this.onItemElementsChanged());
   }
 
-  sendMessage(value: string) {
-    if (!value || value === "") {
+  sendMessage() {
+    if (!this.message || this.message === "") {
       return;
     }
     let chatMessage: ChatMessage = new ChatMessage(
       this.roomId,
       this.user,
-      value,
+      this.message,
       "voice msg cica",
       new Date(),
       1 //this.video.getVideoTag().currentTime
@@ -61,8 +63,8 @@ export class ChatRoomComponent implements OnInit {
 
     this.chatMessages.push(chatMessage);
     this.sentMessage = true;
+    this.message = "";
 
-    this.formValues.nativeElement.reset();
     this.webSocketService.sendChatMessageRequest(this.roomId, chatMessage);
   }
 

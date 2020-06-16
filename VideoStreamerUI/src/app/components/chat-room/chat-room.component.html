@@ -40,15 +40,13 @@
         </div>
     </div>
     <div class="panel-footer">
-        <form #msgForm>
-            <div class="input-group input-group-sm">
-                <input #msg type="text" class="form-control" placeholder="Send a message..."
-                    (keyup.space)="stopPropagation($event)" (keyup.m)="stopPropagation($event)" />
-                <span class="input-group-btn">
-                    <button class="btn btn-primary" type="submit"
-                        style="height: 31px; margin-left: 5px; padding-top: 2px;"
-                        (click)="sendMessage(msg.value)">Send</button>
-                </span>
-            </div>
-        </form>
+        <mat-form-field class="example-full-width">
+            <input matInput type="text" [(ngModel)]="message"
+            (keyup.space)="stopPropagation($event)" (keyup.m)="stopPropagation($event)" 
+            (keyup.enter)="sendMessage()">
+        </mat-form-field>
+
+        <a mat-icon-button [routerLink]="" (click)="sendMessage()" style="fill: pink">
+            <mat-icon>send</mat-icon>
+        </a>
     </div>

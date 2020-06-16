@@ -1,1 +1,31 @@
-<p>actions works!</p>
+<div class="row">
+    <div class="col">
+        <a mat-mini-fab [routerLink]="" (click)="triggerVideo()" *ngIf="isVideoEnabled" color="primary">
+            <mat-icon>videocam</mat-icon>
+        </a>
+
+        <a mat-mini-fab [routerLink]="" (click)="triggerVideo()" *ngIf="!isVideoEnabled" color="accent">
+            <mat-icon>videocam_off</mat-icon>
+        </a>
+    </div>
+
+    <div class="col">
+        <a mat-mini-fab [routerLink]="" (click)="triggerAudio()" *ngIf="isAudioEnabled" color="primary">
+            <mat-icon>mic</mat-icon>
+        </a>
+
+        <a mat-mini-fab [routerLink]="" (click)="triggerAudio()" *ngIf="!isAudioEnabled" color="accent">
+            <mat-icon>mic_off</mat-icon>
+        </a>
+    </div>
+
+    <div class="col">
+        <a mat-mini-fab [routerLink]="" (click)="triggerComments()" *ngIf="areCommentsVisible" color="primary">
+            <mat-icon>comment</mat-icon>
+        </a>
+
+        <a mat-mini-fab [routerLink]="" (click)="triggerComments()" *ngIf="!areCommentsVisible" color="accent">
+            <mat-icon>comment</mat-icon>
+        </a>
+    </div>
+</div>

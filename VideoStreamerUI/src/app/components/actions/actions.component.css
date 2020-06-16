@@ -1,0 +1,9 @@
+  ::ng-deep mat-button.mat-primary .mat-button-focus-overlay {
+    background-color: transparent;
+  }
+
+  .example-button-container {
+    display: flex;
+    justify-content: center;
+    width: 120px;
+  }
