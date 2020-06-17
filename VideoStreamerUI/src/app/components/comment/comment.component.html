@@ -1,15 +1,15 @@
-<div *ngIf="video">
-    <div class="row">
+<div *ngIf="video" style="margin-left:15px; margin-right: 15px;">
+    <!-- <div class="row">
         <div class="col col-sm-2">
             <p>Send comment:</p>
         </div>
         <div class="col col-sm-1">
-            <input #comm (keyup.enter)="sendComment()"
-                (keyup.space)="stopPropagation($event)"
-                (keyup.m)="stopPropagation($event)"
-                [(ngModel)]="inputComment">
+            <input #comm (keyup.enter)="sendComment()" (keyup.space)="stopPropagation($event)"
+                (keyup.m)="stopPropagation($event)" [(ngModel)]="inputComment">
         </div>
-    </div>
+    </div> -->
 
-    <p>Current comment: {{currentComment}}</p>
+    <div style="background-color: rgba(0, 0, 0, 0.2); padding: 2px; color: rgba(112,128,144, 0.5);">
+        <p>{{currentComment}}</p>
+    </div>
 </div>

@@ -6,3 +6,16 @@ video {
 ::ng-deep .mat-grid-tile{
     padding: 0px;
 }
+
+img{
+    border-radius: 50%;
+    height: 150px;
+}
+
+.center {
+    position: relative;          /* where the next element will be automatically positioned */
+    display: inline-block;       /* causes element width to shrink to fit content */
+    left: 25%;                   /* moves left side of image/element to center of parent element */
+    top: 50%;
+    transform: translateY(-50%);
+}

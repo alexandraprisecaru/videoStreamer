@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer, Observable, of, Subject, BehaviorSubject } from 'rxjs';
@@ -12,6 +12,8 @@ import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdat
   styleUrls: ['./movie-room.component.scss']
 })
 export class MovieRoomComponent implements OnInit {
+
+  @ViewChild("moviecontainer") movieCotainer: HTMLDivElement;
   room: MovieRoom;
   roomId: string;
 
@@ -43,7 +45,7 @@ export class MovieRoomComponent implements OnInit {
     this.createMovieRoomUpdatesSubscription();
     this.createUserDisconnectedSubscription();
   }
-
+  
   private processMovieRoom(room: MovieRoom): Observable<MovieRoom> {
     console.debug('Movie Room received through the observer:\n%o', room);
 

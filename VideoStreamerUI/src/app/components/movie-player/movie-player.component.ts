@@ -168,7 +168,7 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
   autoplay: boolean = true;
   preload: boolean = true;
   loop: boolean = false;
-  fullscreen: boolean = false;
+  fullscreen: boolean = true;
   download: boolean = false;
   quality: boolean = true;
   keyboard: boolean = true;

@@ -1,31 +1,30 @@
 <div *ngIf="(isConnected | async) === false">
-    <h1>Seems like you connected somewhere else. Byee</h1>
+    <h1>You've been disconnected. Check if you connected in another tab</h1>
 </div>
 
 <div *ngIf="(isConnected | async) === true">
 
-    <div *ngIf="room!==undefined" style="padding: 10px;">
-        <!-- <div class="row">
-        <div class="col col-lg-10"></div>
-        <div style="display: inline-flex;">
-            <img [src]="user.photoUrl" style="height: 20px;">
-        </div>
-        <div style="display: inline-flex; margin-left: 8px;">
-            <p>{{user.name}}</p>
-        </div>
-    </div> -->
+    <div id="movieroomcontainer">
+        <div *ngIf="room!==undefined">
+            <div class="row">
+                <movie-player [room]="room" [user]="user" id="nopadding" style="width: 100%; height: 100%">
+                </movie-player>
+            </div>
+            <div class="row rowoverlay" style=" pointer-events:none;">
 
-        <div class="row">
-            <div class="row col-lg-12" style="max-height: 60vh;">
+                <div class="row col-md-12 col-xs-12" id="nopadding">
 
-                <!-- video  -->
-                <div class="col-lg-9">
-                    <movie-player [room]="room" [user]="user"></movie-player>
-                </div>
+                    <!-- video  -->
+                    <div class="col-md-9 col-xs-8" id="nopadding">
+                    </div>
 
-                <!-- chat -->
-                <div class="col-lg-3 hidden-md hidden-sm hidden-xs">
-                    <menu [room]="room" [user]="user"></menu>
+                    <!-- chat -->
+                    <div class="col-md-3 col-xs-4 hidden-md hidden-sm hidden-xs" id="nopadding"
+                        style=" pointer-events:auto !important;">
+                        <menu [room]="room" [user]="user" id="nopadding"
+                            style=" margin: 0px; background-color: rgba(255, 0, 0, 0.25);">
+                        </menu>
+                    </div>
                 </div>
             </div>
         </div>

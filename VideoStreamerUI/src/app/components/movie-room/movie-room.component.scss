@@ -1,0 +1,18 @@
+#nopadding {
+    padding: 0px;
+}
+
+.rowoverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+}
+
+#movieroomcontainer {
+    margin-left: 15px;
+    margin-right: 15px;
+}
