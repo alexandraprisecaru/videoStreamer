@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer, Observable, of, Subject, BehaviorSubject } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { AuthService, SocialUser } from 'angularx-social-login';
 import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdate';
+// import fscreen from 'fscreen';
 
 @Component({
   selector: 'app-movie-room',
@@ -13,12 +14,30 @@ import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdat
 })
 export class MovieRoomComponent implements OnInit {
 
-  @ViewChild("moviecontainer") movieCotainer: HTMLDivElement;
+  @ViewChild("menucontainer") menucontainer: HTMLElement;
   room: MovieRoom;
   roomId: string;
 
   user: SocialUser;
   isConnected: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+
+  // hasFullscreenSupport: boolean;
+  // isFullscreen: boolean;
+
+  // ngOnDestroy() {
+  //   if (this.hasFullscreenSupport) {
+  //     fscreen.removeEventListener('fullscreenchange');
+  //   }
+  // }
+
+  // toggleFullscreen() {
+  //   if (this.hasFullscreenSupport && !this.isFullscreen) {
+  //     const elem = document.body;
+  //     fscreen.requestFullscreen(elem);
+  //   } else {
+  //     fscreen.exitFullscreen();
+  //   }
+  // }
 
   constructor(private route: ActivatedRoute,
     private webSocketService: WebSocketsService,
@@ -38,6 +57,14 @@ export class MovieRoomComponent implements OnInit {
         }
       })
     });
+
+    // this.hasFullscreenSupport = fscreen.fullscreenEnabled;
+
+    // if (this.hasFullscreenSupport) {
+    //   fscreen.addEventListener('fullscreenchange', () => {
+    //     this.isFullscreen = (fscreen.fullscreenElement !== null);
+    //   }, false);
+    // }
   }
 
   ngOnInit(): void {

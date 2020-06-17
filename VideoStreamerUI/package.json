@@ -24,6 +24,7 @@
     "@types/socket.io-client": "^1.4.33",
     "angularx-social-login": "^2.3.1",
     "bootstrap": "^4.5.0",
+    "fscreen": "^1.0.2",
     "immutable": "3.8.1",
     "mat-video": "^2.8.1",
     "ngx-cookie-service": "^3.0.4",

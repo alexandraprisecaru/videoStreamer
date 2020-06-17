@@ -2,28 +2,35 @@
     <h1>You've been disconnected. Check if you connected in another tab</h1>
 </div>
 
-<div *ngIf="(isConnected | async) === true">
 
+<div *ngIf="(isConnected | async) === true">
     <div id="movieroomcontainer">
         <div *ngIf="room!==undefined">
             <div class="row">
+                <!-- video  -->
+
                 <movie-player [room]="room" [user]="user" id="nopadding" style="width: 100%; height: 100%">
                 </movie-player>
             </div>
-            <div class="row rowoverlay" style=" pointer-events:none;">
 
-                <div class="row col-md-12 col-xs-12" id="nopadding">
+            <div class="row rowoverlay control-label" style="pointer-events:none;max-height: 70vh" #menucontainer
+                id="menucontent">
 
-                    <!-- video  -->
-                    <div class="col-md-9 col-xs-8" id="nopadding">
-                    </div>
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 control-label" id="nopadding">
+                    <div class="col-lg-9 col-md-8 col-sm-2 col-xs-10 control-label" id="nopadding"> </div>
 
-                    <!-- chat -->
-                    <div class="col-md-3 col-xs-4 hidden-md hidden-sm hidden-xs" id="nopadding"
-                        style=" pointer-events:auto !important;">
-                        <menu [room]="room" [user]="user" id="nopadding"
-                            style=" margin: 0px; background-color: rgba(255, 0, 0, 0.25);">
-                        </menu>
+                    <!-- menu -->
+                    <div class="col-lg-3 col-md-4 col-sm-10 col-xs-10 hidden-md hidden-sm hidden-xs control-label"
+                        id="nopadding" style=" pointer-events:auto !important; ">
+
+                        <div class="row" id="nopadding" style="margin:0px;">
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label" id="nopadding"></div>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 control-label" id="nopadding">
+                                <menu [room]="room" [user]="user" id="nopadding"
+                                    style=" margin: 0px; background-color: rgba(255, 0, 0, 0.25); max-height: 70vh;">
+                                </menu>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

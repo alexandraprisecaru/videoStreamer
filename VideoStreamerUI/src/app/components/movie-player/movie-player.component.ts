@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ViewChild, ChangeDetectorRef, Output, EventEmitter, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
@@ -13,6 +13,7 @@ import { SocialUser } from 'angularx-social-login';
 export class MoviePlayerComponent implements OnInit, OnChanges {
   videoComp: MatVideoComponent;
   htmlVideo: HTMLVideoElement;
+
   @ViewChild('video') set matVideo(matVideo: MatVideoComponent) {
     if (matVideo) { // initially setter gets called with undefined
       this.videoComp = matVideo;
@@ -29,6 +30,20 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
   constructor(
     private webSocketService: WebSocketsService,
     private changeDetector: ChangeDetectorRef) { }
+
+  // ngAfterViewInit(): void {
+  //   setTimeout(() => {
+  //     (document.getElementsByTagName("mat-fullscreen-button")[0] as any).onclick = () => {
+  //       console.log("wtf am I dooooiiiiing on click 2");
+  //       this.toggleFullscreen((document.getElementsByTagName("mat-fullscreen-button")[0] as any));
+  //     }
+  //     // ((document.getElementsByTagName("mat-fullscreen-button")[0] as any) as MatFullscreenButtonComponent).player.click = () => {
+  //     //   this.isFullScreen.next(!this.isFullScreen);
+  //     //   this.toggleFullscreen();
+  //     //   console.log("hmmm ok works from code");
+  //     // };
+  //   }, 1000);
+  // }
 
   ngOnInit(): void {
     this.createMovieRoomPauseUpdatesSubscription();
@@ -168,7 +183,7 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
   autoplay: boolean = true;
   preload: boolean = true;
   loop: boolean = false;
-  fullscreen: boolean = true;
+  fullscreen: boolean = false;
   download: boolean = false;
   quality: boolean = true;
   keyboard: boolean = true;
