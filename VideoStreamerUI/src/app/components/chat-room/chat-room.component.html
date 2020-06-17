@@ -1,27 +1,10 @@
-<div class="panel panel-primary">
-    <div class="panel-heading" style="padding:0;">
-        <!-- <span class="glyphicon glyphicon-user"></span> -->
-        <h6 class="panel-title" style="display:inline;">Chat</h6>
-        <!-- <div class="btn-group btn-group-xs pull-right">
-        <button type="button" class="btn btn-primary"><span
-                class="glyphicon glyphicon-lock"></span></button>
-        <button type="button" class="btn btn-primary"><span
-                class="glyphicon glyphicon-cog"></span></button>
-        <button type="button" class="btn btn-primary"><span
-                class="glyphicon glyphicon-remove"></span></button>
-    </div> -->
-        <div class="clearfix"></div>
-    </div>
-
-    <div *ngIf="newMessagesCount!==0">
-        <button (click)="scrollToBottom()">You have {{newMessagesCount}} new messages</button>
-    </div>
-    <div class="panel-body" style="padding:0;">
+<div class="panel panel-primary" style="max-height: 100%; height: 100%;">
+    <div class="panel-body">
         <div #scrollframe class="frame" (scroll)="scrolled($event)"
-            style="max-height:70vh; max-width:100%;overflow-y:auto;overflow-x:hidden; padding: 0px;">
+            style="max-height:68vh; max-width:100%;overflow-y:auto;overflow-x:hidden; padding: 0px;">
             <table class="table table-hover table-condensed" *ngIf="chatMessages.length !== 0">
 
-                <tr *ngFor="let message of chatMessages" style="width:100%;" class="row" #item>
+                <tr *ngFor="let message of chatMessages" style="width:100%; margin: 0px;" class="row" #item>
                     <td style="padding-right: 0px;">
                         <img [src]="message.User.photoUrl" style="height: 20px;" /></td>
                     <td style="padding-right: 0px;">
@@ -39,14 +22,21 @@
             </table>
         </div>
     </div>
-    <div class="panel-footer">
+
+    <div *ngIf="newMessagesCount!==0">
+        <div style="text-align: center; margin-top: -40px;">
+            <button mat-raised-button color="primary" (click)="scrollToBottom()">You have {{newMessagesCount}} new
+                messages</button>
+        </div>
+    </div>
+
+    <div style="position: absolute; bottom: 8px; display: inline-flex; width: 100%; align-items: baseline; padding-left: 8px; padding-right: 8px; ">
         <mat-form-field class="example-full-width">
-            <input matInput type="text" [(ngModel)]="message"
-            (keyup.space)="stopPropagation($event)" (keyup.m)="stopPropagation($event)" 
-            (keyup.enter)="sendMessage()">
+            <input matInput type="text" [(ngModel)]="message" (keyup.space)="stopPropagation($event)"
+                (keyup.m)="stopPropagation($event)" (keyup.enter)="sendMessage()">
         </mat-form-field>
 
-        <a mat-icon-button [routerLink]="" (click)="sendMessage()" style="fill: pink">
-            <mat-icon>send</mat-icon>
+        <a mat-icon-button [routerLink]="" (click)="sendMessage()">
+            <mat-icon style="color: pink; padding-top:5px;">send</mat-icon>
         </a>
     </div>

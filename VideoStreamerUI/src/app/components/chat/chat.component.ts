@@ -19,7 +19,7 @@ export class ChatComponent implements OnChanges {
   @Input() user: SocialUser;
 
   newMessagesCount: number = 0;
-  isUsersTabSelected: boolean = true;
+  isUsersTabSelected: boolean = false;
 
   constructor(private webSocketService: WebSocketsService) {
   }
