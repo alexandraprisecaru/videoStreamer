@@ -3,7 +3,7 @@ import { MovieComment } from 'src/app/entities/movieComment';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { SocialUser } from 'angularx-social-login';
 import { MovieRoom } from 'src/app/entities/movieRoom';
-import { Observer, Subject } from 'rxjs';
+import { Observer, Subject, fromEvent } from 'rxjs';
 
 @Component({
   selector: 'comment',
@@ -18,7 +18,14 @@ export class CommentComponent implements OnInit, OnChanges {
 
   comments: MovieComment[] = [];
   currentComment: string = "";
+  currentCommentUser: string = "";
   inputComment: string = "";
+  areCommentsVisible: boolean = true;
+  isAddCommentInputVisible: boolean = false;
+
+  commentsHiddenOnAdd = false;
+
+  showButtons = false;
 
   movieCurrentTime: Subject<number> = new Subject<number>();
 
@@ -27,6 +34,15 @@ export class CommentComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.createCommentsReponsesSubscription();
     this.createCommentUpdatesSubscription();
+
+    fromEvent(document, 'mousemove')
+      .subscribe(e => {
+        console.log("mouse moved" + e);
+        this.showButtons = true;
+        setTimeout(() => {
+          this.showButtons = false;
+        }, 8000);
+      });
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
@@ -53,6 +69,7 @@ export class CommentComponent implements OnInit, OnChanges {
 
     this.comments.push(comment);
     this.inputComment = "";
+    this.hideAddComment();
     this.webSocketService.sendMovieCommentRequest(this.room.Movie.Id, comment);
   }
 
@@ -86,15 +103,45 @@ export class CommentComponent implements OnInit, OnChanges {
   }
 
   show() {
+    let previousComment: MovieComment;
     this.movieCurrentTime.subscribe(time => {
 
-      let comment = this.comments.find(x => x.Shown === undefined && x.CurrentTime - time < 2 && x.CurrentTime - time > -2);
+      let comment = this.comments.find(x => x.CurrentTime - time < 2 && x.CurrentTime - time > -2);
       if (comment) {
-        this.currentComment = `${comment.User.firstName}: ${comment.Comment}`;
-        comment.Shown = true;
-        setTimeout(() => { this.currentComment = "" }, 2000)
+        if (previousComment && previousComment.Id === comment.Id) {
+          return;
+        }
+
+        this.currentComment = comment.Comment;
+        previousComment = comment;
+        this.currentCommentUser = comment.User.firstName;
+        setTimeout(() => { this.currentComment = ""; this.currentCommentUser = "" }, 20000)
       }
     });
+  }
+
+  triggerComments() {
+    this.areCommentsVisible = !this.areCommentsVisible;
+  }
+
+  showAddComment() {
+    this.isAddCommentInputVisible = !this.isAddCommentInputVisible;
+
+    if (this.areCommentsVisible) {
+      this.areCommentsVisible = false;
+      this.commentsHiddenOnAdd = true;
+    }
+
+    this.video.pause();
+  }
+
+  hideAddComment() {
+    this.isAddCommentInputVisible = !this.isAddCommentInputVisible;
+    if (this.commentsHiddenOnAdd) {
+      this.areCommentsVisible = true;
+    }
+
+    this.video.play();
   }
 
   private createCommentsReponsesSubscription() {

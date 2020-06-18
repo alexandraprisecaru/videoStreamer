@@ -1,15 +1,60 @@
-<div *ngIf="video" style="margin-left:15px; margin-right: 15px;">
-    <!-- <div class="row">
-        <div class="col col-sm-2">
-            <p>Send comment:</p>
-        </div>
-        <div class="col col-sm-1">
-            <input #comm (keyup.enter)="sendComment()" (keyup.space)="stopPropagation($event)"
-                (keyup.m)="stopPropagation($event)" [(ngModel)]="inputComment">
-        </div>
-    </div> -->
+<div *ngIf="video" style="margin-left:15px; margin-top: 10px;">
+    <div class="row" id="nopadding">
+        <div class="col" id="nopadding">
+            <div [style.visibility]="!showButtons ? 'hidden' : 'visible' ">
+                <div>
+                    <a mat-icon-button [routerLink]="" (click)="triggerComments()" *ngIf="!areCommentsVisible"
+                        color="accent">
+                        <mat-icon>speaker_notes</mat-icon>
+                    </a>
 
-    <div style="background-color: rgba(0, 0, 0, 0.2); padding: 2px; color: rgba(112,128,144, 0.5);">
-        <p>{{currentComment}}</p>
+                    <a mat-icon-button [routerLink]="" (click)="triggerComments()" *ngIf="areCommentsVisible"
+                        color="accent">
+                        <mat-icon>speaker_notes_off</mat-icon>
+                    </a>
+                </div>
+
+                <div>
+                    <a mat-icon-button [routerLink]="" (click)="showAddComment()" *ngIf="!isAddCommentInputVisible"
+                        color="accent">
+                        <mat-icon>add</mat-icon>
+                    </a>
+
+                    <a mat-icon-button [routerLink]="" (click)="hideAddComment()" *ngIf="isAddCommentInputVisible"
+                        color="accent">
+                        <mat-icon>cancel</mat-icon>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="nopadding" style="margin-top: 10px; width:600px; ">
+            <div *ngIf="isAddCommentInputVisible">
+                <div class="row" id="nopadding" style="padding:5px; background-color: rgba(24, 23, 23, 0.5); border-radius: 1%; ">
+                    <div class="col col-md-9" id="nopadding">
+                        <mat-form-field class="example-full-width" id="nopadding">
+                            <input matInput type="text" [(ngModel)]="inputComment"
+                                placeholder="Write your comment here.." maxlength="100"
+                                (keyup.space)="stopPropagation($event)" (keyup.m)="stopPropagation($event)"
+                                (keyup.enter)="sendComment()">
+                        </mat-form-field>
+                    </div>
+                    <div class="col col-md-3" id="nopadding"
+                        style="text-align: end; display: flex; align-items: center;">
+                        <button mat-stroked-button color="primary" (click)="sendComment()">SEND</button>
+                        <button mat-stroked-button color="primary" (click)="hideAddComment()">CANCEL</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div *ngIf="areCommentsVisible && currentComment!==''">
+                <!-- <div style="background-color: rgba(0, 0, 0, 0.2);" id="nopadding"> -->
+                <div style="background-color: rgba(24, 23, 23, 0.3); padding:5px;  border-radius: 1%; min-height: 67px;" id="nopadding">
+                    <p style="color: rgba(196, 208, 219, 0.9); margin: 0px; font-size: 12px;">{{currentCommentUser}}</p>
+                    <p style="color: white; margin: 0px;  font-size: 15px;">{{currentComment}}<3>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

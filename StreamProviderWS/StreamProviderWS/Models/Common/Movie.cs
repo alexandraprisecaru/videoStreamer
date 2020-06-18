@@ -5,5 +5,7 @@
         public string Title { get; set; }
 
         public string Synopsis { get; set; }
+
+        public string StreamUrl { get; set; }
     }
 }
