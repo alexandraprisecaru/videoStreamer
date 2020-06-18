@@ -36,13 +36,13 @@ export class CommentComponent implements OnInit, OnChanges {
     this.createCommentUpdatesSubscription();
 
     fromEvent(document, 'mousemove')
-      .subscribe(e => {
-        console.log("mouse moved" + e);
-        this.showButtons = true;
-        setTimeout(() => {
-          this.showButtons = false;
-        }, 8000);
-      });
+    .subscribe(e => {
+      console.log("mouse moved" + e);
+      this.showButtons = true;
+      setTimeout(() => {
+        this.showButtons = false;
+      }, 8000);
+    });
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {

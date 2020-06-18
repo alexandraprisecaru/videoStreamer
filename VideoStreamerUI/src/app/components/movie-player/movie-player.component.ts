@@ -56,7 +56,8 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.title = this.room.Movie.Title;
+    // this.title = this.room.Movie.Title;
+    this.src = this.room.Movie.StreamUrl;
     this.changeDetector.detectChanges();
 
     this.htmlVideo.onpause = () => {
@@ -178,8 +179,8 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
   }
 
   ngclass: any;
-  src: string = "http://static.videogular.com/assets/videos/videogular.mp4";
-  title: string = this.room ? this.room.Movie.Title : "Not loaded yet";
+  src: string = "";
+  title: string ="";// this.room ? this.room.Movie.Title : "Not loaded yet";
   autoplay: boolean = true;
   preload: boolean = true;
   loop: boolean = false;
@@ -189,7 +190,7 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
   keyboard: boolean = true;
   spinner: any;
   poster: any;
-  muted: boolean = true;
+  muted: boolean = false;
   overlay: boolean = true;
   showFrameByFrame: boolean = false;
   currentTime: number = 1;
