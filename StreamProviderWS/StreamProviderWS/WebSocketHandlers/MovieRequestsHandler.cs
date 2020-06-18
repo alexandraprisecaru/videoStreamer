@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StreamProviderWS.Managers;
+using StreamProviderWS.Models;
 using StreamProviderWS.Models.Common;
 using StreamProviderWS.Models.WebSocket;
 using StreamProviderWS.Models.WebSocket.RequestsMessages;
@@ -30,7 +31,7 @@ namespace StreamProviderWS.WebSocketHandlers
             IChatMessagesProvider chatMessagesProvider,
             IMovieCommentsProvider commentsProvider,
             IRoomSocketsManager roomSocketsManager)
-            : base(webSocketConnectionManager, roomSocketsManager)
+            : base(webSocketConnectionManager, roomSocketsManager, roomsProvider)
         {
             _movieProvider = movieProvider;
             _userProvider = userProvider;
@@ -107,7 +108,7 @@ namespace StreamProviderWS.WebSocketHandlers
                         break;
                     case MessageType.STOPPED_VIDEO_NOTIFICATION:
                         await HandleStoppedVideoNotification(messageWrapper);
-                        break;       
+                        break;
                     case MessageType.STOPPED_AUDIO_NOTIFICATION:
                         await HandleStoppedAudioNotification(messageWrapper);
                         break;
@@ -322,7 +323,8 @@ namespace StreamProviderWS.WebSocketHandlers
 
             var wasUpdated = false;
             // todo: check user id
-            if (!room.Users.Any(u => u.id.Equals(userId)))
+
+            if (!room.UsersInRoom.Any(u => u.User.id.Equals(userId) && u.IsActive))
             {
                 var user = await _userProvider.GetById(userId);
                 if (user == null)
@@ -330,7 +332,16 @@ namespace StreamProviderWS.WebSocketHandlers
                     return;
                 }
 
-                room.Users.Add(user);
+                var existentUser = room.UsersInRoom.FirstOrDefault(x => x.User.id.Equals(user.id));
+                if (existentUser != null)
+                {
+                    existentUser.IsActive = true;
+                }
+                else
+                {
+                    room.UsersInRoom.Add(new UserRoom { User = user, IsActive = true });
+                }
+
                 await _roomsProvider.Update(room.Id, room);
                 wasUpdated = true;
 
@@ -453,7 +464,7 @@ namespace StreamProviderWS.WebSocketHandlers
             var userId = request.UserId;
 
             // todo: check user id
-            if (!room.Users.Any(u => u.id.Equals(userId)))
+            if (!room.UsersInRoom.Select(x => x.User).Any(u => u.id.Equals(userId)))
             {
                 // the messages request was not sent by someone in the same room
                 return;
@@ -494,7 +505,7 @@ namespace StreamProviderWS.WebSocketHandlers
             var userId = request.UserId;
 
             // todo: check user id
-            if (!room.Users.Any(u => u.id.Equals(userId)))
+            if (!room.UsersInRoom.Select(x => x.User).Any(u => u.id.Equals(userId)))
             {
                 // the messages was not sent by someone in the same room
                 return;
@@ -624,7 +635,7 @@ namespace StreamProviderWS.WebSocketHandlers
                 {
                     if (!userSocket.SocketId.Equals(socketId))
                     {
-                        var statusUpdate = new SocketStatusUpdate { IsConnected = false, SocketId = userSocket.SocketId };
+                        var statusUpdate = new SocketStatusUpdate { IsConnected = false, SocketId = userSocket.SocketId, UserId = userSocket.UserId };
                         var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
 
                         MessageWrapper messageWrapper = new MessageWrapper
@@ -634,7 +645,7 @@ namespace StreamProviderWS.WebSocketHandlers
                         };
 
                         var json = JsonConvert.SerializeObject(messageWrapper);
-                         await SendMessageToAllInRoomAsync(roomSocket.RoomId, json);
+                        await SendMessageToAllInRoomAsync(roomSocket.RoomId, json);
 
                         await WebSocketConnectionManager.RemoveSocket(userSocket.SocketId);
                         _roomSocketsManager.DeleteBySocketId(userSocket.SocketId);

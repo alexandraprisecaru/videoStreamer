@@ -10,7 +10,8 @@ namespace StreamProviderWS.WebSocketHandlers
 {
     public class ChatHandler : WebSocketHandler
     {
-        public ChatHandler(ConnectionManager webSocketConnectionManager, IRoomSocketsManager roomSocketsManager) : base(webSocketConnectionManager, roomSocketsManager)
+        public ChatHandler(ConnectionManager webSocketConnectionManager, IRoomSocketsManager roomSocketsManager, IRoomsProvider roomsProvider)
+            : base(webSocketConnectionManager, roomSocketsManager, roomsProvider)
         {
         }
 

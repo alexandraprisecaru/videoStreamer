@@ -1,41 +1,35 @@
-<!-- 
-<div class="row">
-  <div class="col col-sm-6">
-    <p>Users in room:</p>
-  </div>
-  <div>
-    <ul>
-      <li *ngFor="let user of room.Users">
-        <p>{{user.name}}</p>
-      </li>
-    </ul>
-  </div>
-</div> -->
-
 <div class="panel panel-primary">
   <div class="panel-heading" style="padding:0;">
   </div>
 
   <div class="panel-body" style="padding:0;">
     <div style="max-height:70vh; max-width:100%;overflow-y:auto;overflow-x:hidden; padding: 0px;">
-      <mat-grid-list cols="1" rows="3">
-        <mat-grid-tile *ngFor="let client of webrtcClients">
-          <video width="320" height="240" *ngIf="client.stream.getVideoTracks()[0].enabled" autoplay
-            [srcObject]="client.stream" [muted]="client.id === socketId" (onPlay)="stopPropagation($event)"
-            (onPause)="stopPropagation($event)"></video>
+      <mat-list style="height: 70vh;">
+        <mat-list-item *ngFor="let client of webrtcClients" style="height: 240px; width: 320px;">
+          <div class="row" style="height: 240px;margin: 0px; width: 320px; justify-content: center;">
+            <div class="row" style="margin: 0px; padding: 0px;">
+              <video width="320" height="240" *ngIf="client.stream.getVideoTracks()[0].enabled" autoplay
+                [srcObject]="client.stream" [muted]="client.id === socketId" (onPlay)="stopPropagation($event)"
+                (onPause)="stopPropagation($event)" style="height: 220px; width: 300px;"></video>
 
-          <div *ngIf="!client.stream.getVideoTracks()[0].enabled" style="width:320px; height:240px; background: brown;">
-            <img [src]="client.user.photoUrl" class="center" />
-            <!-- 
-            <div *ngIf="client.stream.getAudioTracks()[0].enabled">
-              <p>sound on</p>
+              <div *ngIf="!client.stream.getVideoTracks()[0].enabled"
+                style="width:300px; height:220px; ">
+                <img [src]="client.user.photoUrl" class="center" />
+              </div>
+
             </div>
-      
-            <div *ngIf="!client.stream.getAudioTracks()[0].enabled">
-              <p>sound off</p>
-            </div> -->
+            <div class="row rowoverlay" style="height: 220px; width: 300px; justify-content: center; margin: 0px;">
+              <p style="align-self: flex-end; color: rgba(192, 191, 191, 0.8);">{{client.user.name}}</p>
+            </div>
+            <div class="row rowoverlay" style="height: 220px; width: 300px; justify-content: flex-end;">
+              <span mat-mini-fab *ngIf="!client.stream.getAudioTracks()[0].enabled"
+                style="align-self: flex-end; margin:5px;">
+                <mat-icon color="accent">mic_off</mat-icon>
+              </span>
+            </div>
           </div>
-        </mat-grid-tile>
-      </mat-grid-list>
+        </mat-list-item>
+      </mat-list>
     </div>
   </div>
+</div>

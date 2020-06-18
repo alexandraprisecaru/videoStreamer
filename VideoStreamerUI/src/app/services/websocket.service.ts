@@ -66,6 +66,7 @@ export class WebSocketsService {
   private userConnected: Subject<SocketStatusUpdate>;
   private userDisconnected: Subject<SocketStatusUpdate>;
   socketId: string = "";
+  userId: string = "";
 
   private socketEventPeerMessageSubject: Subject<PeerMessage>;
   private socketEventPeerConnectedSubject: Subject<ConnectToRoom>;
@@ -121,7 +122,7 @@ export class WebSocketsService {
 
   public stop(): void {
     if (this.webSocket != null) {
-      let socketStatus: SocketStatusUpdate = { IsConnected: false, SocketId: this.socketId };
+      let socketStatus: SocketStatusUpdate = { IsConnected: false, SocketId: this.socketId, UserId: this.userId };
       this.userDisconnected.next(socketStatus);
       this.webSocket.close();
     }
@@ -241,7 +242,7 @@ export class WebSocketsService {
 
     this.webSocket.onclose = function (closeEvent: CloseEvent) {
       console.info('WebSocket connection has been closed: %o', closeEvent);
-      let socketStatus: SocketStatusUpdate = { IsConnected: false, SocketId: self.socketId };
+      let socketStatus: SocketStatusUpdate = { IsConnected: false, SocketId: self.socketId, UserId: self.userId };
       self.userDisconnected.next(socketStatus);
     };
   }
@@ -275,6 +276,7 @@ export class WebSocketsService {
   }
 
   public sendSaveUserRequest(user: SocialUser): void {
+    this.userId = user.id;
     const request: SaveUserRequest = new SaveUserRequest(user);
     const message: MessageWrapper = new MessageWrapper(MessageType.SAVE_USER_REQUEST, request);
 

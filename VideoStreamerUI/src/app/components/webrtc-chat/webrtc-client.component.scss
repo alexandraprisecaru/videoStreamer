@@ -3,19 +3,53 @@ video {
     transform: scaleX(-1);
 }
 
-::ng-deep .mat-grid-tile{
+::ng-deep .mat-grid-tile {
     padding: 0px;
 }
 
-img{
+img {
     border-radius: 50%;
     height: 150px;
 }
 
 .center {
-    position: relative;          /* where the next element will be automatically positioned */
-    display: inline-block;       /* causes element width to shrink to fit content */
-    left: 25%;                   /* moves left side of image/element to center of parent element */
+    position: relative; /* where the next element will be automatically positioned */
+    display: inline-block; /* causes element width to shrink to fit content */
+    left: 25%; /* moves left side of image/element to center of parent element */
     top: 50%;
     transform: translateY(-50%);
+}
+
+.rowoverlay {
+    position: fixed;
+    // top: 0;
+    // left: 0;
+    // z-index: 2147483647;
+    z-index: 1;
+    // bottom: 0;
+    // right: 0;
+    height: 100%;
+}
+
+.my-fab {
+    width: 20px;
+    height: 20px;
+    line-height: 14px;
+    font-size: 14px;
+    border-radius: 50%;
+    &::ng-deep .mat-button-wrapper {
+        line-height: 20px;
+        padding: 0;
+
+        .mat-icon {
+            font-size: 20px;
+            padding-right: 0px;
+            margin: 0px;
+            padding-top: 0px;
+        }
+    }
+}
+
+::ng-deep .mat-list-base .mat-list-item .mat-list-item-content, .mat-list-base .mat-list-option .mat-list-item-content {
+    padding: 0px !important;
 }

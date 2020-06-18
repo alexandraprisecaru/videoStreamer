@@ -72,7 +72,7 @@ export class MovieRoomComponent implements OnInit {
     this.createMovieRoomUpdatesSubscription();
     this.createUserDisconnectedSubscription();
   }
-  
+
   private processMovieRoom(room: MovieRoom): Observable<MovieRoom> {
     console.debug('Movie Room received through the observer:\n%o', room);
 
@@ -145,8 +145,14 @@ export class MovieRoomComponent implements OnInit {
   }
 
   userDisconnected(status: SocketStatusUpdate) {
-    if (status.SocketId === this.webSocketService.socketId) {
+    if (status.SocketId === this.webSocketService.socketId && status.UserId === this.user.id) {
       this.isConnected.next(false);
     }
+
+    let user = this.room.UsersInRoom.find(x => x.User.id === status.UserId);
+    if (user) {
+      user.IsActive = false;
+    }
+
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using StreamProviderWS.Models;
 using StreamProviderWS.Models.Common;
 using StreamProviderWS.Repositories.Interfaces;
 
@@ -27,7 +28,7 @@ namespace StreamProviderWS.Services
         {
             var rooms = await _roomRepository.GetAllAsync();
 
-            return rooms.Where(x => x.Users.Any(u => u.id.Equals(userId))).ToList();
+            return rooms.Where(x => x.UsersInRoom.Select(x => x.User).Any(u => u.id.Equals(userId))).ToList();
         }
 
         public async Task<MovieRoom> CreateRoom(string movieId, string userId)
@@ -44,7 +45,7 @@ namespace StreamProviderWS.Services
             MovieRoom room = new MovieRoom
             {
                 Movie = movie,
-                Users = new List<User> { user },
+                UsersInRoom = new List<UserRoom> { new UserRoom { User = user, IsActive = true } },
                 Stream = "",
                 TimeWatched = 0
             };

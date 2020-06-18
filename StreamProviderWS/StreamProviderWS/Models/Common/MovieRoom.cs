@@ -6,7 +6,7 @@ namespace StreamProviderWS.Models.Common
     {
         public Movie Movie { get; set; }
 
-        public List<User> Users { get; set; }
+        public List<UserRoom> UsersInRoom { get; set; }
 
         public string Stream { get; set; }
 
