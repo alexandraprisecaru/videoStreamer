@@ -190,7 +190,7 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
   keyboard: boolean = true;
   spinner: any;
   poster: any;
-  muted: boolean = false;
+  muted: boolean = true;
   overlay: boolean = true;
   showFrameByFrame: boolean = false;
   currentTime: number = 1;

@@ -8,29 +8,49 @@
         <div *ngIf="room!==undefined">
             <div class="row">
                 <!-- video  -->
-
                 <movie-player [room]="room" [user]="user" id="nopadding" style="width: 100%; height: 100%">
                 </movie-player>
             </div>
-            <div class="row rowoverlay control-label">
-                
-            </div>
+
             <div class="row rowoverlay control-label" style="pointer-events:none;max-height: 100vh" #menucontainer
                 id="menucontent">
 
                 <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 control-label" id="nopadding">
-                    <div class="col-lg-9 col-md-8 col-sm-2 col-xs-10 control-label" id="nopadding"> </div>
+                    <div class="col-lg-8 col-md-7 col-sm-1 col-xs-9 control-label" id="nopadding">
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 control-label" id="nopadding"></div>
 
                     <!-- menu -->
                     <div class="col-lg-3 col-md-4 col-sm-10 col-xs-10 hidden-md hidden-sm hidden-xs control-label"
                         id="nopadding" style=" pointer-events:auto !important; ">
+                        <!-- <div class="row" id="nopadding" style="margin:0px;"> -->
+                        <!-- <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label" id="nopadding">
+                            </div> -->
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 control-label" id="nopadding">
+                            <div class="d-flex flex-row-reverse" id="nopadding">
+                                <div class="p-2" id="nopadding" #menu [style.display]="isMenuVisible ? 'block': 'none'">
+                                    <menu [room]="room" [user]="user" id="nopadding" id="collapseExample" style=" margin-right: 10px; border-radius: 1%; 
+                                    padding-left: 0px; margin-top:10px;background-color: rgba(24, 23, 23, 0.5);
+                                    width: 320px;
+                                         max-height: 90vh; min-height: 90vh; ">
+                                    </menu>
 
-                        <div class="row" id="nopadding" style="margin:0px;">
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 control-label" id="nopadding"></div>
-                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 control-label" id="nopadding">
-                                <menu [room]="room" [user]="user" id="nopadding"
-                                    style=" margin-right: 10px; border-radius: 1%; margin-top:10px;background-color: rgba(24, 23, 23, 0.5); max-height: 90vh; min-height: 90vh;">
-                                </menu>
+                                </div>
+                                <div class="p-2" id="nopadding">
+                                    <div id=" nopadding"
+                                        style="pointer-events:auto !important; height: fit-content; text-align: end; margin-top: 10px;">
+
+                                        <a mat-icon-button [routerLink]="" (click)="triggerMenu()" *ngIf="isMenuVisible"
+                                            color="accent">
+                                            <mat-icon>arrow_forward_ios</mat-icon>
+                                        </a>
+
+                                        <a mat-icon-button [routerLink]="" (click)="triggerMenu()"
+                                            *ngIf="!isMenuVisible" color="accent">
+                                            <mat-icon>arrow_back_ios</mat-icon>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

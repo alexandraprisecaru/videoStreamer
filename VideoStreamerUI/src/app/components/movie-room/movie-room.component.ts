@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { Observer, Observable, of, Subject, BehaviorSubject } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { AuthService, SocialUser } from 'angularx-social-login';
 import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdate';
+import { CookieService } from 'ngx-cookie-service';
 // import fscreen from 'fscreen';
 
 @Component({
@@ -14,12 +15,22 @@ import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdat
 })
 export class MovieRoomComponent implements OnInit {
 
-  @ViewChild("menucontainer") menucontainer: HTMLElement;
+  menucontainer: any;
+
+  @ViewChild('menu') set menu(menu: ElementRef) {
+    if (menu) { // initially setter gets called with undefined
+      this.menucontainer = menu;
+    }
+  }
+
   room: MovieRoom;
   roomId: string;
 
+  IS_MENU_VISIBLE = "isMenuVisible";
+
   user: SocialUser;
   isConnected: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  isMenuVisible: boolean;
 
   // hasFullscreenSupport: boolean;
   // isFullscreen: boolean;
@@ -41,7 +52,8 @@ export class MovieRoomComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
     private webSocketService: WebSocketsService,
-    private authService: AuthService) {
+    private authService: AuthService,
+    private cookieService: CookieService) {
 
     this.route.params.subscribe(params => {
       console.log(params);
@@ -56,6 +68,15 @@ export class MovieRoomComponent implements OnInit {
           this.webSocketService.sendMovieRoomWithIdRequest(this.roomId);
         }
       })
+
+      let cookieMenu = this.cookieService.get(this.IS_MENU_VISIBLE);
+      if (!cookieMenu) {
+        this.cookieService.delete(this.IS_MENU_VISIBLE);
+        this.cookieService.set(this.IS_MENU_VISIBLE, "true");
+        this.isMenuVisible = true;
+      } else {
+        this.isMenuVisible = cookieMenu === "true";
+      }
     });
 
     // this.hasFullscreenSupport = fscreen.fullscreenEnabled;
@@ -71,6 +92,13 @@ export class MovieRoomComponent implements OnInit {
     this.createMovieRoomResponsesSubscription();
     this.createMovieRoomUpdatesSubscription();
     this.createUserDisconnectedSubscription();
+  }
+
+  triggerMenu() {
+    this.isMenuVisible = !this.isMenuVisible;
+
+    this.cookieService.delete(this.IS_MENU_VISIBLE);
+    this.cookieService.set(this.IS_MENU_VISIBLE, String(this.isMenuVisible));
   }
 
   private processMovieRoom(room: MovieRoom): Observable<MovieRoom> {
