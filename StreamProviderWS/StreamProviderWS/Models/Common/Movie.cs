@@ -7,5 +7,6 @@
         public string Synopsis { get; set; }
 
         public string StreamUrl { get; set; }
+        public string Image { get; set; }
     }
 }

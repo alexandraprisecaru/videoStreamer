@@ -14,6 +14,12 @@ export class MovielistComponent implements OnInit {
 
   movies: Movie[] = [];
   movieRooms: MovieRoom[] = [];
+
+  moviesTest: Movie[] = [];
+
+  selectedMovie: Movie;
+  selectedMovieRooms: MovieRoom[] = [];
+
   constructor(private webSocketService: WebSocketsService, private router: Router) { }
 
   ngOnInit(): void {
@@ -40,6 +46,15 @@ export class MovielistComponent implements OnInit {
     console.debug('Movies received through the observer:\n%o', movieList);
 
     this.movies = movieList;
+    // todo: remove 
+    this.moviesTest.push(...this.movies);
+    this.moviesTest.push(...this.movies);
+    this.moviesTest.push(...this.movies);
+    this.moviesTest.push(...this.movies);
+    this.moviesTest.push(...this.movies);
+    this.moviesTest.push(...this.movies);
+    this.moviesTest.push(...this.movies);
+    this.moviesTest.push(...this.movies);
   }
 
   private processMovieRoom(room: MovieRoom): void {
@@ -52,6 +67,21 @@ export class MovielistComponent implements OnInit {
     console.debug('Movie Rooms received through the observer:\n%o', rooms);
 
     this.movieRooms = rooms;
+  }
+
+  handleMovieSelected(movie: Movie) {
+    this.selectedMovieRooms = this.movieRooms.filter(x => x.Movie.Id === movie.Id);
+
+    if(!this.selectedMovieRooms || this.selectedMovieRooms.length ===0){
+      this.goToMovie(movie);
+      return;
+    }
+
+    this.selectedMovie = movie;
+  }
+
+  handleMovieRoomSelected(room: MovieRoom){
+    this.router.navigate([`movies/${room.Id}`]);
   }
 
   private createMovieListResponsesSubscription() {

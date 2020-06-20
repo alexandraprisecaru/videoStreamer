@@ -1,20 +1,33 @@
-<div *ngIf="movies.length > 0" class="bold">
-    <h3>Movies</h3>
-    <p>Movies count:{{movies.length}}</p>
-    <div>
-        <ul>
-            <li *ngFor="let movie of movies">
-                <button (click)="goToMovie(movie)">{{movie.Title}}</button>
-            </li>
-        </ul>
+<div class="container">
+    <div class="row" style="justify-content: center;">
+        <div class="row__inner">
+            <div class="tile" *ngFor="let x of moviesTest">
+                <div (click)="handleMovieSelected(x)">
+                    <div class="tile__media">
+                        <img class="tile__img" [src]="x.Image" alt="" />
+                    </div>
+                    <div class="tile__details">
+                        <div class="tile__title">
+                            Top Gear
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div>
-        <p>Movie rooms count: {{movieRooms.length}}
-        <ul>
-            <li *ngFor="let room of movieRooms">
-                <button>{{room.Id}}</button>
-            </li>
-        </ul>
+    
+    <div class="row" style="justify-content: center;" *ngIf="selectedMovie && selectedMovie.Id">
+        <div>
+            <p>{{selectedMovie.Title}}</p>
+        </div>
+        <div class="row__rooms" style="display: flex;">
+            <div *ngFor="let room of selectedMovieRooms">
+                <!-- <p>Room id: {{room.Id}}</p> -->
+                <div (click)="handleMovieRoomSelected(room)" class="grey-on-hover"
+                    style="background: red; width:180px; padding:10px; margin: 10px; display: flex; justify-content: center;">
+                    <img src="../../../assets/icons/room.png" width=100px;>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
