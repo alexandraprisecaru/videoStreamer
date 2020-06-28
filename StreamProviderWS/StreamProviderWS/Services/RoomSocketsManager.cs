@@ -6,7 +6,26 @@ namespace StreamProviderWS.Services
 {
     public class RoomSocketsManager : IRoomSocketsManager
     {
-        protected List<RoomSockets> RoomSockets { get; set; }
+        private List<RoomSockets> _roomSockets = new List<RoomSockets>();
+        private readonly object lockObject = new object();
+
+        protected List<RoomSockets> RoomSockets
+        {
+            get
+            {
+                lock (lockObject)
+                {
+                    return _roomSockets;
+                }
+            }
+            set
+            {
+                lock (lockObject)
+                {
+                    _roomSockets = value;
+                }
+            }
+        }
 
         public RoomSocketsManager()
         {

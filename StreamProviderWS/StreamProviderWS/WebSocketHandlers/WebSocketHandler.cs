@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -7,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StreamProviderWS.Managers;
-using StreamProviderWS.Models.Common;
 using StreamProviderWS.Models.WebSocket;
 using StreamProviderWS.Models.WebSocket.RequestsMessages;
 using StreamProviderWS.Services;
@@ -16,18 +14,54 @@ namespace StreamProviderWS.WebSocketHandlers
 {
     public abstract class WebSocketHandler
     {
+        private readonly object lockRooms = new object();
+        private readonly object lockRoomSockets = new object();
+        private readonly object lockConnectionManager = new object();
+
         private readonly IRoomSocketsManager _roomSocketsManager;
         private readonly IRoomsProvider _roomsProvider;
-        protected ConnectionManager WebSocketConnectionManager { get; set; }
+        private readonly ConnectionManager _connectionManager;
+        protected IRoomSocketsManager RoomSocketsManager
+        {
+            get
+            {
+                lock (lockRoomSockets)
+                {
+                    return _roomSocketsManager;
+                }
+            }
+        }
 
-        public WebSocketHandler(
+        protected IRoomsProvider RoomsProvider
+        {
+            get
+            {
+                lock (lockRooms)
+                {
+                    return _roomsProvider;
+                }
+            }
+        }
+
+        protected ConnectionManager WebSocketConnectionManager
+        {
+            get
+            {
+                lock (lockConnectionManager)
+                {
+                    return _connectionManager;
+                }
+            }
+        }
+
+        protected WebSocketHandler(
             ConnectionManager webSocketConnectionManager,
             IRoomSocketsManager roomSocketsManager,
             IRoomsProvider roomsProvider)
         {
             _roomSocketsManager = roomSocketsManager;
             _roomsProvider = roomsProvider;
-            WebSocketConnectionManager = webSocketConnectionManager;
+            _connectionManager = webSocketConnectionManager;
         }
 
         public virtual async Task OnConnected(WebSocket socket)
@@ -52,13 +86,13 @@ namespace StreamProviderWS.WebSocketHandlers
         {
             var socketId = WebSocketConnectionManager.GetId(socket);
 
-            var roomSockets = _roomSocketsManager.GetBySocketId(socketId);
+            var roomSockets = RoomSocketsManager.GetBySocketId(socketId);
             if (roomSockets == null || roomSockets.Count == 0)
             {
                 return;
 
             }
-            
+
             var userId = roomSockets[0].UserSockets.FirstOrDefault()?.UserId;
             if (string.IsNullOrWhiteSpace(userId))
             {
@@ -80,15 +114,14 @@ namespace StreamProviderWS.WebSocketHandlers
 
             var tasks = roomSockets.Select(x => SendMessageToAllInRoomAsync(x.RoomId, json));
             await Task.WhenAll(tasks);
+
             await WebSocketConnectionManager.RemoveSocket(WebSocketConnectionManager.GetId(socket));
 
-            var userRooms = await _roomsProvider.GetAllByUserId(userId);
-            if (userRooms == null || userRooms.Count == 0)
+            var userRooms = await RoomsProvider.GetAllByUserId(userId);
+            if (userRooms == null || !userRooms.Any())
             {
                 return;
             }
-
-            //var updatedRooms = new List<MovieRoom>();
 
             userRooms.ForEach(room =>
             {
@@ -101,24 +134,8 @@ namespace StreamProviderWS.WebSocketHandlers
 
                 userInRoom.IsActive = false;
 
-                _roomsProvider.Update(room.Id, room);
+                RoomsProvider.Update(room.Id, room);
             });
-
-            //    var jsonRoom = JsonConvert.SerializeObject(room);
-            //    var messageResponseWrapper = new MessageWrapper
-            //    {
-            //        type = MessageType.MOVIE_ROOM_UPDATE,
-            //        payload = jsonRoom
-            //    };
-
-            //    var jsonR = JsonConvert.SerializeObject(messageResponseWrapper); 
-            //    return SendMessageToAllInRoomAsync(room.Id, jsonR);
-            //});
-
-            //await Task.WhenAll(tasksUpdate);
-
-            //var tasksDbUpdate = updatedRooms.Select(room => _roomsProvider.Update(room.Id, room));
-            //await Task.WhenAll(tasksDbUpdate);
         }
 
         public async Task SendMessageAsync(WebSocket socket, string message)
@@ -154,41 +171,44 @@ namespace StreamProviderWS.WebSocketHandlers
 
         public async Task SendMessageToAllInRoomAsync(string roomId, string message)
         {
-            var socketIds = _roomSocketsManager.GetByRoomId(roomId)?.SelectMany(x => x.UserSockets)
-                .Select(x => x.SocketId)
-                .ToList();
+            var roomSocket = RoomSocketsManager.GetAll().FirstOrDefault(x => x.RoomId.Equals(roomId));
+            if (roomSocket == null)
+            {
+                throw new ArgumentException($"No room socket found for room id : {roomId}");
+            }
 
-            if (socketIds == null || socketIds.Count == 0)
+            if (roomSocket.UserSockets == null || roomSocket.UserSockets.Count == 0)
             {
                 return;
             }
 
-            var tasks = socketIds.Select(socketId =>
-            {
-                var socket = WebSocketConnectionManager.GetSocketById(socketId);
-                if (socket == null)
-                {
-                    _roomSocketsManager.DeleteBySocketId(socketId);
-                    return Task.CompletedTask;
-                }
+            var tasks = roomSocket.UserSockets
+                .Select(x => x.SocketId)
+                .Select(socketId =>
+                 {
+                     var socket = WebSocketConnectionManager.GetSocketById(socketId);
+                     if (socket == null)
+                     {
+                         RoomSocketsManager.DeleteBySocketId(socketId);
+                         return Task.CompletedTask;
+                     }
 
-                if (socket.State == WebSocketState.Open)
-                {
-                    return SendMessageAsync(socket, message);
-                }
-                else
-                {
-                    _roomSocketsManager.DeleteBySocketId(socketId);
-                }
+                     if (socket.State == WebSocketState.Open)
+                     {
+                         return SendMessageAsync(socket, message);
+                     }
+                     else
+                     {
+                         RoomSocketsManager.DeleteBySocketId(socketId);
+                     }
 
-                return Task.CompletedTask;
-            });
+                     return Task.CompletedTask;
+                 });
 
             await Task.WhenAll(tasks);
         }
 
 
-        //TODO - decide if exposing the message string is better than exposing the result and buffer
         public abstract Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer);
     }
 }

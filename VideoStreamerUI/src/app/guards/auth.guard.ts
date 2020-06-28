@@ -17,15 +17,14 @@ export class AuthGuard implements CanActivate {
     private cookieService: CookieService,
     private webSocketService: WebSocketsService,
     private router: Router) {
-
     this.authService.authState.subscribe((user) => {
       this.user = user;
       this.loggedIn = (user != null);
 
-      if(this.loggedIn){
+      if (this.loggedIn) {
         console.log(this.user);
 
-        webSocketService.sendSaveUserRequest(user);
+        this.webSocketService.sendSaveUserRequest(user);
 
         this.saveToCookie("authToken", this.user.authToken);
         this.saveToCookie("idToken", this.user.idToken);
@@ -33,14 +32,12 @@ export class AuthGuard implements CanActivate {
     });
   }
 
-  canActivate(
-    next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot)
+    : Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     let existentCookie = this.cookieService.get("authToken");
     if (!existentCookie) {
       this.signInWithGoogle();
     } else {
-      // this.router.navigate(["movies"]);
       return true;
     }
   }

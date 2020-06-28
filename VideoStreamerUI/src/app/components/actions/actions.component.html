@@ -21,12 +21,8 @@
     </div>
 
     <div class="col">
-        <a mat-mini-fab [routerLink]="" (click)="triggerComments()" *ngIf="areCommentsVisible" color="primary">
-            <mat-icon>comment</mat-icon>
-        </a>
-
-        <a mat-mini-fab [routerLink]="" (click)="triggerComments()" *ngIf="!areCommentsVisible" color="accent">
-            <mat-icon>comment</mat-icon>
+        <a mat-mini-fab [routerLink]="" (click)="leaveRoom()" color="primary">
+            <mat-icon>close</mat-icon>
         </a>
     </div>
     <div class="col-md-2"></div>

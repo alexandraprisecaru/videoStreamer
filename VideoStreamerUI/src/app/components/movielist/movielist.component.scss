@@ -114,16 +114,18 @@ a:hover {
         content: "▶";
         left: 0;
         width: 100%;
-        height: -webkit-fill-available !important;
+        height: 100%;
+        // height: -webkit-fill-available !important;
         display: flex !important;
         justify-content: center !important;
         align-content: center !important;
         flex-direction: column !important;
         text-align: center !important;
         font-size: 30px;
-        margin-left: 7px;
-        margin-top: -18px;
+        // margin-left: 7px;
+        // margin-top: -18px;
         z-index: 2;
+        align-items: center !important;
     }
 
     .tile:hover & {

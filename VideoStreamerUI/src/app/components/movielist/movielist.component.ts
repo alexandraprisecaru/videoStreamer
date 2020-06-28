@@ -70,7 +70,6 @@ export class MovielistComponent implements OnInit {
   }
 
   handleMovieSelected(movie: Movie) {
-
     let movieRooms = this.movieRooms.filter(x => x.Movie.Id === movie.Id);
 
     if (!this.movieRooms || this.movieRooms.length === 0) {
@@ -79,7 +78,7 @@ export class MovielistComponent implements OnInit {
     }
 
     this.selectedMovieRooms = [];
-    for (let index = 1; index < movieRooms.length - 1; index++) {
+    for (let index = 0; index < movieRooms.length; index++) {
       this.selectedMovieRooms.push([index, movieRooms[index]]);
     }
 

@@ -9,22 +9,8 @@ namespace StreamProviderWS.Managers
 {
     public class ConnectionManager
     {
-        private ConcurrentDictionary<string, WebSocket> _sockets = new ConcurrentDictionary<string, WebSocket>();
+        private readonly ConcurrentDictionary<string, WebSocket> _sockets = new ConcurrentDictionary<string, WebSocket>();
 
-        public WebSocket GetSocketById(string id)
-        {
-            return _sockets.FirstOrDefault(p => p.Key == id).Value;
-        }
-
-        public ConcurrentDictionary<string, WebSocket> GetAll()
-        {
-            return _sockets;
-        }
-
-        public string GetId(WebSocket socket)
-        {
-            return _sockets.FirstOrDefault(p => p.Value == socket).Key;
-        }
         public void AddSocket(WebSocket socket)
         {
             _sockets.TryAdd(CreateConnectionId(), socket);
@@ -47,6 +33,12 @@ namespace StreamProviderWS.Managers
                 statusDescription: "Closed by the ConnectionManager",
                 cancellationToken: CancellationToken.None);
         }
+
+        public WebSocket GetSocketById(string id) => _sockets.FirstOrDefault(p => p.Key == id).Value;
+
+        public ConcurrentDictionary<string, WebSocket> GetAll() => _sockets;
+
+        public string GetId(WebSocket socket) => _sockets.FirstOrDefault(p => p.Value == socket).Key;
 
         private string CreateConnectionId()
         {

@@ -1,4 +1,3 @@
-import { LoginComponent } from './components/login/login.component';
 import { MovielistComponent } from './components/movielist/movielist.component';
 import { MovieRoomComponent } from './components/movie-room/movie-room.component';
 import { BrowserModule } from '@angular/platform-browser';
@@ -14,7 +13,6 @@ import { FormsModule } from '@angular/forms';
 import { ChatComponent } from './components/chat/chat.component';
 import { CommentComponent } from './components/comment/comment.component';
 import { MoviePlayerComponent } from './components/movie-player/movie-player.component';
-import { VideoChatComponent } from './components/video-chat/video-chat.component';
 import { WebRTCChatModule } from './components/webrtc-chat/webrtc-chat.module';
 import { MenuComponent } from './components/menu/menu.component';
 import { UserInfoComponent } from './components/user-info/user-info.component';
@@ -39,14 +37,12 @@ export function provideConfig() {
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     MovielistComponent,
     MovieRoomComponent,
     EmptyComponent,
     ChatComponent,
     CommentComponent,
     MoviePlayerComponent,
-    VideoChatComponent,
     MenuComponent,
     UserInfoComponent,
     ChatRoomComponent,

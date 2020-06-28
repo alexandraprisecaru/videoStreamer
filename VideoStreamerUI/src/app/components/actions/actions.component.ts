@@ -4,6 +4,7 @@ import { MovieRoom } from 'src/app/entities/movieRoom';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { CookieService } from 'ngx-cookie-service';
 import { WebRTCConnectionService } from '../webrtc-chat/shared/webrtc-client-connection.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'actions',
@@ -25,6 +26,7 @@ export class ActionsComponent implements OnChanges {
   constructor(
     private cookieService: CookieService,
     private webSocketService: WebSocketsService,
+    private router: Router,
     private webrtcConnectionService: WebRTCConnectionService) { }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
@@ -71,6 +73,11 @@ export class ActionsComponent implements OnChanges {
 
   triggerComments() {
     this.areCommentsVisible = !this.areCommentsVisible;
+  }
+  
+  leaveRoom() {
+    this.webSocketService.sendLeaveRoomRequest(this.user.id, this.room.Id);
+    this.router.navigate([""]);
   }
 
   /**

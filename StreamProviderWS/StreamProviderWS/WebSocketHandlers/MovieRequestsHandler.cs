@@ -18,10 +18,8 @@ namespace StreamProviderWS.WebSocketHandlers
     {
         private readonly IProvider<Movie> _movieProvider;
         private readonly IProvider<User> _userProvider;
-        private readonly IRoomsProvider _roomsProvider;
         private readonly IChatMessagesProvider _chatMessagesProvider;
         private readonly IMovieCommentsProvider _commentsProvider;
-        private readonly IRoomSocketsManager _roomSocketsManager;
 
         public MovieRequestsHandler(
             ConnectionManager webSocketConnectionManager,
@@ -35,23 +33,24 @@ namespace StreamProviderWS.WebSocketHandlers
         {
             _movieProvider = movieProvider;
             _userProvider = userProvider;
-            _roomsProvider = roomsProvider;
             _chatMessagesProvider = chatMessagesProvider;
             _commentsProvider = commentsProvider;
-            _roomSocketsManager = roomSocketsManager;
         }
 
         public override async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
             try
             {
-                var a = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                var messageWrapper = JsonConvert.DeserializeObject<MessageWrapper>(a);
-
-                // todo: checkups
+                var input = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                var messageWrapper = JsonConvert.DeserializeObject<MessageWrapper>(input);
 
                 switch (messageWrapper.type)
                 {
+
+                    case MessageType.MOVIE_ROOMS_REQUEST:
+                        await HandleMovieRoomsRequest(socket, messageWrapper);
+                        break;
+
                     case MessageType.SAVE_USER_REQUEST:
                         await HandleSaveUserRequest(messageWrapper);
                         break;
@@ -78,10 +77,6 @@ namespace StreamProviderWS.WebSocketHandlers
 
                     case MessageType.MOVIE_ROOM_SEEK_REQUEST:
                         await HandleMovieRoomSeekRequest(messageWrapper);
-                        break;
-
-                    case MessageType.MOVIE_ROOMS_REQUEST:
-                        await HandleMovieRoomsRequest(socket, messageWrapper);
                         break;
 
                     case MessageType.CHAT_MESSAGES_REQUEST:
@@ -112,6 +107,10 @@ namespace StreamProviderWS.WebSocketHandlers
                     case MessageType.STOPPED_AUDIO_NOTIFICATION:
                         await HandleStoppedAudioNotification(messageWrapper);
                         break;
+
+                    case MessageType.LEAVE_ROOM:
+                        await HandleLeaveRoomRequest(messageWrapper);
+                        break;
                     default:
                         break;
                 }
@@ -120,6 +119,64 @@ namespace StreamProviderWS.WebSocketHandlers
             {
 
             }
+        }
+
+        private async Task HandleLeaveRoomRequest(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<LeaveRoomRequest>(messageWrapper.payload);
+            if (request == null || string.IsNullOrWhiteSpace(request.RoomId) ||
+                string.IsNullOrWhiteSpace(request.UserId))
+            {
+                throw new ArgumentException("Error while leaving room");
+            }
+
+            // set user as inactive in database
+            var room = await RoomsProvider.GetById(request.RoomId);
+            if (room == null)
+            {
+                throw new InvalidOperationException($"no room was found with id: {request.RoomId}");
+            }
+
+            var user = room.UsersInRoom.FirstOrDefault(x => x.User.id.Equals(request.UserId));
+            if (user == null)
+            {
+                throw new InvalidOperationException(
+                    $"no user was found in room {request.RoomId} with id: {request.UserId}");
+            }
+
+            user.IsActive = false;
+
+            await RoomsProvider.Update(request.RoomId, room);
+
+            // update the room-user-sockets in-memory list
+            RoomSockets roomSockets = RoomSocketsManager.GetByRoomId(request.RoomId).FirstOrDefault();
+
+            if (roomSockets == null)
+            {
+                throw new InvalidOperationException($"room sockets for {request.RoomId} is null or empty");
+            }
+
+            var socket = roomSockets.UserSockets.FirstOrDefault(x => x.UserId.Equals(request.UserId));
+            if (socket == null)
+            {
+                throw new InvalidOperationException($"User socket associated to user :{request.UserId} is null");
+            }
+
+            roomSockets.UserSockets = roomSockets.UserSockets.Where(x => !x.UserId.Equals(request.UserId)).ToList();
+
+            // send message to all room members to notify that user x has left the room
+            var statusUpdate = new SocketStatusUpdate { IsConnected = false, SocketId = socket.SocketId, UserId = request.UserId };
+            var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
+
+            MessageWrapper messageWrapperResponse = new MessageWrapper
+            {
+                type = MessageType.SOCKET_STATUS,
+                payload = jsonStatus
+            };
+
+            var json = JsonConvert.SerializeObject(messageWrapperResponse);
+
+            await Task.Run(async () => await SendMessageToAllInRoomAsync(request.RoomId, json));
         }
 
         private async Task HandleStoppedVideoNotification(MessageWrapper messageWrapper)
@@ -210,7 +267,7 @@ namespace StreamProviderWS.WebSocketHandlers
                 return;
             }
 
-            var rooms = await _roomsProvider.GetAllByUserId(request.UserId);
+            var rooms = await RoomsProvider.GetAllByUserId(request.UserId);
             if (rooms == null || rooms.Count == 0)
             {
                 return;
@@ -263,9 +320,8 @@ namespace StreamProviderWS.WebSocketHandlers
                 return;
             }
 
-            var room = await _roomsProvider.CreateRoom(movieRoomRequest.MovieId, movieRoomRequest.UserId);
+            var room = await RoomsProvider.CreateRoom(movieRoomRequest.MovieId, movieRoomRequest.UserId);
             var jsonRoom = JsonConvert.SerializeObject(room);
-
             var messageResponseWrapper = new MessageWrapper
             {
                 type = MessageType.MOVIE_ROOM_RESPONSE,
@@ -276,7 +332,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
             await SendMessageAsync(socket, json);
 
-            _roomSocketsManager.Add(new RoomSockets
+            RoomSocketsManager.Add(new RoomSockets
             {
                 RoomId = room.Id,
                 UserSockets = new List<UserSocket>
@@ -285,8 +341,13 @@ namespace StreamProviderWS.WebSocketHandlers
                 }
             });
 
+            await UpdateUserRoomsList(socket, movieRoomRequest.UserId);
+        }
+
+        private async Task UpdateUserRoomsList(WebSocket socket, string userId)
+        {
             // update the user's list of rooms
-            var allUserRooms = await _roomsProvider.GetAllByUserId(movieRoomRequest.UserId);
+            var allUserRooms = await RoomsProvider.GetAllByUserId(userId);
             var jsonRooms = JsonConvert.SerializeObject(allUserRooms);
 
             var messageUpdateWrapper = new MessageWrapper
@@ -303,49 +364,77 @@ namespace StreamProviderWS.WebSocketHandlers
         private async Task HandleMovieRoomWithIdRequest(WebSocket socket, MessageWrapper messageWrapper)
         {
             var socketId = WebSocketConnectionManager.GetId(socket);
+
             var movieRoomRequest = JsonConvert.DeserializeObject<MovieRoomWithIdRequest>(messageWrapper.payload);
             if (movieRoomRequest?.RoomId == null)
             {
                 return;
             }
 
-            var room = await _roomsProvider.GetById(movieRoomRequest.RoomId);
-
-            // todo: check room
+            var room = await RoomsProvider.GetById(movieRoomRequest.RoomId);
             if (room == null)
             {
-                return;
+                throw new InvalidOperationException($"Cannot connect to a room that doesn't exist: {movieRoomRequest.RoomId}");
             }
 
             var userId = movieRoomRequest.UserId;
 
-            await CheckAndUpdateRoomSocket(userId, room.Id, socketId);
+            if (await CheckAndUpdateRoomSocket(userId, room.Id, socketId)) // room was updated in some way
+            {
+                var roomDB = await RoomsProvider.GetById(room.Id);
+                var userDB = roomDB?.UsersInRoom.FirstOrDefault(x => x.User.id.Equals(userId));
+                if (userDB != null)
+                {
+                    // in case the user exists in db (room users), set the user as inactive to update later
+                    userDB.IsActive = false;
+                    await RoomsProvider.Update(room.Id, roomDB);
+                }
+            }
 
             var wasUpdated = false;
-            // todo: check user id
 
+            room = await RoomsProvider.GetById(room.Id);
             if (!room.UsersInRoom.Any(u => u.User.id.Equals(userId) && u.IsActive))
             {
                 var user = await _userProvider.GetById(userId);
                 if (user == null)
                 {
-                    return;
+                    throw new InvalidOperationException($"User with id: {userId} does not exist");
                 }
 
+                // check if user is in room
                 var existentUser = room.UsersInRoom.FirstOrDefault(x => x.User.id.Equals(user.id));
                 if (existentUser != null)
                 {
+                    // if he is, set him as active
                     existentUser.IsActive = true;
                 }
                 else
                 {
+                    // otherwise, add him
                     room.UsersInRoom.Add(new UserRoom { User = user, IsActive = true });
                 }
 
-                await _roomsProvider.Update(room.Id, room);
+                await RoomsProvider.Update(room.Id, room);
                 wasUpdated = true;
 
-                _roomSocketsManager.AddUserSocket(room.Id, new UserSocket { UserId = user.id, SocketId = socketId });
+                var roomSocket = RoomSocketsManager.GetByRoomId(room.Id).FirstOrDefault();
+                if (roomSocket == null)
+                {
+                    roomSocket = new RoomSockets
+                    {
+                        RoomId = room.Id,
+                        UserSockets = new List<UserSocket> {new UserSocket {UserId = userId, SocketId = socketId}}
+                    };
+
+                    RoomSocketsManager.Add(roomSocket);
+                }
+
+                var userSocket = roomSocket.UserSockets.FirstOrDefault(x => x.UserId.Equals(userId) && x.SocketId.Equals(socketId));
+                if (userSocket == null)
+                {
+                    RoomSocketsManager.AddUserSocket(room.Id, new UserSocket { UserId = user.id, SocketId = socketId });
+                }
             }
 
             var jsonRoom = JsonConvert.SerializeObject(room);
@@ -362,6 +451,7 @@ namespace StreamProviderWS.WebSocketHandlers
 
             if (wasUpdated)
             {
+                // let everyone in room know that another user joined
                 messageResponseWrapper = new MessageWrapper
                 {
                     type = MessageType.MOVIE_ROOM_UPDATE,
@@ -371,8 +461,8 @@ namespace StreamProviderWS.WebSocketHandlers
                 json = JsonConvert.SerializeObject(messageResponseWrapper);
                 await SendMessageToAllInRoomAsync(room.Id, json);
 
-                // Update user about the newly created room
-                var rooms = await _roomsProvider.GetAllByUserId(movieRoomRequest.UserId);
+                // Update the current user list of rooms
+                var rooms = await RoomsProvider.GetAllByUserId(movieRoomRequest.UserId);
                 var jsonRooms = JsonConvert.SerializeObject(rooms);
                 messageResponseWrapper = new MessageWrapper
                 {
@@ -453,7 +543,7 @@ namespace StreamProviderWS.WebSocketHandlers
                 return;
             }
 
-            var room = await _roomsProvider.GetById(request.RoomId);
+            var room = await RoomsProvider.GetById(request.RoomId);
 
             // todo: check room
             if (room == null)
@@ -494,7 +584,7 @@ namespace StreamProviderWS.WebSocketHandlers
                 return;
             }
 
-            var room = await _roomsProvider.GetById(request.RoomId);
+            var room = await RoomsProvider.GetById(request.RoomId);
 
             // todo: check room
             if (room == null)
@@ -596,7 +686,7 @@ namespace StreamProviderWS.WebSocketHandlers
                 return null;
             }
 
-            var room = await _roomsProvider.GetById(request.RoomId);
+            var room = await RoomsProvider.GetById(request.RoomId);
             if (room == null)
             {
                 // wtf 
@@ -607,53 +697,63 @@ namespace StreamProviderWS.WebSocketHandlers
 
             room.TimeWatched = request.CurrentTime;
 
-            await _roomsProvider.Update(room.Id, room);
+            await RoomsProvider.Update(room.Id, room);
 
             var movieRoomAction = new MovieRoomAction { Room = room, UserId = request.UserId };
             return JsonConvert.SerializeObject(movieRoomAction);
         }
 
-        private async Task CheckAndUpdateRoomSocket(string userId, string roomId, string socketId)
+        private async Task<bool> CheckAndUpdateRoomSocket(string userId, string roomId, string socketId)
         {
-            var roomSocket = _roomSocketsManager.GetByUserId(userId)?.FirstOrDefault(x => x.RoomId.Equals(roomId));
-            if (roomSocket == null)
+            // check if room exists
+            var roomSocket1 = RoomSocketsManager.GetByRoomId(roomId).FirstOrDefault();
+            if (roomSocket1 == null)
             {
-                _roomSocketsManager.Add(new RoomSockets
+                // if not, create it
+                RoomSocketsManager.Add(new RoomSockets
                 {
                     RoomId = roomId,
                     UserSockets = new List<UserSocket> { new UserSocket { UserId = userId, SocketId = socketId } }
                 });
+
+                return true;
             }
-            else
+
+            // check if the user is already in the room
+            var userSocket1 = roomSocket1.UserSockets.FirstOrDefault(x => x.UserId.Equals(userId));
+            if (userSocket1 == null)
             {
-                var userSocket = roomSocket.UserSockets.FirstOrDefault(x => x.UserId.Equals(userId));
-                if (userSocket == null)
+                // if not, add him
+                roomSocket1.UserSockets.Add(new UserSocket
                 {
-                    roomSocket.UserSockets.Add(new UserSocket { UserId = userId, SocketId = socketId });
-                }
-                else
-                {
-                    if (!userSocket.SocketId.Equals(socketId))
-                    {
-                        var statusUpdate = new SocketStatusUpdate { IsConnected = false, SocketId = userSocket.SocketId, UserId = userSocket.UserId };
-                        var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
+                    UserId = userId,
+                    SocketId = socketId
+                });
 
-                        MessageWrapper messageWrapper = new MessageWrapper
-                        {
-                            type = MessageType.SOCKET_STATUS,
-                            payload = jsonStatus
-                        };
-
-                        var json = JsonConvert.SerializeObject(messageWrapper);
-                        await SendMessageToAllInRoomAsync(roomSocket.RoomId, json);
-
-                        await WebSocketConnectionManager.RemoveSocket(userSocket.SocketId);
-                        _roomSocketsManager.DeleteBySocketId(userSocket.SocketId);
-                        _roomSocketsManager.AddUserSocket(roomId, new UserSocket { UserId = userId, SocketId = socketId });
-                    }
-                }
+                return true;
             }
 
+            if (!userSocket1.SocketId.Equals(socketId))
+            {
+                var statusUpdate = new SocketStatusUpdate { IsConnected = false, SocketId = userSocket1.SocketId, UserId = userSocket1.UserId };
+                var jsonStatus = JsonConvert.SerializeObject(statusUpdate);
+
+                MessageWrapper messageWrapper = new MessageWrapper
+                {
+                    type = MessageType.SOCKET_STATUS,
+                    payload = jsonStatus
+                };
+
+                var json = JsonConvert.SerializeObject(messageWrapper);
+                await SendMessageToAllInRoomAsync(roomSocket1.RoomId, json);
+
+                await WebSocketConnectionManager.RemoveSocket(userSocket1.SocketId);
+
+                RoomSocketsManager.AddUserSocket(roomId, new UserSocket { UserId = userId, SocketId = socketId });
+                return true;
+            }
+
+            return false;
         }
     }
 }

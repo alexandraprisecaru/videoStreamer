@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observer, Subject } from 'rxjs';
 
 import { AppConfigService } from './appConfig.service';
@@ -34,15 +34,16 @@ import { ConnectToRoom } from '../entities/video-chat/connectToRoom';
 import { ConnectToRoomRequest } from '../entities/requests/video/connectToRoomRequest';
 import { PeerMessageRequest } from '../entities/requests/video/peerMessageRequest';
 import { StoppedMediaNotification } from '../entities/requests/video/stoppedMediaNotfication';
+import { LeaveRoomRequest } from '../entities/requests/video/leaveRoomRequest';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketsService {
+
   private user: SocialUser;
   private webSocket: WebSocket;
 
-  // Maybe we only need one balance subject
   private movieListResponseSubject: Subject<Movie[]>;
   private movieListUpdateSubject: Subject<Movie[]>;
 
@@ -224,7 +225,6 @@ export class WebSocketsService {
 
     this.webSocket.onmessage = function (messageEvent: MessageEvent) {
       const jsonReceived: string = messageEvent.data;
-
       console.debug('WebSocket message received: %s', jsonReceived);
 
       self.authService.authState.subscribe((user) => {
@@ -233,7 +233,6 @@ export class WebSocketsService {
           self.handleMessage(jsonReceived);
         }
       });
-
     };;
 
     this.webSocket.onerror = function (messageEvent: MessageEvent) {
@@ -242,9 +241,18 @@ export class WebSocketsService {
 
     this.webSocket.onclose = function (closeEvent: CloseEvent) {
       console.info('WebSocket connection has been closed: %o', closeEvent);
-      let socketStatus: SocketStatusUpdate = { IsConnected: false, SocketId: self.socketId, UserId: self.userId };
+      let socketStatus: SocketStatusUpdate = { IsConnected: false,
+         SocketId: self.socketId,
+         UserId: self.userId };
       self.userDisconnected.next(socketStatus);
     };
+  }
+
+  sendLeaveRoomRequest(userId: string, roomId: string) {
+    const request: LeaveRoomRequest = new LeaveRoomRequest(userId, roomId);
+    const message: MessageWrapper = new MessageWrapper(MessageType.LEAVE_ROOM, request);
+
+    this.sendMessage(this.webSocket, message);
   }
 
   public sendConnectToRoomVideoRequest(connectToRoom: ConnectToRoom) {
@@ -418,25 +426,6 @@ export class WebSocketsService {
     this.sendMessage(this.webSocket, message);
   }
 
-  private waitForOpenConnection(socket: WebSocket) {
-    return new Promise((resolve, reject) => {
-      const maxNumberOfAttempts = 10
-      const intervalTime = 200 //ms
-
-      let currentAttempt = 0
-      const interval = setInterval(() => {
-        if (currentAttempt > maxNumberOfAttempts - 1) {
-          clearInterval(interval)
-          reject(new Error('Maximum number of attempts exceeded'))
-        } else if (socket.readyState === socket.OPEN) {
-          clearInterval(interval)
-          resolve()
-        }
-        currentAttempt++
-      }, intervalTime)
-    })
-  }
-
   private async sendMessage(socket: WebSocket, message: MessageWrapper) {
     if (socket.readyState !== socket.OPEN) {
       try {
@@ -454,6 +443,20 @@ export class WebSocketsService {
     let messageWrapper = this.validateAndGetMessage(messageRecieved);
 
     switch (messageWrapper.type) {
+      case MessageType.MOVIE_ROOM_RESPONSE:
+        let room: MovieRoom;
+        try {
+          room = JSON.parse(messageWrapper.payload);
+        } catch (error) {
+          console.error('Room reponse: Unable to deserialize MovieRoom object: %s',
+            messageWrapper.payload);
+          return;
+        }
+
+        console.debug('Room received: %o', room);
+        this.movieRoomResponseSubject.next(room);
+        break;
+
       case MessageType.STOPPED_VIDEO_NOTIFICATION:
         let stop: StoppedMediaNotification;
         try {
@@ -588,19 +591,6 @@ export class WebSocketsService {
         break;
 
 
-      case MessageType.MOVIE_ROOM_RESPONSE:
-        let room: MovieRoom;
-        try {
-          room = JSON.parse(messageWrapper.payload);
-        } catch (error) {
-          console.error('Room reponse: Unable to deserialize MovieRoom object: %s',
-            messageWrapper.payload);
-          return;
-        }
-
-        console.debug('Room received: %o', room);
-        this.movieRoomResponseSubject.next(room);
-        break;
 
       case MessageType.MOVIE_ROOM_UPDATE:
         let roomUpdated: MovieRoom;
@@ -753,6 +743,25 @@ export class WebSocketsService {
 
       default: break;
     }
+  }
+
+  private waitForOpenConnection(socket: WebSocket) {
+    return new Promise((resolve, reject) => {
+      const maxNumberOfAttempts = 10
+      const intervalTime = 200 //ms
+
+      let currentAttempt = 0
+      const interval = setInterval(() => {
+        if (currentAttempt > maxNumberOfAttempts - 1) {
+          clearInterval(interval)
+          reject(new Error('Maximum number of attempts exceeded'))
+        } else if (socket.readyState === socket.OPEN) {
+          clearInterval(interval)
+          resolve()
+        }
+        currentAttempt++
+      }, intervalTime)
+    })
   }
 
   private validateAndGetMessage(messageReceived: string) {

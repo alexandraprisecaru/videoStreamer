@@ -6,7 +6,7 @@
                     <div class="tile__media">
                         <img class="tile__img" [src]="x.Image" alt="" />
                     </div>
-                    <div class="tile__details">
+                    <div class="tile__details" style="align-items: center;">
                         <div class="tile__title">
                             <p>
                                 {{x.Title}}
@@ -24,24 +24,37 @@
         </div>
         <div class="row__rooms" style="display: flex;">
             <div *ngFor="let room of selectedMovieRooms">
-                <div style="background: red; width:180px; padding:10px; margin: 10px;">
-                    <!-- <p>Room id: {{room.Id}}</p> -->
-                    <div (click)="handleMovieRoomSelected(room[1])" class="row grey-on-hover" id="smth"
-                        style="overflow: hidden; display: flex; justify-content: center;">
-                        <img src="../../../assets/icons/room.png" width=100px;>
+                <div style="background: gray; width:180px; padding:10px; margin: 10px;" class="grey-on-hover"
+                    (click)="handleMovieRoomSelected(room[1])">
+                    <div style="display:flex; justify-content: center;">
+                        <!-- <p>Room id: {{room.Id}}</p> -->
+                        <div (click)="handleMovieRoomSelected(room[1])" class="row" id="smth"
+                            style="overflow: hidden; display: flex; justify-content: center; border:0px">
+                            <img src="../../../assets/icons/room.png" width=100px;>
+                        </div>
+
                     </div>
                     <div class="row rowoverlay">
-                        <p style="color: rgba(255, 255, 255, .7);width: 100px;height: 100px;margin-top: -64px;margin-left: 50px;position: fixed;font-size: 80px !important;">{{room[0]}}</p>
+                        <div>
+                            <p
+                                style="color: rgba(255, 255, 255, .7);width: 100px;height: 100px;margin-top: -64px;margin-left: 50px;position: fixed;font-size: 80px !important;">
+                                {{room[0]}}</p>
+                        </div>
+
                     </div>
+
                     <div class="row rowoverlay">
                         <div *ngFor="let user of room[1].UsersInRoom">
-
                             <img [src]="user.User.photoUrl" width=30px; id="avatar">
                             <div *ngIf="user.IsActive">
-                                <div style="background: greenyellow; border-radius: 50%; width:10px; height:10px; position: absolute; margin-top: -7px;"></div>
+                                <div
+                                    style="background: greenyellow; border-radius: 50%; width:10px; height:10px; position: absolute; margin-top: -7px;">
+                                </div>
                             </div>
                             <div *ngIf="!user.IsActive">
-                                <div style="background: rgb(172, 168, 168); border-radius: 50%; width:10px; height:10px; position: absolute; margin-top: -7px;"></div>
+                                <div
+                                    style="background: rgb(172, 168, 168); border-radius: 50%; width:10px; height:10px; position: absolute; margin-top: -7px;">
+                                </div>
                             </div>
                         </div>
                     </div>

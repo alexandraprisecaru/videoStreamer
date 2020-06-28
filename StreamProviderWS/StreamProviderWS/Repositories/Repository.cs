@@ -22,8 +22,7 @@ namespace StreamProviderWS.Repositories
 
         public async Task<List<T>> GetAllAsync() => (await _collection.FindAsync(item => true)).ToList();
 
-        public async Task<T> GetByIdAsync(string id) =>
-            (await _collection.FindAsync(item => item.Id == id)).FirstOrDefault();
+        public async Task<T> GetByIdAsync(string id) => (await _collection.FindAsync(item => item.Id == id)).FirstOrDefault();
 
         public async Task<T> CreateAsync(T item)
         {

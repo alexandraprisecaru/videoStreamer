@@ -29,11 +29,8 @@ namespace StreamProviderWS
             services.AddSingleton(Configuration);
             services.AddControllers();
 
-            services.Configure<DatabaseSettings>(
-                Configuration.GetSection(nameof(DatabaseSettings)));
-
-            services.AddSingleton<IDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+            services.Configure<DatabaseSettings>(Configuration.GetSection(nameof(DatabaseSettings)));
+            services.AddSingleton<IDatabaseSettings>(sp => sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
 
 
             //ProducerConfig producerConfig = new ProducerConfig();
@@ -56,12 +53,13 @@ namespace StreamProviderWS
             //services.AddSingleton(consumer);
             //services.AddSingleton(bytesConsumer);
 
-            services.AddConsumer<string, string>(Configuration, "consumer");
-            services.AddConsumer<string, byte[]>(Configuration, "consumer");
-            services.AddProducer<string, string>(Configuration, "producer");
-            services.AddProducer<string, byte[]>(Configuration, "producer");
             //services.AddHostedService<GeometryBytesConsumerService>();
             //services.AddHostedService<GeometryStringProducerService>();
+
+            //services.AddConsumer<string, string>(Configuration, "consumer");
+            //services.AddConsumer<string, byte[]>(Configuration, "consumer");
+            //services.AddProducer<string, string>(Configuration, "producer");
+            //services.AddProducer<string, byte[]>(Configuration, "producer");
 
             services.AddSingleton<IRoomSocketsManager, RoomSocketsManager>();
 
@@ -88,7 +86,6 @@ namespace StreamProviderWS
 
             app.UseWebSockets();
 
-            app.MapWebSocketManager("/chat", serviceProvider.GetService<ChatHandler>());
             app.MapWebSocketManager("/movies", serviceProvider.GetService<MovieRequestsHandler>());
 
             app.UseStaticFiles();
