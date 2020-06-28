@@ -70,16 +70,16 @@ export class MovielistComponent implements OnInit {
   }
 
   handleMovieSelected(movie: Movie) {
-    let movieRooms = this.movieRooms.filter(x => x.Movie.Id === movie.Id);
+    let rooms = this.movieRooms.filter(x => x.Movie.Id === movie.Id);
 
-    if (!this.movieRooms || this.movieRooms.length === 0) {
+    if (!rooms || rooms.length === 0) {
       this.goToMovie(movie);
       return;
     }
 
     this.selectedMovieRooms = [];
-    for (let index = 0; index < movieRooms.length; index++) {
-      this.selectedMovieRooms.push([index, movieRooms[index]]);
+    for (let index = 0; index < rooms.length; index++) {
+      this.selectedMovieRooms.push([index + 1, rooms[index]]);
     }
 
     this.selectedMovie = movie;

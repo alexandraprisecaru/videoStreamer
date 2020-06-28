@@ -1,10 +1,10 @@
-import { Component, Input, OnChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 
 import { WebRTCClient } from './shared/webrtc-client.model';
 import { WebRTCClientStore } from './shared/webrtc-client.store.service';
 import { WebRTCConnectionService } from './shared/webrtc-client-connection.service';
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 import { VideoInfo } from 'src/app/entities/videoInfo';
 import { CookieService } from 'ngx-cookie-service';
 import { SocialUser } from 'angularx-social-login';
@@ -17,7 +17,7 @@ import { MovieRoom } from 'src/app/entities/movieRoom';
   styleUrls: ['./webrtc-client.component.scss'],
   templateUrl: './webrtc-chat.component.html'
 })
-export class WebRTCChatComponent implements OnChanges {
+export class WebRTCChatComponent implements OnChanges, OnDestroy {
   @ViewChild('vid') video: ElementRef;
 
   @Input() user: SocialUser;
@@ -27,6 +27,8 @@ export class WebRTCChatComponent implements OnChanges {
 
   isAudioEnabled = false;
   isVideoEnabled = false;
+
+  clientsSubscription: Subscription;
 
   isMuted = false;
   socketId: string;
@@ -51,7 +53,7 @@ export class WebRTCChatComponent implements OnChanges {
 
     this.socketId = this.webSocketService.socketId;
 
-    this.webrtcClientStoreService.clients$.subscribe(
+    this.clientsSubscription = this.webrtcClientStoreService.clients$.subscribe(
       clientList => {
         this.webrtcClients = clientList.filter(c => c.roomId === this.roomId).toArray();
       }
@@ -64,6 +66,14 @@ export class WebRTCChatComponent implements OnChanges {
 
     let videoInfo = new VideoInfo(this.user.id, this.roomId, this.isAudioEnabled, this.isVideoEnabled);
     this.webrtcConnectionService.connectVideoAndAudio(this.user, videoInfo);
+  }
+
+  ngOnDestroy() {
+    this.clientsSubscription.unsubscribe();
+
+    this.webrtcClients.forEach(client=>{
+      this.webrtcClientStoreService.removeClient(client.id);
+    })
   }
 
   stopPropagation($event: Event) {
@@ -164,7 +174,7 @@ export class WebRTCChatComponent implements OnChanges {
     console.debug('Movie Room received through the observer:\n%o', room);
 
     this.roomId = room.Id;
-}
+  }
 
   private createMovieRoomUpdatesSubscription() {
     let self = this;
