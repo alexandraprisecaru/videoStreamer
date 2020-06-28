@@ -33,7 +33,7 @@
                 <div class="row" id="nopadding" style="padding:5px; background-color: rgba(24, 23, 23, 0.5); border-radius: 1%; ">
                     <div class="col col-md-9" id="nopadding">
                         <mat-form-field class="example-full-width" id="nopadding">
-                            <input matInput type="text" [(ngModel)]="inputComment"
+                            <input matInput type="text" [(ngModel)]="inputComment"  name="someUnusualName2" autocomplete="off"
                                 placeholder="Write your comment here.." maxlength="100"
                                 (keyup.space)="stopPropagation($event)" (keyup.m)="stopPropagation($event)"
                                 (keyup.enter)="sendComment()">

@@ -1,7 +1,7 @@
-<div class="panel panel-primary" style="max-height: 100%; height: 100%;">
-    <div class="panel-body">
+<div class="panel panel-primary">
+    <div class="panel-body"  style="max-height: 100%; height: 100%;">
         <div #scrollframe class="frame" (scroll)="scrolled($event)"
-            style="max-height:68vh; max-width:100%;overflow-y:auto;overflow-x:hidden; padding: 0px;">
+            style="max-height:64vh; max-width:100%;overflow-y:auto;overflow-x:hidden; padding: 0px;">
             <table class="table table-hover table-condensed" *ngIf="chatMessages.length !== 0">
 
                 <tr *ngFor="let message of chatMessages" style="width:100%; margin: 0px;" class="row" #item>
@@ -24,7 +24,7 @@
     </div>
 
     <div *ngIf="newMessagesCount!==0 && chatMessages.length>8">
-        <div style="text-align: center; margin-top: -40px;">
+        <div style="text-align: center; margin-top: -70px;">
             <button mat-raised-button color="primary" (click)="scrollToBottom()">You have {{newMessagesCount}} new
                 messages</button>
         </div>
@@ -33,7 +33,9 @@
     <div style="position: absolute; bottom: 8px; display: inline-flex; width: 100%; align-items: baseline; padding-left: 8px; padding-right: 8px; ">
         <mat-form-field class="example-full-width">
             <input matInput type="text" [(ngModel)]="message" (keyup.space)="stopPropagation($event)"
-                (keyup.m)="stopPropagation($event)" (keyup.enter)="sendMessage()">
+                (keyup.m)="stopPropagation($event)" (keyup.enter)="sendMessage()"
+                name="someUnusualName" autocomplete="off"
+                cdkFocusInitial>
         </mat-form-field>
 
         <a mat-icon-button [routerLink]="" (click)="sendMessage()">

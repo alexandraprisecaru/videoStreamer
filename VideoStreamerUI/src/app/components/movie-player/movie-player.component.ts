@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, ViewChild, ChangeDetectorRef, Output, EventEmitter, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ViewChild, ChangeDetectorRef, Output, EventEmitter, AfterViewInit, AfterViewChecked, ElementRef } from '@angular/core';
 import { WebSocketsService } from 'src/app/services/websocket.service';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { MatVideoComponent } from 'mat-video/lib/video.component';
@@ -95,7 +95,7 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
       if(this.videoPaused){
         return;
       }
-      
+
       this.webSocketService.updateRoomCurrentTime(this.room.Id, this.htmlVideo.currentTime);
     }, 1000);
   }

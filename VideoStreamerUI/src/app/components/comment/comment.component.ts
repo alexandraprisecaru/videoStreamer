@@ -25,9 +25,10 @@ export class CommentComponent implements OnInit, OnChanges {
 
   commentsHiddenOnAdd = false;
 
-  showButtons = false;
-
   movieCurrentTime: Subject<number> = new Subject<number>();
+  
+  showButtons = false;
+  showButtonsInitialized: boolean = false;
 
   constructor(private webSocketService: WebSocketsService) { }
 
@@ -36,13 +37,20 @@ export class CommentComponent implements OnInit, OnChanges {
     this.createCommentUpdatesSubscription();
 
     fromEvent(document, 'mousemove')
-    .subscribe(e => {
-      console.log("mouse moved" + e);
-      this.showButtons = true;
-      setTimeout(() => {
-        this.showButtons = false;
-      }, 8000);
-    });
+      .subscribe(e => {
+        console.log("mouse moved" + e);
+
+        if (!this.showButtons && !this.showButtonsInitialized) {
+          this.showButtons = true;
+          this.showButtonsInitialized = true;
+
+          setTimeout(() => {
+            this.showButtons = false;
+            this.showButtonsInitialized = false;
+
+          }, 5000);
+        }
+      });
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
@@ -52,7 +60,7 @@ export class CommentComponent implements OnInit, OnChanges {
 
     this.webSocketService.sendMovieCommentsRequest(this.room.Movie.Id);
     this.video.ontimeupdate = () => {
-      setTimeout(() => { this.movieCurrentTime.next(this.video.currentTime); }, 1000)
+      setTimeout(() => { this.movieCurrentTime.next(this.video.currentTime); }, 500)
     }
   }
 
@@ -115,7 +123,7 @@ export class CommentComponent implements OnInit, OnChanges {
         this.currentComment = comment.Comment;
         previousComment = comment;
         this.currentCommentUser = comment.User.firstName;
-        setTimeout(() => { this.currentComment = ""; this.currentCommentUser = "" }, 20000)
+        setTimeout(() => { this.currentComment = ""; this.currentCommentUser = "" }, 2000)
       }
     });
   }

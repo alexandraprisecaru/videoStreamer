@@ -1,12 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from "@angular/router";
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer, Observable, of, Subject, BehaviorSubject } from 'rxjs';
+import { Observer, Observable, of, BehaviorSubject, fromEvent } from 'rxjs';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { AuthService, SocialUser } from 'angularx-social-login';
 import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdate';
 import { CookieService } from 'ngx-cookie-service';
-// import fscreen from 'fscreen';
 
 @Component({
   selector: 'app-movie-room',
@@ -32,23 +31,8 @@ export class MovieRoomComponent implements OnInit {
   isConnected: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   isMenuVisible: boolean;
 
-  // hasFullscreenSupport: boolean;
-  // isFullscreen: boolean;
-
-  // ngOnDestroy() {
-  //   if (this.hasFullscreenSupport) {
-  //     fscreen.removeEventListener('fullscreenchange');
-  //   }
-  // }
-
-  // toggleFullscreen() {
-  //   if (this.hasFullscreenSupport && !this.isFullscreen) {
-  //     const elem = document.body;
-  //     fscreen.requestFullscreen(elem);
-  //   } else {
-  //     fscreen.exitFullscreen();
-  //   }
-  // }
+  showButtons = false;
+  showButtonsInitialized: boolean = false;
 
   constructor(private route: ActivatedRoute,
     private webSocketService: WebSocketsService,
@@ -56,6 +40,22 @@ export class MovieRoomComponent implements OnInit {
     private cookieService: CookieService,
     private elementRef: ElementRef) {
 
+    fromEvent(document, 'mousemove')
+    .subscribe(e => {
+      console.log("mouse moved" + e);
+
+      if (!this.showButtons && !this.showButtonsInitialized) {
+        this.showButtons = true;
+        this.showButtonsInitialized = true;
+
+        setTimeout(() => {
+          this.showButtons = false;
+          this.showButtonsInitialized = false;
+
+        }, 5000);
+      }
+    });
+    
     this.route.params.subscribe(params => {
       console.log(params);
 

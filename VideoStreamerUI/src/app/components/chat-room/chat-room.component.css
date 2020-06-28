@@ -10,7 +10,7 @@
 }
 
 .example-full-width {
-  width: 85%;
+  width: 100% !important;
 }
 
 img {
