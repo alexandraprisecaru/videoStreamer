@@ -1,14 +1,15 @@
-import { Component, Input, OnChanges, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, ElementRef } from '@angular/core';
 
 import { WebRTCClient } from './shared/webrtc-client.model';
 import { WebRTCClientStore } from './shared/webrtc-client.store.service';
 import { WebRTCConnectionService } from './shared/webrtc-client-connection.service';
 import { WebSocketsService } from 'src/app/services/websocket.service';
-import { Observer, BehaviorSubject } from 'rxjs';
+import { Observer } from 'rxjs';
 import { VideoInfo } from 'src/app/entities/videoInfo';
 import { CookieService } from 'ngx-cookie-service';
 import { SocialUser } from 'angularx-social-login';
 import { StoppedMediaNotification } from 'src/app/entities/requests/video/stoppedMediaNotfication';
+import { SocketStatusUpdate } from 'src/app/entities/responses/SocketStatusUpdate';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 
 @Component({
@@ -34,10 +35,13 @@ export class WebRTCChatComponent implements OnChanges {
     private webrtcClientStoreService: WebRTCClientStore,
     private webrtcConnectionService: WebRTCConnectionService,
     private cookieService: CookieService,
-    private webSocketService: WebSocketsService
+    private webSocketService: WebSocketsService,
+    private elementRef: ElementRef
   ) {
     this.createStoppedVideoNotificationSubscription();
     this.createStoppedAudioNotificationSubscription();
+    this.createUserDisconnectedSubscription();
+    this.createMovieRoomUpdatesSubscription();
   }
 
   ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
@@ -125,5 +129,63 @@ export class WebRTCChatComponent implements OnChanges {
         client.stream.getAudioTracks()[0].enabled = !client.stream.getAudioTracks()[0].enabled;
       }
     });
+  }
+
+  private createUserDisconnectedSubscription() {
+    let self = this;
+    const socketStatusUpdatesObserver: Observer<SocketStatusUpdate> = {
+      next: function (status: SocketStatusUpdate): void {
+        self.userDisconnected(status);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more socket status updates');
+      }
+    };
+
+    this.webSocketService.subscribeToUserDisconnected(socketStatusUpdatesObserver);
+  }
+
+  userDisconnected(status: SocketStatusUpdate) {
+    let client = this.webrtcClients.find(x => x.user.id === status.UserId);
+    if (!client) {
+      console.log(`no webrtc client found for user id: ${status.UserId}`);
+      return;
+    }
+
+    this.webrtcClientStoreService.removeClient(client.id);
+  }
+
+  private processMovieRoom(room: MovieRoom): void {
+    console.debug('Movie Room received through the observer:\n%o', room);
+
+    this.roomId = room.Id;
+}
+
+  private createMovieRoomUpdatesSubscription() {
+    let self = this;
+    const movieRoomUpdatesObserver: Observer<MovieRoom> = {
+      next: function (room: MovieRoom): void {
+        if (room.Id !== self.roomId) {
+          return;
+        }
+
+        self.processMovieRoom(room);
+      },
+
+      error: function (err: any): void {
+        console.error('Error: %o', err);
+      },
+
+      complete: function (): void {
+        console.log('No more movies responses');
+      }
+    };
+
+    this.webSocketService.subscribeToMovieRoomUpdates(movieRoomUpdatesObserver);
   }
 }

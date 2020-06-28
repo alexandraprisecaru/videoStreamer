@@ -53,7 +53,8 @@ export class MovieRoomComponent implements OnInit {
   constructor(private route: ActivatedRoute,
     private webSocketService: WebSocketsService,
     private authService: AuthService,
-    private cookieService: CookieService) {
+    private cookieService: CookieService,
+    private elementRef: ElementRef) {
 
     this.route.params.subscribe(params => {
       console.log(params);
@@ -181,6 +182,9 @@ export class MovieRoomComponent implements OnInit {
     if (user) {
       user.IsActive = false;
     }
+  }
 
+  userLeftRoomEvent(){
+    this.elementRef.nativeElement.remove();
   }
 }

@@ -29,7 +29,8 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 control-label" id="nopadding">
                             <div class="d-flex flex-row-reverse" id="nopadding">
                                 <div class="p-2" id="nopadding" #menu [style.display]="isMenuVisible ? 'block': 'none'">
-                                    <menu [room]="room" [user]="user" id="nopadding" id="collapseExample" style=" margin-right: 10px; border-radius: 1%; 
+                                    <menu [room]="room" [user]="user" (userLeftRoomEvent)="userLeftRoomEvent()"
+                                     id="nopadding" id="collapseExample" style=" margin-right: 10px; border-radius: 1%; 
                                     padding-left: 0px; margin-top:10px;background-color: rgba(24, 23, 23, 0.5);
                                     width: 320px;
                                          max-height: 90vh; min-height: 90vh; ">

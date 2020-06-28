@@ -1,4 +1,4 @@
-import { Component, OnChanges, Input } from '@angular/core';
+import { Component, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { SocialUser } from 'angularx-social-login';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 import { WebSocketsService } from 'src/app/services/websocket.service';
@@ -15,6 +15,7 @@ export class ActionsComponent implements OnChanges {
 
   @Input() room: MovieRoom;
   @Input() user: SocialUser;
+  @Output() userLeftRoom = new EventEmitter();
   isVideoEnabled: boolean;
   isAudioEnabled: boolean;
   areCommentsVisible: boolean = true;
@@ -77,6 +78,7 @@ export class ActionsComponent implements OnChanges {
   
   leaveRoom() {
     this.webSocketService.sendLeaveRoomRequest(this.user.id, this.room.Id);
+    this.userLeftRoom.emit();
     this.router.navigate([""]);
   }
 

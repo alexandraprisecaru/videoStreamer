@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, Output, EventEmitter } from '@angular/core';
 import { SocialUser } from 'angularx-social-login';
 import { MovieRoom } from 'src/app/entities/movieRoom';
 
@@ -11,6 +11,7 @@ export class MenuComponent implements OnChanges {
 
   @Input() room: MovieRoom;
   @Input() user: SocialUser;
+  @Output() userLeftRoomEvent = new EventEmitter();
 
   constructor() { }
 
@@ -18,5 +19,9 @@ export class MenuComponent implements OnChanges {
     if (!this.room || !this.user) {
       return;
     }
+  }
+
+  userLeftRoom() {
+    this.userLeftRoomEvent.emit();
   }
 }
