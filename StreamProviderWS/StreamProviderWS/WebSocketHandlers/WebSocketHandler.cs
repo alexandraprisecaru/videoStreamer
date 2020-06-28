@@ -94,7 +94,9 @@ namespace StreamProviderWS.WebSocketHandlers
 
             }
 
-            var userId = roomSockets[0].UserSockets.FirstOrDefault()?.UserId;
+            var userSocket = roomSockets[0].UserSockets.FirstOrDefault(x => x.SocketId.Equals(socketId));
+            var userId = userSocket?.UserId;
+
             if (string.IsNullOrWhiteSpace(userId))
             {
                 return;
