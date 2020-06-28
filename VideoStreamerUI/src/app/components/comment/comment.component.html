@@ -4,24 +4,24 @@
             <div [style.visibility]="!showButtons ? 'hidden' : 'visible' ">
                 <div>
                     <a mat-icon-button [routerLink]="" (click)="triggerComments()" *ngIf="!areCommentsVisible"
-                        color="accent">
+                        color="accent" matTooltip="Show comments" matTooltipPosition="right" matTooltipHideDelay="200">
                         <mat-icon>speaker_notes</mat-icon>
                     </a>
 
                     <a mat-icon-button [routerLink]="" (click)="triggerComments()" *ngIf="areCommentsVisible"
-                        color="accent">
+                        color="accent" matTooltip="Hide comments" matTooltipPosition="right" matTooltipHideDelay="200">
                         <mat-icon>speaker_notes_off</mat-icon>
                     </a>
                 </div>
 
                 <div>
                     <a mat-icon-button [routerLink]="" (click)="showAddComment()" *ngIf="!isAddCommentInputVisible"
-                        color="accent">
+                        color="accent" matTooltip="Add comment" matTooltipPosition="below" matTooltipHideDelay="200">
                         <mat-icon>add</mat-icon>
                     </a>
 
                     <a mat-icon-button [routerLink]="" (click)="hideAddComment()" *ngIf="isAddCommentInputVisible"
-                        color="accent">
+                        color="accent" matTooltip="Cancel" matTooltipPosition="below" matTooltipHideDelay="200">
                         <mat-icon>cancel</mat-icon>
                     </a>
                 </div>
@@ -30,11 +30,12 @@
 
         <div id="nopadding" style="margin-top: 10px; width:600px; ">
             <div *ngIf="isAddCommentInputVisible">
-                <div class="row" id="nopadding" style="padding:5px; background-color: rgba(24, 23, 23, 0.5); border-radius: 1%; ">
+                <div class="row" id="nopadding"
+                    style="padding:5px; background-color: rgba(24, 23, 23, 0.5); border-radius: 1%; ">
                     <div class="col col-md-9" id="nopadding">
                         <mat-form-field class="example-full-width" id="nopadding">
-                            <input matInput type="text" [(ngModel)]="inputComment"  name="someUnusualName2" autocomplete="off"
-                                placeholder="Write your comment here.." maxlength="100"
+                            <input matInput type="text" [(ngModel)]="inputComment" name="someUnusualName2"
+                                autocomplete="off" placeholder="Write your comment here.." maxlength="100"
                                 (keyup.space)="stopPropagation($event)" (keyup.m)="stopPropagation($event)"
                                 (keyup.enter)="sendComment()">
                         </mat-form-field>
@@ -50,7 +51,8 @@
 
             <div *ngIf="areCommentsVisible && currentComment!==''">
                 <!-- <div style="background-color: rgba(0, 0, 0, 0.2);" id="nopadding"> -->
-                <div style="background-color: rgba(24, 23, 23, 0.3); padding:5px;  border-radius: 1%; min-height: 67px;" id="nopadding">
+                <div style="background-color: rgba(24, 23, 23, 0.3); padding:5px;  border-radius: 1%; min-height: 67px;"
+                    id="nopadding">
                     <p style="color: rgba(196, 208, 219, 0.9); margin: 0px; font-size: 12px;">{{currentCommentUser}}</p>
                     <p style="color: white; margin: 0px;  font-size: 15px;">{{currentComment}}</p>
                 </div>

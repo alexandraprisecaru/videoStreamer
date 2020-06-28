@@ -42,12 +42,15 @@
                                         style="pointer-events:auto !important; height: fit-content; text-align: end; margin-top: 10px;">
 
                                         <a mat-icon-button [routerLink]="" (click)="triggerMenu()" *ngIf="isMenuVisible"
-                                            color="accent">
+                                            color="accent"  matTooltip="Hide chat"
+                                            matTooltipPosition="left" matTooltipHideDelay="200">
                                             <mat-icon>arrow_forward_ios</mat-icon>
                                         </a>
 
                                         <a mat-icon-button [routerLink]="" (click)="triggerMenu()"
-                                            *ngIf="!isMenuVisible" color="accent">
+                                            *ngIf="!isMenuVisible" color="accent"
+                                            matTooltip="Show chat"
+                                            matTooltipPosition="left" matTooltipHideDelay="200">
                                             <mat-icon>arrow_back_ios</mat-icon>
                                         </a>
                                     </div>

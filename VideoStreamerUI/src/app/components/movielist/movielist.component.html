@@ -5,7 +5,7 @@
     <div class="row" style="justify-content: center;">
         <div class="row__inner">
             <div class="tile" *ngFor="let x of movies">
-                <div (click)="handleMovieSelected(x)">
+                <div (mouseover)="handleMovieSelected(x)">
                     <div class="tile__media">
                         <img class="tile__img" [src]="x.Image" alt="" />
                     </div>
@@ -24,7 +24,8 @@
     <div class="row" style="justify-content: center; overflow: auto;" *ngIf="selectedMovie && selectedMovie.Id">
         <div class="row__rooms" style="display: flex;">
             <div style="background: rgb(109, 18, 18); width:180px; padding:10px; margin: 10px;" class="grey-on-hover"
-                (click)="goToMovie(selectedMovie)">
+                (click)="goToMovie(selectedMovie)" matTooltip="Create room" matTooltipPosition="above"
+                matTooltipHideDelay="200">
                 <div style="display:flex; justify-content: center;">
                     <!-- <p>Room id: {{room.Id}}</p> -->
                     <div (click)="goToMovie(selectedMovie)" class="row" id="smth"
@@ -34,22 +35,24 @@
                 </div>
                 <div class="row rowoverlay" style="height: fit-content; width: fit-content; overflow: hidden;">
                     <div>
-                        <p style="color: rgba(255, 255, 255, .7);width: 100px;height: 100px;margin-top: -64px;margin-left: 50px;position: fixed;font-size: 100px !important;">
+                        <p
+                            style="color: rgba(255, 255, 255, .7);width: 100px;height: 100px;margin-top: -64px;margin-left: 50px;position: fixed;font-size: 100px !important;">
                             +</p>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row__rooms" style="display: flex;">
-            <div *ngFor="let room of selectedMovieRooms">
+            <div *ngFor="let room of selectedMovieRooms"  matTooltip="Join room"
+            matTooltipPosition="above" matTooltipHideDelay="200">
                 <div style="background: gray; width:180px; padding:10px; margin: 10px;" class="grey-on-hover"
                     (click)="handleMovieRoomSelected(room[1])">
                     <div style="display:flex; justify-content: center;">
                         <!-- <p>Room id: {{room.Id}}</p> -->
-                        <div (click)="handleMovieRoomSelected(room[1])" class="row" id="smth"
+                        <div (click)="handleMovieRoomSelected(room[1])" class="row" id="smth" 
                             style="overflow: hidden; display: flex; justify-content: center; border:0px">
                             <img src="../../../assets/icons/room.png" width=100px;>
-                        </div>
+                    </div>
 
                     </div>
                     <div class="row rowoverlay" style="height: fit-content;width: fit-content; overflow: hidden;">
@@ -63,7 +66,9 @@
 
                     <div class="row rowoverlay" style="height: 50px;width: fit-content; overflow: hidden;">
                         <div *ngFor="let user of room[1].UsersInRoom">
-                            <img [src]="user.User.photoUrl" width=30px; id="avatar">
+                            <img [src]="user.User.photoUrl" width=30px; id="avatar"
+                            [matTooltip]="user.User.name"
+                            matTooltipPosition="below" matTooltipHideDelay="200">
                             <div *ngIf="user.IsActive">
                                 <div
                                     style="background: greenyellow; border-radius: 50%; width:10px; height:10px; position: absolute; margin-top: -7px;">

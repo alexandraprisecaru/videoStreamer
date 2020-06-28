@@ -1,27 +1,32 @@
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col">
-        <a mat-mini-fab [routerLink]="" (click)="triggerVideo()" *ngIf="isVideoEnabled" color="primary">
+        <a mat-mini-fab (click)="triggerVideo()" *ngIf="isVideoEnabled" color="primary" matTooltip="Disable camera"
+            matTooltipPosition="above" matTooltipHideDelay="200">
             <mat-icon>videocam</mat-icon>
         </a>
 
-        <a mat-mini-fab [routerLink]="" (click)="triggerVideo()" *ngIf="!isVideoEnabled" color="accent">
+        <a mat-mini-fab [routerLink]="" (click)="triggerVideo()" *ngIf="!isVideoEnabled" color="accent"
+            matTooltip="Enable camera" matTooltipPosition="above" matTooltipHideDelay="200">
             <mat-icon>videocam_off</mat-icon>
         </a>
     </div>
 
     <div class="col">
-        <a mat-mini-fab [routerLink]="" (click)="triggerAudio()" *ngIf="isAudioEnabled" color="primary">
+        <a mat-mini-fab [routerLink]="" (click)="triggerAudio()" *ngIf="isAudioEnabled" color="primary"
+            matTooltip="Disable audio" matTooltipPosition="above" matTooltipHideDelay="200">
             <mat-icon>mic</mat-icon>
         </a>
 
-        <a mat-mini-fab [routerLink]="" (click)="triggerAudio()" *ngIf="!isAudioEnabled" color="accent">
+        <a mat-mini-fab [routerLink]="" (click)="triggerAudio()" *ngIf="!isAudioEnabled" color="accent"
+            matTooltip="Enable audio" matTooltipPosition="above" matTooltipHideDelay="200">
             <mat-icon>mic_off</mat-icon>
         </a>
     </div>
 
     <div class="col">
-        <a mat-mini-fab [routerLink]="" (click)="leaveRoom()" color="primary">
+        <a mat-mini-fab [routerLink]="" (click)="leaveRoom()" color="primary" matTooltip="Leave room"
+            matTooltipPosition="above" matTooltipHideDelay="200">
             <mat-icon>close</mat-icon>
         </a>
     </div>
