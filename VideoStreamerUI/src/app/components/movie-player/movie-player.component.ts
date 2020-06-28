@@ -13,6 +13,7 @@ import { SocialUser } from 'angularx-social-login';
 export class MoviePlayerComponent implements OnInit, OnChanges {
   videoComp: MatVideoComponent;
   htmlVideo: HTMLVideoElement;
+  videoPaused: boolean;
 
   @ViewChild('video') set matVideo(matVideo: MatVideoComponent) {
     if (matVideo) { // initially setter gets called with undefined
@@ -59,10 +60,13 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
     // this.title = this.room.Movie.Title;
     this.src = this.room.Movie.StreamUrl;
     this.changeDetector.detectChanges();
+    this.htmlVideo.currentTime = this.room.TimeWatched;
+    this.updateCurrentTime();
 
     this.htmlVideo.onpause = () => {
       // check if it's on pause already-> don't make request
       console.log(`on pause called, current time: ${this.htmlVideo.currentTime}`);
+      this.videoPaused = true;
 
       // send ws request to pause video for all
       this.webSocketService.sendPauseRequest(this.room.Id, this.htmlVideo.currentTime);
@@ -70,7 +74,7 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
 
     this.htmlVideo.onplay = () => {
       console.log(`on play called, current time: ${this.htmlVideo.currentTime}`);
-
+      this.videoPaused = false;
       // send ws reuqest to play the video
       this.webSocketService.sendPlayRequest(this.room.Id, this.htmlVideo.currentTime);
     }
@@ -84,6 +88,16 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
 
       this.seekedByWS = false;
     }
+  }
+
+  updateCurrentTime() {
+    setInterval(() => {
+      if(this.videoPaused){
+        return;
+      }
+      
+      this.webSocketService.updateRoomCurrentTime(this.room.Id, this.htmlVideo.currentTime);
+    }, 1000);
   }
 
   private pause(roomId: string, currentTime: number) {
@@ -180,7 +194,7 @@ export class MoviePlayerComponent implements OnInit, OnChanges {
 
   ngclass: any;
   src: string = "";
-  title: string ="";// this.room ? this.room.Movie.Title : "Not loaded yet";
+  title: string = "";// this.room ? this.room.Movie.Title : "Not loaded yet";
   autoplay: boolean = true;
   preload: boolean = true;
   loop: boolean = false;

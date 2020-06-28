@@ -60,6 +60,7 @@
         public const string SOCKET_STATUS = "SOCKET_STATUS";
 
         public const string LEAVE_ROOM = "LEAVE_ROOM";
+        public const string UPDATE_ROOM_CURRENT_TIME = "UPDATE_ROOM_CURRENT_TIME";
 
         // hmm............... idk if personal is needed or doable in the current implementation
         public const string MOVIE_CLOSE_PERSONAL_REQUEST = "MOVIE_CLOSE_PERSONAL_REQUEST";

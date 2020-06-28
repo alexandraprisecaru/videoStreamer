@@ -46,15 +46,6 @@ export class MovielistComponent implements OnInit {
     console.debug('Movies received through the observer:\n%o', movieList);
 
     this.movies = movieList;
-    // todo: remove 
-    this.moviesTest.push(...this.movies);
-    this.moviesTest.push(...this.movies);
-    this.moviesTest.push(...this.movies);
-    this.moviesTest.push(...this.movies);
-    this.moviesTest.push(...this.movies);
-    this.moviesTest.push(...this.movies);
-    this.moviesTest.push(...this.movies);
-    this.moviesTest.push(...this.movies);
   }
 
   private processMovieRoom(room: MovieRoom): void {

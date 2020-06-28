@@ -111,6 +111,10 @@ namespace StreamProviderWS.WebSocketHandlers
                     case MessageType.LEAVE_ROOM:
                         await HandleLeaveRoomRequest(messageWrapper);
                         break;
+
+                    case MessageType.UPDATE_ROOM_CURRENT_TIME:
+                        await HandleRoomCurrentTimeUpdatedRequest(messageWrapper);
+                        break;
                     default:
                         break;
                 }
@@ -119,6 +123,26 @@ namespace StreamProviderWS.WebSocketHandlers
             {
 
             }
+        }
+
+        private async Task HandleRoomCurrentTimeUpdatedRequest(MessageWrapper messageWrapper)
+        {
+            var request = JsonConvert.DeserializeObject<UpdateRoomCurrentTimeRequest>(messageWrapper.payload);
+            if (request == null || string.IsNullOrWhiteSpace(request.RoomId))
+            {
+                throw new ArgumentException("Error while updating room current time");
+            }
+
+            // set user as inactive in database
+            var room = await RoomsProvider.GetById(request.RoomId);
+            if (room == null)
+            {
+                throw new InvalidOperationException($"no room was found with id: {request.RoomId}");
+            }
+
+            room.TimeWatched = request.CurrentTime;
+
+            await RoomsProvider.Update(room.Id, room);
         }
 
         private async Task HandleLeaveRoomRequest(MessageWrapper messageWrapper)

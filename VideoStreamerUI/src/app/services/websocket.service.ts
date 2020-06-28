@@ -35,11 +35,13 @@ import { ConnectToRoomRequest } from '../entities/requests/video/connectToRoomRe
 import { PeerMessageRequest } from '../entities/requests/video/peerMessageRequest';
 import { StoppedMediaNotification } from '../entities/requests/video/stoppedMediaNotfication';
 import { LeaveRoomRequest } from '../entities/requests/video/leaveRoomRequest';
+import { MovieRoomCurrentTimeRequest } from '../entities/requests/movieRoomCurrentTimeRequest';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketsService {
+
 
   private user: SocialUser;
   private webSocket: WebSocket;
@@ -241,11 +243,20 @@ export class WebSocketsService {
 
     this.webSocket.onclose = function (closeEvent: CloseEvent) {
       console.info('WebSocket connection has been closed: %o', closeEvent);
-      let socketStatus: SocketStatusUpdate = { IsConnected: false,
-         SocketId: self.socketId,
-         UserId: self.userId };
+      let socketStatus: SocketStatusUpdate = {
+        IsConnected: false,
+        SocketId: self.socketId,
+        UserId: self.userId
+      };
       self.userDisconnected.next(socketStatus);
     };
+  }
+
+  updateRoomCurrentTime(roomId: string, currentTime: number) {
+    const request: MovieRoomCurrentTimeRequest  = new MovieRoomCurrentTimeRequest(roomId, currentTime);
+    const message: MessageWrapper = new MessageWrapper(MessageType.UPDATE_ROOM_CURRENT_TIME, request);
+
+    this.sendMessage(this.webSocket, message);
   }
 
   sendLeaveRoomRequest(userId: string, roomId: string) {
