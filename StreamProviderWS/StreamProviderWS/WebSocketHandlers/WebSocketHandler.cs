@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
@@ -182,6 +183,8 @@ namespace StreamProviderWS.WebSocketHandlers
                 return;
             }
 
+            List<string> socketIdsThatMustBeDeleted = new List<string>();
+
             var tasks = roomSocket.UserSockets
                 .Select(x => x.SocketId)
                 .Select(socketId =>
@@ -189,7 +192,7 @@ namespace StreamProviderWS.WebSocketHandlers
                      var socket = WebSocketConnectionManager.GetSocketById(socketId);
                      if (socket == null)
                      {
-                         RoomSocketsManager.DeleteBySocketId(socketId);
+                         socketIdsThatMustBeDeleted.Add(socketId);
                          return Task.CompletedTask;
                      }
 
@@ -199,13 +202,23 @@ namespace StreamProviderWS.WebSocketHandlers
                      }
                      else
                      {
-                         RoomSocketsManager.DeleteBySocketId(socketId);
+                         socketIdsThatMustBeDeleted.Add(socketId);
                      }
 
                      return Task.CompletedTask;
                  });
 
             await Task.WhenAll(tasks);
+
+            if (socketIdsThatMustBeDeleted.Count == 0)
+            {
+                return;
+            }
+
+            socketIdsThatMustBeDeleted.ForEach(socketId =>
+            {
+                RoomSocketsManager.DeleteBySocketId(socketId);
+            });
         }
 
 
